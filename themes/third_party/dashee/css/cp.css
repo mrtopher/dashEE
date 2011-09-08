@@ -1,0 +1,164 @@
+/* EE Override */
+#mainContent .pageContents { padding:0; background-color:#FFF; }
+.heading h2.edit { display:none; } 
+#breadCrumb ol { display: none; }
+.contents { margin:0; }
+
+
+/* Module CSS */
+#dashContainer .column { 
+    float: left;
+    width: 31%;
+    margin-left:3.3%;
+	/* Min-height: */
+	min-height: 400px;
+	height: auto !important; 
+	height: 400px;
+	}
+#column1.column { margin-left:0; }
+#dashContainer .widget {
+    margin-bottom:15px;
+    padding: 2px;
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
+}
+#dashContainer .widget .widget-head {
+    overflow: hidden;
+    width: 100%;
+    height: 35px;
+    line-height: 35px;
+    background:#9DAEB9;
+    border-top-left-radius:10px;
+    border-top-right-radius:10px;
+}
+#dashContainer .widget .widget-head h3 {
+    padding: 0 10px;
+    float: left;
+    color:#FFF;
+    text-shadow:0 1px 0 #666666;
+    font-size:1.6em;
+}
+#dashContainer .widget .widget-content {
+    background: #ECF1F4;
+    color: #5F6C74;
+	border-radius:0 0 10px 10px;
+    line-height: 1.2em;
+    overflow: hidden;
+	/* Min-height: */
+	min-height: 175px;
+	height: auto !important; 
+	height: px;
+}
+#dashContainer .widget .widget-content p {
+    padding: 0.8em 5px;
+}
+#dashContainer .widget .widget-content form p {
+    padding: 3px 5px;
+}
+#dashContainer .widget .widget-content pre {
+    padding: 0.5em 5px;
+    color: #EEE;
+    font-size: 12px;
+}
+#dashContainer .widget .widget-content ul {
+    padding: 5px 5px 5px 30px;
+    list-style: disc;
+}
+#dashContainer .widget .widget-content ul li {padding: 3px 0;}
+#dashContainer .widget .widget-content ul.images {
+    padding: 7px 0 0 0;
+    list-style: none;
+    height: 1%;
+}
+#dashContainer .widget .widget-content ul.images li {
+    display: inline;
+    float: left;
+}
+#dashContainer .widget .widget-content ul.images img {
+    display: inline;
+    float: left;
+    margin: 0 0 7px 7px;
+}
+#dashContainer .widget form input[type=text] { width:96%; }
+
+#dashContainer .widget .widget-content table { width:100%; border-collapse:collapse; border-top: 1px solid #D0D7DF; border-right: 1px solid #D0D7DF; }
+#dashContainer .widget .widget-content thead { text-align:left; background:#2D3A42; color:#FFF; }
+#dashContainer .widget .widget-content th, #dashContainer .widget .widget-content td { padding:5px; border-bottom: 1px solid #D0D7DF; border-left: 1px solid #D0D7DF; }
+
+.widget-head a.remove  {
+    float: right;
+    display: none;
+    background: url(../images/icon-remove.png) no-repeat;
+    width: 12px;
+    height: 12px;
+    margin: 12px 8px 8px 0;
+    text-indent: -9999em;
+    outline: none;
+}
+
+.widget-head a.edit  {
+    float: right;
+    display: none;
+    background: url(../images/icon-settings.png) no-repeat;
+    width: 12px;
+    height: 12px;
+    text-indent: -9999em;
+    margin: 12px 8px 8px 4px;
+    outline: none;
+}
+
+.widget-head a.collapse  {
+    float: right;
+    display: none;
+    background: url(../images/icon-collapse.png) no-repeat;
+    width: 12px;
+    height: 12px;
+    text-indent: -9999em;
+    margin: 14px 6px 8px 4px;
+    outline: none;
+}
+
+.widget-placeholder { border: 2px dashed #999;}
+
+
+/* Widget Specific Styling */
+#dashContainer .welcome .widget-head {
+    background:#FFFF66;
+}
+#dashContainer .welcome .widget-head h3 {
+    color:#666;
+	text-shadow:none;
+}
+#dashContainer .welcome .widget-content {
+    background: #FFFFCC;
+}
+
+#dashContainer .eedefault .widget-content ul, #dashContainer .eedefault .widget-content ul li { padding:0; }
+#dashContainer .eedefault .widget-content ul li.item a { 
+	background: url("../../../cp_themes/default/images/contentmenu_icons.gif") no-repeat scroll 17px -120px #ECF1F4;
+	}
+#dashContainer .eedefault .widget-content ul li.group a { 
+	background: url("../../../cp_themes/default/images/contentmenu_icons.gif") no-repeat scroll 17px -80px #ECF1F4;
+	}
+#dashContainer .eedefault .widget-content ul li.site a { 
+	background: url("../../../cp_themes/default/images/contentmenu_icons.gif") no-repeat scroll 17px 6px #ECF1F4;
+	}
+#dashContainer .eedefault .widget-content ul li.resource a {
+	background: url("../../../cp_themes/default/images/contentmenu_icons.gif") no-repeat scroll 17px -38px #ECF1F4;
+	}
+#dashContainer .eedefault .widget-content ul li a {
+	background-color: #ECF1F4;
+    border-bottom: 1px solid #D0D7DF;
+    border-top: 1px solid #FFFFFF;
+    display: block;
+    font-size: 13px;
+    font-weight: bold;
+    padding: 5px 0 4px 40px;
+    color:#5F6C74;
+    }
+#dashContainer .eedefault .widget-content ul li a:hover {
+   	background-color:	#fff;
+	color:				#e11842;
+	text-shadow:		none;
+	text-decoration:	none;
+	}
