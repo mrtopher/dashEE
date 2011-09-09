@@ -3,6 +3,9 @@
  * @requires jQuery($), jQuery UI & sortable/draggable UI modules
  */
 
+var url = window.location.href;
+url = url.split('?')[0];
+
 var dashEE = {
     
     jQuery : $,
@@ -66,7 +69,7 @@ var dashEE = {
 							'Yes': function() {
 								$.ajax({
 									type: 'GET',
-									url: './index.php?D=cp&C=addons_modules&M=show_module_cp&module=dashee&method=remove_widget&col='+col+'&wgt='+id,
+									url: url + '/?D=cp&C=addons_modules&M=show_module_cp&module=dashee&method=remove_widget&col='+col+'&wgt='+id,
 									dataTyle: 'html',
 									success: function(html) {
 				                        thisLink.parents(settings.widgetSelector).animate({
@@ -101,22 +104,22 @@ var dashEE = {
 					var wgt = thisWidget.attr('id');
 					var col = thisWidget.parents('ul.column').attr('id').substr(-1);
 					
-					$(thisID+' .widget-content').html('<p><center><img src="../themes/third_party/dashee/images/ajax-loader.gif" /></center></p>');
+					$(thisID+' .widget-content').html('<p><center><img src="themes/third_party/dashee/images/ajax-loader.gif" /></center></p>');
 					
 					$.ajax({
 						type: 'GET',
-						url: './index.php?D=cp&C=addons_modules&M=show_module_cp&module=dashee&method=widget_settings&col='+col+'&wgt='+wgt,
+						url: url + '?D=cp&C=addons_modules&M=show_module_cp&module=dashee&method=widget_settings&col='+col+'&wgt='+wgt,
 						dataTyle: 'html',
 						success: function(html) {
 							$(thisID+' .widget-content').html(html);
 							
 							$('form.dashForm').submit(function(event) {
 								event.preventDefault();
-								$(thisID+' .widget-content').html('<p><center><img src="../themes/third_party/dashee/images/ajax-loader.gif" /></center></p>');
+								$(thisID+' .widget-content').html('<p><center><img src="themes/third_party/dashee/images/ajax-loader.gif" /></center></p>');
 			
 								$.ajax({
 									type: 'POST',
-									url: './index.php?D=cp&C=addons_modules&M=show_module_cp&module=dashee&method=update_settings',
+									url: url + '?D=cp&C=addons_modules&M=show_module_cp&module=dashee&method=update_settings',
 									data: $(this).serialize()+'&col='+col+'&wgt='+wgt,
 									dataTyle: 'json',
 									success: function(html) {
@@ -260,7 +263,7 @@ var dashEE = {
                 // save new order to DB
                 $.ajax({
 					type: 'GET',
-					url: './index.php?D=cp&C=addons_modules&M=show_module_cp&module=dashee&method=update_widget_order',
+					url: url + '?D=cp&C=addons_modules&M=show_module_cp&module=dashee&method=update_widget_order',
 					data: 'order='+widgets,
 					dataTyle: 'html',
 					success: function(html) {
@@ -300,11 +303,11 @@ $().ready(function() {
 	// Click event to display available widgets listing.
 	$('a[href="#widgets"]').click(function() {
 		if($('a[href="#widgets"]').html() == 'Widgets') {
-			$('#dashListing .content').html('<p>&nbsp;</p><p><center>Loading...</center></p><p><center><img src="../themes/third_party/dashee/images/ajax-loader.gif" /></center></p><p>&nbsp;</p>');
+			$('#dashListing .content').html('<p>&nbsp;</p><p><center>Loading...</center></p><p><center><img src="themes/third_party/dashee/images/ajax-loader.gif" /></center></p><p>&nbsp;</p>');
 			$('#dashListing').slideDown();
 			$.ajax({
 				type: 'GET',
-				url: './index.php?D=cp&C=addons_modules&M=show_module_cp&module=dashee&method=get_widget_listing',
+				url: url + '?D=cp&C=addons_modules&M=show_module_cp&module=dashee&method=get_widget_listing',
 				dataTyle: 'html',
 				success: function(html) {
 					$('#dashListing .content').html(html);
