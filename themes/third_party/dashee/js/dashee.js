@@ -3,12 +3,12 @@
  * @requires jQuery($), jQuery UI & sortable/draggable UI modules
  */
 
+(function($) {
+
 var url = window.location.href;
 url = url.split('?')[0];
 
 var dashEE = {
-    
-    jQuery : $,
     
     settings : {
         columns : '.column',
@@ -38,14 +38,12 @@ var dashEE = {
     },
     
     getWidgetSettings : function (id) {
-        var $ = this.jQuery,
-            settings = this.settings;
+        var settings = this.settings;
         return (id&&settings.widgetIndividual[id]) ? $.extend({},settings.widgetDefault,settings.widgetIndividual[id]) : settings.widgetDefault;
     },
     
     addWidgetControls : function () {
         var dashEE = this,
-            $ = this.jQuery,
             settings = this.settings;
             
         $(settings.widgetSelector, $(settings.columns)).each(function () {
@@ -181,13 +179,11 @@ var dashEE = {
     },
     
     attachStylesheet : function (href) {
-        var $ = this.jQuery;
         return $('<link href="' + href + '" rel="stylesheet" type="text/css" />').appendTo('head');
     },
     
     makeSortable : function () {
         var dashEE = this,
-            $ = this.jQuery,
             settings = this.settings,
             $sortableItems = $(settings.widgetSelector);
             /*$sortableItems = (function () {
@@ -315,3 +311,5 @@ $().ready(function() {
 
 	dashEE.init();
 });
+
+})(jQuery);
