@@ -98,50 +98,50 @@
 	border-bottom: none;
 }
 
-.widget .widget-content a {
+.widget.contentMenu .widget-content a {
 	color: #5f6c74;
 	font-weight: bold;
 }
-.widget .widget-content a:hover {
+.widget.contentMenu .widget-content a:hover {
 	color: #E7174B;
 	text-decoration: none;
 }
 
-.widget .widget-content table {
+.widget.contentMenu .widget-content table {
 	width: 100%;
 	border-collapse: separate;
 	border-spacing: 0;
 }
-.widget .widget-content table th,
-.widget .widget-content table td {
+.widget.contentMenu .widget-content table th,
+.widget.contentMenu .widget-content table td {
 	padding: 5px 0 5px 17px;
 	text-align: left;
 	vertical-align: top;
 }
-.widget .widget-content table th:last-child,
-.widget .widget-content table td:last-child {
+.widget.contentMenu .widget-content table th:last-child,
+.widget.contentMenu .widget-content table td:last-child {
 	padding-right: 17px;
 	text-align: right;
 }
-.widget .widget-content table thead th,
-.widget .widget-content table thead td {
+.widget.contentMenu .widget-content table thead th,
+.widget.contentMenu .widget-content table thead td {
 	border-top: 1px solid #fff;
 	border-bottom: 1px solid #bbb;
 	text-shadow: 0 1px #fff;
 	background: -webkit-gradient(linear, 0 0, 0 100%, from(transparent), to(rgba(0,0,0,0.1)));
 	background: -moz-linear-gradient(top, transparent, rgba(0,0,0,0.1));
 }
-.widget .widget-content table tbody th,
-.widget .widget-content table tbody td {
+.widget.contentMenu .widget-content table tbody th,
+.widget.contentMenu .widget-content table tbody td {
 	border-top: 1px solid #fff;
 	border-bottom: 1px solid #d0d7df;
 }
-.widget .widget-content table tbody tr:hover th,
-.widget .widget-content table tbody tr:hover td {
+.widget.contentMenu .widget-content table tbody tr:hover th,
+.widget.contentMenu .widget-content table tbody tr:hover td {
 	background: #fff;
 }
-.widget .widget-content table tbody tr:last-child th,
-.widget .widget-content table tbody tr:last-child td {
+.widget.contentMenu .widget-content table tbody tr:last-child th,
+.widget.contentMenu .widget-content table tbody tr:last-child td {
 	border-bottom: 0;
 }
 

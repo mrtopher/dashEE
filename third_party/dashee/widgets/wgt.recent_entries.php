@@ -15,6 +15,7 @@
 class Wgt_recent_entries
 {
 	public 	$title;
+	public $wclass;
 	
 	private $_EE;
 	
@@ -24,6 +25,7 @@ class Wgt_recent_entries
 	public function __construct()
 	{
 		$this->title = 'Recent Entries';
+		$this->wclass = 'contentMenu';	
 	
 		$this->_EE =& get_instance();
 	}
