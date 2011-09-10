@@ -25,7 +25,7 @@ class Wgt_modify_links
 	public function __construct()
 	{
 		$this->title 	= lang('modify').' <span class="subtext">'.lang('or_delete').'</span>';
-		$this->wclass 	= 'eedefault';
+		$this->wclass 	= 'contentMenu modify';
 		
 		$this->_EE 		=& get_instance();
 	}

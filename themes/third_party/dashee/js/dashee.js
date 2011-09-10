@@ -13,7 +13,8 @@ var dashEE = {
     settings : {
         columns : '.column',
         widgetSelector: '.widget',
-        handleSelector: '.widget-head',
+        handleSelector: '.heading',
+        buttonsSelector: '.heading .buttons',
         contentSelector: '.widget-content',
         widgetDefault : {
             movable: true,
@@ -50,7 +51,7 @@ var dashEE = {
         $(settings.widgetSelector, $(settings.columns)).each(function () {
             var thisWidgetSettings = dashEE.getWidgetSettings($(this).attr('dashee'));
             if (thisWidgetSettings.removable) {
-                $('<a href="#" title="close" class="remove">CLOSE</a>').mousedown(function (e) {
+                $('<a href="#" title="Close" class="remove"></a>').mousedown(function (e) {
                     e.stopPropagation();    
                 }).click(function () {
                 	var thisLink = $(this);
@@ -91,31 +92,34 @@ var dashEE = {
 						title: 'Remove Widget'
 					});
                     return false;
-                }).appendTo($(settings.handleSelector, this));
+                }).appendTo($(settings.buttonsSelector, this));
             }
             
             if (thisWidgetSettings.editable) {
-                $('<a href="#" title="settings" class="edit">EDIT</a>').mousedown(function (e) {
+                $('<a href="#" title="Settings" class="edit"></a>').mousedown(function (e) {
                     e.stopPropagation();    
                 }).click(function () {
                 	var thisLink = $(this);
                 	var thisWidget = thisLink.parents('li.widget');
+					var thisWidgetContent = $('.widget-content', thisWidget);
                 	var thisID = '#'+thisWidget.attr('id');
 					var wgt = thisWidget.attr('id');
 					var col = thisWidget.parents('ul.column').attr('id').substr(-1);
 					
-					$(thisID+' .widget-content').html('<p><center><img src="themes/third_party/dashee/images/ajax-loader.gif" /></center></p>');
+					thisWidgetContent.html('<p><center><img src="themes/third_party/dashee/images/ajax-loader.gif" /></center></p>');
 					
 					$.ajax({
 						type: 'GET',
 						url: url + '?D=cp&C=addons_modules&M=show_module_cp&module=dashee&method=widget_settings&col='+col+'&wgt='+wgt,
 						dataTyle: 'html',
 						success: function(html) {
-							$(thisID+' .widget-content').html(html);
+							thisWidgetContent.html(html);
+							thisWidgetContent.addClass('settings');
 							
 							$('form.dashForm').submit(function(event) {
 								event.preventDefault();
-								$(thisID+' .widget-content').html('<p><center><img src="themes/third_party/dashee/images/ajax-loader.gif" /></center></p>');
+								thisWidgetContent.removeClass('settings');
+								thisWidgetContent.html('<p><center><img src="themes/third_party/dashee/images/ajax-loader.gif" /></center></p>');
 			
 								$.ajax({
 									type: 'POST',
@@ -124,11 +128,11 @@ var dashEE = {
 									dataTyle: 'json',
 									success: function(html) {
 										var response = $.parseJSON(html);
-										$(thisID+' .widget-head h3').html(response.title);
-										$(thisID+' .widget-content').html(response.content);
+										$(thisID+' .heading h2').html(response.title);
+										thisWidgetContent.html(response.content);
 									},
 									error: function(html) {
-										$(thisID+' .content').html('<p>There was a problem.</p>');
+										thisWidgetContent.html('<p>There was a problem.</p>');
 									}
 								});
 			
@@ -138,31 +142,20 @@ var dashEE = {
 							$(thisID+' .content').html('<p>There was a problem.</p>');
 						}
 					});
-                }).appendTo($(settings.handleSelector,this));
+                }).appendTo($(settings.buttonsSelector,this));
             }
             
             if (thisWidgetSettings.collapsible) {
-                $('<a href="#" title="collapse" class="collapse">COLLAPSE</a>').mousedown(function (e) {
-                    e.stopPropagation();
-                    
-                    if($(this).parents(settings.widgetSelector).find(settings.contentSelector).is(':visible')) {
-	                    $(this).css({backgroundPosition: '0 -15px'})
-	                        .parents(settings.widgetSelector)
-	                            .find(settings.contentSelector).hide();
-                    }
-                    else {
-	                    $(this).css({backgroundPosition: ''})
-	                        .parents(settings.widgetSelector)
-	                            .find(settings.contentSelector).show();
-                    }
-                }).appendTo($(settings.handleSelector,this));
+                $('<a href="#" title="Collapse" class="collapse"></a>').mousedown(function (e) {
+					$(this).parents(settings.widgetSelector).toggleClass('collapsed')
+                }).appendTo($(settings.buttonsSelector,this));
             }
 
             /*if (thisWidgetSettings.collapsible) {
-                $('<a href="#" title="collapse" class="collapse">COLLAPSE</a>').mousedown(function (e) {
+                $('<a href="#" title="Collapse" class="collapse"></a>').mousedown(function (e) {
                     e.stopPropagation();    
                 }).toggle(function () {
-                    $(this).css({backgroundPosition: '0 -15px'})
+                    $(this).css({backgroundPosition: '0 100%'})
                         .parents(settings.widgetSelector)
                             .find(settings.contentSelector).hide();
                     return false;
@@ -171,21 +164,17 @@ var dashEE = {
                         .parents(settings.widgetSelector)
                             .find(settings.contentSelector).show();
                     return false;
-                }).appendTo($(settings.handleSelector,this));
+                }).appendTo($(settings.buttonsSelector,this));
             }*/
 
         });
         
-		$('#dashContainer .widget-head').hover(
+		$('.widget .heading').hover(
 			function() {
-				$(this).find('a.collapse').show();
-				$(this).find('a.edit').show();
-				$(this).find('a.remove').show();
+				$(this).find('.buttons').show();
 			},
 			function() {
-				$(this).find('a.collapse').hide();
-				$(this).find('a.edit').hide();
-				$(this).find('a.remove').hide();
+				$(this).find('.buttons').hide();
 			}
 		);
         
@@ -287,7 +276,7 @@ $().ready(function() {
 	// Click event to collapse all widgets.
 	$('a[href="#collapse"]').click(function() {
 		$(dashEE.settings.widgetSelector).each(function () {
-			$(this).find('a.collapse').css({backgroundPosition: '0 -15px'});
+			$(this).find('a.collapse').css({backgroundPosition: '0 100%'});
 			$(this).find(dashEE.settings.contentSelector).hide();
 		});
 	});

@@ -15,6 +15,7 @@
 class Wgt_feed_reader
 {
 	public $title;
+	public $wclass;
 	public $settings;
 	
 	/**
@@ -26,6 +27,7 @@ class Wgt_feed_reader
 			'url' => 'http://expressionengine.com/feeds/rss/eeblog/',
 			'num' => 5
 			);
+		$this->wclass = 'contentMenu';
 	}
 	
 	// ----------------------------------------------------------------
@@ -52,7 +54,7 @@ class Wgt_feed_reader
 			$link		= trim($item->link);
 			$title 		= trim($item->title);
 			
-			$display .= '<li>'.anchor($link, $title, 'target="_blank"').'</li>';
+			$display .= '<li class="item" title="'.str_replace('"', '&quot;"', $title).'">'.anchor($link, $title, 'target="_blank"').'</li>';
 		
 			++$i;
 		}

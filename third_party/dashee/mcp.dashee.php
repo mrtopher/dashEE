@@ -398,8 +398,9 @@ class Dashee_mcp {
 					
 					$cols[$col] .= '
 						<li id="'.$id.'" class="widget '.$class.'" '.$dash_code.'>
-							<div class="widget-head">
-								<h3>'.$obj->title.'</h3>
+							<div class="heading">
+								<h2>'.$obj->title.'</h2>
+								<div class="buttons"></div>
 							</div>
 							<div class="widget-content">'.$content.'</div>
 						</li>
