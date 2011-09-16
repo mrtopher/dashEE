@@ -13,3 +13,5 @@
 <div id="dashConfirm" style="display:none;">
 	<p>Are you sure you want to remove this widget from your dashboard?</p>
 </div>
+
+<img src="<?php echo $theme_url; ?>images/ajax-loader.gif" id="dashLoader" />

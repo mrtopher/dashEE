@@ -122,6 +122,8 @@
 
 .widget-placeholder { border: 2px dashed #999;}
 
+img#dashLoader { display:none; }
+
 
 /* Widget Specific Styling */
 #dashContainer .welcome .widget-head {

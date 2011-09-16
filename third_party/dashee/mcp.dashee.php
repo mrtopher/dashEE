@@ -78,7 +78,7 @@ class Dashee_mcp {
 		// load widgets
 		$widgets = $this->_widget_loader($this->_settings['widgets']);
 		
-		return $this->_EE->load->view('index', array('settings' => $this->_settings, 'content' => $widgets), TRUE);
+		return $this->_EE->load->view('index', array('settings' => $this->_settings, 'content' => $widgets, 'theme_url' => $this->_theme_url), TRUE);
 	}
 	
 	/**
