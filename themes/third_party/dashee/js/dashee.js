@@ -134,7 +134,7 @@ var dashEE = {
 			}, this));
 
 			$editButton.click($.proxy(function () {
-				$content.html('<p><center><img src="themes/third_party/dashee/images/ajax-loader.gif" /></center></p>');
+				$content.html('<p><center><img src="'+$('#dashLoader').attr('src')+'" /></center></p>');
 
 				$.ajax({
 					type: 'GET',
@@ -147,7 +147,7 @@ var dashEE = {
 						$('form.dashForm').submit(function(event) {
 							event.preventDefault();
 							$content.removeClass('settings');
-							$content.html('<p><center><img src="themes/third_party/dashee/images/ajax-loader.gif" /></center></p>');
+							$content.html('<p><center><img src="'+$('#dashLoader').attr('src')+'" /></center></p>');
 		
 							$.ajax({
 								type: 'POST',
@@ -318,7 +318,7 @@ $().ready(function() {
 	// Click event to display available widgets listing.
 	$('a[href="#widgets"]').click(function() {
 		if($('a[href="#widgets"]').html() == 'Widgets') {
-			$('#dashListing .content').html('<p>&nbsp;</p><p><center>Loading...</center></p><p><center><img src="themes/third_party/dashee/images/ajax-loader.gif" /></center></p><p>&nbsp;</p>');
+			$('#dashListing .content').html('<p>&nbsp;</p><p><center>Loading...</center></p><p><center><img src="'+$('#dashLoader').attr('src')+'" /></center></p><p>&nbsp;</p>');
 			$('#dashListing').slideDown();
 			$.ajax({
 				type: 'GET',

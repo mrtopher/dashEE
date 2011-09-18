@@ -67,6 +67,7 @@ class Dashee_ext {
 		$this->settings = array();
 		
 		$hooks = array(
+			'cp_css_end'		=> 'crumb_hide',
 			'cp_js_end'			=> 'crumb_remap',
 			'cp_member_login'	=> 'member_redirect',
 			);
@@ -88,6 +89,22 @@ class Dashee_ext {
 
 	// ----------------------------------------------------------------------
 	
+	/**
+	 * Hide Breadcrumb Nav
+	 *
+	 * Adds CSS to CP to hide breadcrumb nav. Module will display with JS once 
+	 * the page is fully loaded. This is to prevent the breadcrumb nav from being 
+	 * displayed before it has been updated by module JS.
+	 *
+	 * @return string
+	 */
+	public function crumb_hide()
+	{
+		return '#breadCrumb ol { display:none; }';
+	}
+	
+	// ----------------------------------------------------------------------
+
 	/**
 	 * Remap Breadcrumb Nav
 	 *

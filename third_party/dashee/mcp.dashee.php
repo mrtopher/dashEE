@@ -78,7 +78,7 @@ class Dashee_mcp {
 		// load widgets
 		$widgets = $this->_widget_loader($this->_settings['widgets']);
 		
-		return $this->_EE->load->view('index', array('settings' => $this->_settings, 'content' => $widgets), TRUE);
+		return $this->_EE->load->view('index', array('settings' => $this->_settings, 'content' => $widgets, 'theme_url' => $this->_theme_url), TRUE);
 	}
 	
 	/**
@@ -404,7 +404,7 @@ class Dashee_mcp {
 					$obj = $this->_get_widget_object($params['mod'], $params['wgt']);
 									
 					$class 		= isset($obj->wclass) ? $obj->wclass : '';
-					$dash_code 	= isset($params['stng']) ? 'dashee="dynamic"' : '';
+					$dash_code 	= method_exists($obj, 'settings_form') ? 'dashee="dynamic"' : '';
 
 					// check widget permissions
 					if(method_exists($obj, 'permissions') && !$obj->permissions())

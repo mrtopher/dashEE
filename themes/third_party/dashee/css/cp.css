@@ -9,9 +9,8 @@
 
 
 /* Module CSS */
-#dashListing {
-	margin: 0 3.3%;
-}
+#dashListing { height:275px; overflow:auto; margin: 0 3.3% 25px; }
+
 #dashContainer .column { 
     float: left;
     width: 29%;
@@ -176,6 +175,8 @@
 .widget.collapsed .widget-content { display: none; }
 
 .widget-placeholder { margin-bottom: 21px; border: 2px dashed #999; }
+
+img#dashLoader { display:none; }
 
 
 /* Widget Specific Styling */

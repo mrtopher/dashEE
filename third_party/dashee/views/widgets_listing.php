@@ -16,4 +16,3 @@ foreach($rows as $row)
 echo $this->table->generate();
 
 ?>
-<p>&nbsp;</p>

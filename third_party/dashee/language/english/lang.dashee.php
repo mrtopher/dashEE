@@ -31,7 +31,10 @@ $lang = array(
 	'wgt_view_links_description' => 'EE view links from default control panel.',
 
 	'wgt_recent_entries_name' => 'Recent Entries',
-	'wgt_recent_entries_description' => 'Displays ten most recent EE entires.',
+	'wgt_recent_entries_description' => 'Displays 10 most recent EE entries.',
+
+	'wgt_recent_comments_name' => 'Recent Comments',
+	'wgt_recent_comments_description' => 'Displays 10 most recent EE entry comments.',
 
 	'wgt_welcome_name' => 'Welcome to dashEE',
 	'wgt_welcome_description' => 'General module info and links.',
