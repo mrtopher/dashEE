@@ -25,7 +25,7 @@ class Wgt_view_links
 	public function __construct()
 	{
 		$this->title 	= 'View';
-		$this->wclass 	= 'eedefault';
+		$this->wclass 	= 'contentMenu view';
 		
 		$this->_EE		=& get_instance();
 	}

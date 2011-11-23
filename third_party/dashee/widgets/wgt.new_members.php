@@ -15,6 +15,7 @@
 class Wgt_new_members
 {
 	public 	$title;
+	public $wclass;
 	
 	private $_EE;
 	
@@ -24,6 +25,7 @@ class Wgt_new_members
 	public function __construct()
 	{
 		$this->title = 'New Members';
+		$this->wclass = 'contentMenu';	
 		
 		$this->_EE =& get_instance();
 	}

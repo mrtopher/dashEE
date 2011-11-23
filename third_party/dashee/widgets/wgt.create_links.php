@@ -25,7 +25,7 @@ class Wgt_create_links
 	public function __construct()
 	{	
 		$this->title  	= lang('create');
-		$this->wclass 	= 'eedefault';	
+		$this->wclass 	= 'contentMenu create';	
 	
 		$this->_EE 		=& get_instance();
 	}

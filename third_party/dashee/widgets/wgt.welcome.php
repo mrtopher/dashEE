@@ -23,7 +23,7 @@ class Wgt_welcome
 	public function __construct()
 	{
 		$this->title 	= 'Welcome to dashEE';
-		$this->wclass	= 'welcome';
+		$this->wclass	= 'padded welcome';
 	}
 	
 	// ----------------------------------------------------------------

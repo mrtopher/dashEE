@@ -15,6 +15,7 @@
 class Wgt_feed_reader
 {
 	public $title;
+	public $wclass;
 	public $settings;
 	
 	/**
@@ -26,6 +27,7 @@ class Wgt_feed_reader
 			'url' => 'http://expressionengine.com/feeds/rss/eeblog/',
 			'num' => 5
 			);
+		$this->wclass = 'contentMenu';
 	}
 	
 	// ----------------------------------------------------------------
@@ -41,27 +43,14 @@ class Wgt_feed_reader
 		$EE = get_instance();
 		$EE->load->helper('text');
 	
-		$rss = simplexml_load_file($settings->url);		
-		
-		$display = '';
-		$i = 0;
-		foreach($rss->channel->item as $key => $item)
-		{
-			if($i >= $settings->num) { break; }
-		
-			$link		= trim($item->link);
-			$title 		= trim($item->title);
-			
-			$display .= '<li>'.anchor($link, $title, 'target="_blank"').'</li>';
-		
-			++$i;
-		}
-		
-		$this->title = ellipsize($rss->channel->title, 19, 1);
-	
-		return '
-			<ul>'.$display.'</ul>
-		';
+		$rss = simplexml_load_file($settings->url);
+
+		$this->title = (string) $rss->channel->title;
+
+		$vars['rss'] = $rss;
+		$vars['num'] = $settings->num;
+
+		return $EE->load->view('widgets/feed_reader', $vars, TRUE);
 	}
 	
 	/**

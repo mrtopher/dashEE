@@ -15,6 +15,7 @@
 class Wgt_blank
 {
 	public $title;
+	public $wclass;
 	public $settings;
 	
 	/**
@@ -26,6 +27,7 @@ class Wgt_blank
 			'title' => 'Blank Widget',
 			'body'  => '<p>This is a blank module. You can fill it with whatever content you wish.</p>'
 			);
+		$this->wclass = 'padded';
 	}
 	
 	// ----------------------------------------------------------------
