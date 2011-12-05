@@ -3,11 +3,13 @@
 		<div class="content">&nbsp;</div>
 	</div>
 	
-	<?php $i = 1; ?>
-	<?php foreach($content as $col): ?>
-		<ul id="column<?php echo $i; ?>" class="column"><?php echo $col; ?></ul>
-		<?php ++$i; ?>
-	<?php endforeach; ?>
+	<div class="columns<?php echo $settings['columns']; ?>">
+		<?php $i = 1; ?>
+		<?php foreach($content as $col): ?>
+			<ul id="column<?php echo $i; ?>" class="column"><?php echo $col; ?></ul>
+			<?php ++$i; ?>
+		<?php endforeach; ?>
+	</div>
 </div>
 
 <div id="dashConfirm" style="display:none;">

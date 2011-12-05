@@ -73,12 +73,132 @@ class Dashee_mcp {
 	
 		$this->_EE->cp->set_variable('cp_page_title', lang('dashee_term'));
 		
-		$this->_EE->cp->set_right_nav(array('btn_collapse' => '#collapse', 'btn_expand' => '#expand', 'btn_widgets' => '#widgets'));
+		$this->_EE->cp->set_right_nav(array('btn_collapse' => '#collapse', 'btn_expand' => '#expand', 'btn_widgets' => '#widgets', 'btn_settings' => $this->_base_url.AMP.'method=settings'));
+		
+		// Override default breadcrumb display to make module look like default CP homepage.
+		$this->_EE->javascript->output("
+			$('#breadCrumb ol li').slice(2).remove();
+			$('#breadCrumb ol li:last-child').attr('class', 'last').html('Dashboard');
+		");
+		
+		$msg = $this->_EE->session->flashdata('dashee_msg');
+		if($msg != '')
+		{
+			$this->_EE->javascript->output("
+				$.ee_notice('".$msg."', {type: 'success'});
+			");
+		}
+		
+		$this->_EE->javascript->compile();
 		
 		// load widgets
 		$widgets = $this->_widget_loader($this->_settings['widgets']);
 		
-		return $this->_EE->load->view('index', array('settings' => $this->_settings, 'content' => $widgets, 'theme_url' => $this->_theme_url), TRUE);
+		$page_data = array(
+			'settings' 	=> $this->_settings, 
+			'content' 	=> $widgets, 
+			'theme_url' => $this->_theme_url
+			);
+		
+		return $this->_EE->load->view('index', $page_data, TRUE);
+	}
+	
+	/**
+	 * Settings Function
+	 * Display module settings form.
+	 *
+	 * @return 	void
+	 */
+	public function settings()
+	{
+		$this->_EE->load->library('table');
+	
+        $css = $this->_theme_url .'css/cp.css';
+		$js  = $this->_theme_url .'js/dashee.js';
+		
+        //$this->_EE->cp->add_to_head('<link rel="stylesheet" type="text/css" href="'.$css.'" />');
+        $this->_EE->cp->add_to_head('<script type="text/javascript" src="'.$js.'"></script>');
+	
+		$this->_EE->cp->set_variable('cp_page_title', lang('dashee_settings'));
+		
+		$this->_EE->cp->set_breadcrumb($this->_base_url, lang('btn_settings'));
+		
+		// Override default breadcrumb display to make module look like default CP homepage.
+		$this->_EE->javascript->output("
+			$('#breadCrumb ol li').slice(2,4).remove();
+		");
+		$this->_EE->javascript->compile();
+		
+		return $this->_EE->load->view('settings', array('action_url' => $this->_base_qs.AMP.'method=update_settings', 'settings' => $this->_settings), TRUE);
+	}
+	
+	/**
+	 * Update Settings Function
+	 * Attempt to save users module settings to DB.
+	 *
+	 * @return 	void
+	 */
+	public function update_settings()
+	{
+		$post_columns = $this->_EE->input->post('columns');
+		if($post_columns != '' AND is_numeric($post_columns) AND $post_columns <= 3)
+		{
+			$current = $this->_settings['columns'];
+			$new = $this->_EE->input->post('columns');
+			$widgets = $this->_settings['widgets'];
+			
+			// modify widget placement based on newly selected # of columns
+			if($new < $current)
+			{
+				if($new > 1)
+				{
+					foreach($widgets[3] as $id => $settings)
+					{
+						$widgets[2][$id] = $settings;
+					}
+					unset($widgets[3]);
+				}
+				else
+				{
+					if(array_key_exists(3,$widgets) && array_key_exists(2,$widgets))
+					{
+						$combined = array_merge($widgets[2],$widgets[3]);	
+					}
+					else
+					{
+						$combined = $widgets[2];
+					}
+					
+					foreach($combined as $id => $settings)
+					{
+						$widgets[1][$id] = $settings;
+					}
+
+					unset($widgets[3]);
+					unset($widgets[2]);
+				}
+			}
+			elseif($new > $current)
+			{
+				if($new == 2)
+				{
+					$widgets[2] = array();
+				}
+				else
+				{
+					$widgets[3] = array();
+				}
+			}
+			
+			// save new config to DB
+			$this->_settings['widgets'] = $widgets;
+			$this->_settings['columns'] = $new;
+			$this->_update_member(FALSE);
+			
+			$this->_EE->session->set_flashdata('dashee_msg', 'Your settings have been updated.');
+		}
+		
+		$this->_EE->functions->redirect($this->_base_url);
 	}
 	
 	/**
@@ -293,7 +413,7 @@ class Dashee_mcp {
 	 *
 	 * @return 	NULL
 	 */
-	public function update_settings()
+	public function update_widget_settings()
 	{
 		$data 		= $_POST;
 		$settings 	= array();
@@ -393,7 +513,10 @@ class Dashee_mcp {
 	 */
 	private function _widget_loader(array $widgets)
 	{
-		$cols = array(1 => '', 2 => '', 3 => '');
+		for($i=1; $i <= $this->_settings['columns']; ++$i)
+		{
+			$cols[$i] = '';
+		}
 
 		foreach($widgets as $col => $widget)
 		{

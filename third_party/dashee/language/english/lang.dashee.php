@@ -10,10 +10,12 @@ $lang = array(
 	'module_home' => 'dashEE Home',
 	
 	'dashee_term' 	=> 'Dashboard',	
+	'dashee_settings' 	=> 'dashEE Settings',	
 	
 	'btn_collapse'	=> '- Collapse All',
 	'btn_expand'	=> '+ Expand All',
 	'btn_widgets'	=> 'Widgets',
+	'btn_settings'	=> 'Settings',
 	
 	'widget_added'	=> 'Widget added.',
 	

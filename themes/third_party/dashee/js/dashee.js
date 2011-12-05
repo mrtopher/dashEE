@@ -137,7 +137,6 @@ var dashEE = {
 
 			$editButton.click($.proxy(function () {
 				$content.html('<p><center><img src="'+$('#dashLoader').attr('src')+'" /></center></p>');
-
 				col = widget.parents(this.settings).attr('id').substr(-1);
 				
 				$.ajax({
@@ -155,7 +154,7 @@ var dashEE = {
 		
 							$.ajax({
 								type: 'POST',
-								url: url + '?D=cp&C=addons_modules&M=show_module_cp&module=dashee&method=update_settings',
+								url: url + '?D=cp&C=addons_modules&M=show_module_cp&module=dashee&method=update_widget_settings',
 								data: $(this).serialize()+'&col='+col+'&wgt='+id,
 								dataTyle: 'json',
 								success: function(html) {
@@ -305,10 +304,9 @@ var dashEE = {
 };
 
 $().ready(function() {
-	// Override default breadcrumb display to make module look like default CP homepage.
-	$('#breadCrumb ol li').slice(2).remove();
-	$('#breadCrumb ol li:last-child').attr('class', 'last').html('Dashboard');
-	
+	$('a[href="#collapse"]').parent('.button').css('float', 'left');
+	$('a[href="#expand"]').parent('.button').css('float', 'left');
+
 	// Click event to collapse all widgets.
 	$('a[href="#collapse"]').click(function() {
 		dashEE.getWidgets().addClass('collapsed');
@@ -335,7 +333,7 @@ $().ready(function() {
 					$('#dashListing .content').html('<p>There was a problem.</p>');
 				}
 			});
-			$('a[href="#widgets"]').html('Close');
+			$('a[href="#widgets"]').html('Close Widgets');
 		}
 		else {
 			$('#dashListing').slideUp();

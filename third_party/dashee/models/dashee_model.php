@@ -40,7 +40,7 @@ class Dashee_model extends CI_Model {
         $this->_EE =& get_instance();
         
         $this->_package_name    = 'dashEE';
-        $this->_package_version = '1.3';
+        $this->_package_version = '1.4';
     }
     
     /**
@@ -187,10 +187,10 @@ class Dashee_model extends CI_Model {
             return FALSE;
         }
 
-        /*if(version_compare($installed_version, '1.1.0', '<'))
+        if(version_compare($installed_version, '1.4', '<'))
         {
-            $this->_update_package_to_version_110();
-        }*/
+            $this->_update_package_to_version_14();
+        }
 
         // Forcibly update the module version number?
         if($force === TRUE)
@@ -203,6 +203,25 @@ class Dashee_model extends CI_Model {
         }
 
         return TRUE;
+    }
+    
+    /**
+     * Updates dashboard config format to account for storing settings.
+     *
+     * @access  private
+     * @return  void
+     */
+    public function _update_package_to_version_14()
+    {
+    	$qry = $this->_EE->db->get('dashee_members');
+    	
+    	foreach($qry->result() as $row)
+    	{
+    		$settings = json_decode($row->config, TRUE);
+    		$settings['columns'] = 3;
+    		
+    		$this->db->update('dashee_members', array('config' => json_encode($settings)), array('id' => $row->id)); 
+    	}
     }
     
     /**
@@ -282,7 +301,8 @@ class Dashee_model extends CI_Model {
 							'wgt' => 'wgt.view_links.php'
 							)
 						)
-					)
+					),
+				'columns' => 3
 				);
 		
 			$params = array(
