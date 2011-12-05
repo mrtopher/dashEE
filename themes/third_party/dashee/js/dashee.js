@@ -86,6 +86,8 @@ var dashEE = {
 			}, this));
 
 			$removeBtn.click($.proxy(function (e) {
+				col = widget.parents(this.settings).attr('id').substr(-1);
+				
 				$('#dashConfirm').dialog({
 					resizable: false,
 					height:140,
@@ -136,6 +138,8 @@ var dashEE = {
 			$editButton.click($.proxy(function () {
 				$content.html('<p><center><img src="'+$('#dashLoader').attr('src')+'" /></center></p>');
 
+				col = widget.parents(this.settings).attr('id').substr(-1);
+				
 				$.ajax({
 					type: 'GET',
 					url: url + '?D=cp&C=addons_modules&M=show_module_cp&module=dashee&method=widget_settings&col='+col+'&wgt='+id,
