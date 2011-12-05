@@ -65,6 +65,8 @@ class Dashee_mcp {
 	 */
 	public function index()
 	{
+		$this->EE->extensions->last_call();
+	
         $css = $this->_theme_url .'css/cp.css';
 		$js  = $this->_theme_url .'js/dashee.js';
 		
