@@ -19,7 +19,11 @@ else
 	$col1_checked = 'checked';
 }
 
-$this->table->set_template($cp_table_template);
+$this->table->set_template($cp_pad_table_template);
+$this->table->template['thead_open'] = '<thead class="visualEscapism">';
+
+$this->table->set_caption('General');
+
 $this->table->set_heading(
    'Preference',
    'Setting');
@@ -40,4 +44,63 @@ echo $this->table->generate();
 </div>
 
 
-<?php echo form_close(); ?>
+<?php 
+
+echo form_close(); 
+
+$this->table->set_template($cp_pad_table_template);
+$this->table->template['thead_open'] = '<thead class="visualEscapism">';
+
+$this->table->set_caption('Saved Layouts');
+
+$this->table->set_heading(
+   'Name',
+   'Description',
+   'Options');
+
+if(count($layouts) > 0)
+{
+	foreach($layouts as $layout)
+	{
+		$this->table->add_row($layout->name,
+								$layout->description ? $layout->description : '--',
+								anchor('#', 'Use layout').' | '.anchor('#', 'Delete'));
+	}
+	
+	echo $this->table->generate();
+}
+else
+{
+
+}
+?>
+<p>&nbsp;</p>
+<?php
+$this->table->set_template($cp_pad_table_template);
+$this->table->template['thead_open'] = '<thead class="visualEscapism">';
+
+$this->table->set_caption('Member Group Layouts');
+
+$this->table->set_heading(
+   'Member Group',
+   'Description',
+   'Layout');
+
+if(count($member_groups) > 0)
+{
+	foreach($member_groups as $group)
+	{
+		$this->table->add_row($group->title,
+								$group->description ? $group->description : '--',
+								form_dropdown('', $opts_layouts));
+	}
+	
+	echo $this->table->generate();
+}
+else
+{
+
+}
+
+
+?>

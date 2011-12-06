@@ -129,11 +129,11 @@ class Dashee_model extends CI_Model {
 			'member_id' => array(
 				'type' 			=> 'INT',
 				'constraint' 	=> 10,
-				'unsigned'		=> TRUE,
+				'unsigned'		=> TRUE
 				),
 			'config' => array(
 				'type'			=> 'TEXT',
-				'null'			=> TRUE,
+				'null'			=> TRUE
 				)
 			);
 			
@@ -206,13 +206,15 @@ class Dashee_model extends CI_Model {
     }
     
     /**
-     * Updates dashboard config format to account for storing settings.
+     * Update dashboard config format to account for storing settings.
+     * Add new DB tables to account for saving layouts and assigning them to member groups.
      *
      * @access  private
      * @return  void
      */
-    public function _update_package_to_version_14()
+    private function _update_package_to_version_14()
     {
+    	// update stored configs with new 'columns' variable
     	$qry = $this->_EE->db->get('dashee_members');
     	
     	foreach($qry->result() as $row)
@@ -222,8 +224,103 @@ class Dashee_model extends CI_Model {
     		
     		$this->db->update('dashee_members', array('config' => json_encode($settings)), array('id' => $row->id)); 
     	}
+    	
+    	// add DB tables for storing layouts and assigning them to member groups
+		$this->_EE->load->dbforge();
+				
+		$fields = array(
+			'id' => array(
+				'type' 			 => 'INT',
+				'constraint'  	 => 10,
+				'unsigned'		 => TRUE,
+				'auto_increment' => TRUE
+				),
+			'name' => array(
+				'type' 			=> 'VARCHAR',
+				'constraint' 	=> 200
+				),
+			'description' => array(
+				'type' 			=> 'TEXT',
+				'null'			=> TRUE,
+				),
+			'config' => array(
+				'type'			=> 'TEXT',
+				'null'			=> TRUE,
+				),
+			'is_default' => array(
+				'type'			=> 'TINYINT',
+				'constraint'	=> 1,
+				'default'		=> 0
+				)
+			);
+			
+		$this->_EE->dbforge->add_field($fields);
+		$this->_EE->dbforge->add_key('id', TRUE);
+		$this->_EE->dbforge->create_table('dashee_layouts', TRUE);
+		unset($fields);
+		
+		$fields = array(
+			'id' => array(
+				'type' 			 => 'INT',
+				'constraint'  	 => 10,
+				'unsigned'		 => TRUE,
+				'auto_increment' => TRUE
+				),
+			'member_group_id' => array(
+				'type' 			=> 'INT',
+				'constraint' 	=> 10,
+				'unsigned'		=> TRUE,
+				),
+			'layout_id' => array(
+				'type' 			=> 'INT',
+				'constraint' 	=> 10,
+				'unsigned'		=> TRUE,
+				)
+			);
+			
+		$this->_EE->dbforge->add_field($fields);
+		$this->_EE->dbforge->add_key('id', TRUE);
+		$this->_EE->dbforge->create_table('dashee_layouts_members', TRUE);
+
+		// add standard default layout to new layouts DB table
+		$default_config = array(
+			'widgets' => array(
+				1 => array(
+					'wgt1' => array(
+						'mod' => 'dashee', 
+						'wgt' => 'wgt.welcome.php'
+						),
+					'wgt2' => array(
+						'mod' => 'dashee',
+						'wgt' => 'wgt.create_links.php'
+						)
+					),
+				2 => array(
+					'wgt3' => array(
+						'mod' => 'dashee',
+						'wgt' => 'wgt.modify_links.php'
+						)
+					),
+				3 => array(
+					'wgt4' => array(
+						'mod' => 'dashee',
+						'wgt' => 'wgt.view_links.php'
+						)
+					)
+				),
+			'columns' => 3
+			);
+	
+		$params = array(
+			'name' 			=> 'Default EE layout',
+			'description'	=> 'Default dashEE layout that mimics standard EE CP.',
+			'config' 		=> json_encode($default_config),
+			'is_default' 	=> TRUE
+			);
+			
+		$this->_EE->db->insert('dashee_layouts', $params);
     }
-    
+        
     /**
      * Returns the package theme folder URL, appending a forward slash if required.
      *
@@ -277,37 +374,11 @@ class Dashee_model extends CI_Model {
 		if($result->num_rows() < 1)
 		{
 			// This is a new user with no preferences, return default configuration.
-			$config = array(
-				'widgets' => array(
-					1 => array(
-						'wgt1' => array(
-							'mod' => 'dashee', 
-							'wgt' => 'wgt.welcome.php'
-							),
-						'wgt2' => array(
-							'mod' => 'dashee',
-							'wgt' => 'wgt.create_links.php'
-							)
-						),
-					2 => array(
-						'wgt3' => array(
-							'mod' => 'dashee',
-							'wgt' => 'wgt.modify_links.php'
-							)
-						),
-					3 => array(
-						'wgt4' => array(
-							'mod' => 'dashee',
-							'wgt' => 'wgt.view_links.php'
-							)
-						)
-					),
-				'columns' => 3
-				);
+			$qry = $this->_EE->db->get_where('dashee_layouts', array('is_default' => TRUE))->row();
 		
 			$params = array(
 				'member_id' => $member_id,
-				'config' 	=> json_encode($config)
+				'config' 	=> $qry->config
 				);
 				
 			$this->_EE->db->insert('dashee_members', $params);
@@ -331,7 +402,52 @@ class Dashee_model extends CI_Model {
 	public function update_member($member_id, $config)
 	{
 		return $this->_EE->db->update('exp_dashee_members', array('config' => json_encode($config)), array('member_id' => $member_id));
-	}    
+	}  
+	
+	/**
+	 * Get all saved layouts for display.
+	 *
+     * @access  public
+	 * @return 	obj
+	 */
+	public function get_layouts()
+	{
+		return $this->_EE->db->order_by('name')->get('dashee_layouts')->result();
+	}
+	
+	/**
+	 * Add new layout to DB.
+	 *
+     * @access  public
+     * @param	string		$name			Name of layout to save.
+     * @param	string		$description	Optional layout description.
+     * @param	array		$config			Dashboard config.
+	 * @return 	obj
+	 */
+	public function add_layout($name, $description, $config)
+	{
+		$params = array(
+			'name' 			=> $name,
+			'description' 	=> $description,
+			'config' 		=> json_encode($config)
+			);
+		$this->_EE->db->insert('dashee_layouts', $params);
+	}  
+	
+	/**
+	 * Get all member groups in CMS for layout assignment.
+	 *
+     * @access  public
+	 * @return 	obj
+	 */
+	public function get_member_groups()
+	{
+		return $this->_EE->db->select('group_id, group_title AS title, group_description AS description')
+			->from('member_groups')
+			->order_by('group_title')
+			->get()
+			->result();
+	}
 }
 /* End of file dashee_model.php */
 /* Location: /system/expressionengine/third_party/dashee/models/dashee_model.php */

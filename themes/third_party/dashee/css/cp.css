@@ -182,6 +182,8 @@ img#dashLoader { display:none; }
 
 img#dashLoader { display:none; }
 
+#dashSaveLayout input, #dashSaveLayout textarea { background:#FFF; }
+
 
 /* Widget Specific Styling */
 .widget.welcome .heading {

@@ -73,7 +73,14 @@ class Dashee_mcp {
 	
 		$this->_EE->cp->set_variable('cp_page_title', lang('dashee_term'));
 		
-		$this->_EE->cp->set_right_nav(array('btn_collapse' => '#collapse', 'btn_expand' => '#expand', 'btn_widgets' => '#widgets', 'btn_settings' => $this->_base_url.AMP.'method=settings'));
+		$button_data = array(
+			'btn_collapse' 	=> '#collapse', 
+			'btn_expand' 	=> '#expand',
+			'btn_save'		=> '#save-layout', 
+			'btn_widgets' 	=> '#widgets', 
+			'btn_settings' 	=> $this->_base_url.AMP.'method=settings'
+			);
+		$this->_EE->cp->set_right_nav($button_data);
 		
 		// Override default breadcrumb display to make module look like default CP homepage.
 		$this->_EE->javascript->output("
@@ -113,10 +120,8 @@ class Dashee_mcp {
 	{
 		$this->_EE->load->library('table');
 	
-        $css = $this->_theme_url .'css/cp.css';
 		$js  = $this->_theme_url .'js/dashee.js';
 		
-        //$this->_EE->cp->add_to_head('<link rel="stylesheet" type="text/css" href="'.$css.'" />');
         $this->_EE->cp->add_to_head('<script type="text/javascript" src="'.$js.'"></script>');
 	
 		$this->_EE->cp->set_variable('cp_page_title', lang('dashee_settings'));
@@ -129,7 +134,22 @@ class Dashee_mcp {
 		");
 		$this->_EE->javascript->compile();
 		
-		return $this->_EE->load->view('settings', array('action_url' => $this->_base_qs.AMP.'method=update_settings', 'settings' => $this->_settings), TRUE);
+		// get layout options for display and use as dropdown options
+		$layouts = $this->_model->get_layouts();
+		$layout_options = array();
+		foreach($layouts as $layout)
+		{
+			$layout_options[$layout->id] = $layout->name;
+		}
+		
+		$page_data = array(
+			'action_url' 	=> $this->_base_qs.AMP.'method=update_settings',
+			'settings' 		=> $this->_settings,
+			'layouts' 		=> $this->_model->get_layouts(),
+			'opts_layouts' 	=> $layout_options,
+			'member_groups'	=> $this->_model->get_member_groups()
+			);
+		return $this->_EE->load->view('settings', $page_data, TRUE);
 	}
 	
 	/**
@@ -437,6 +457,23 @@ class Dashee_mcp {
 			);
 		echo json_encode($result);
 		exit();
+	}
+	
+	/**
+	 * AJAX METHOD
+	 * Attempt to save current dashboard layout in DB.
+	 *
+	 * @return 	NULL
+	 */
+	public function save_layout()
+	{
+		$name 			= $this->_EE->input->post('layout_name');
+		$description 	= $this->_EE->input->post('layout_desc');
+		
+		if($name != '')
+		{
+			$this->_model->add_layout($name, $description, $this->_settings);
+		}
 	}
 	
 	/**

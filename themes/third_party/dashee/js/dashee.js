@@ -277,6 +277,7 @@ var dashEE = {
 $().ready(function() {
 	$('a[href="#collapse"]').parent('.button').css('float', 'left');
 	$('a[href="#expand"]').parent('.button').css('float', 'left');
+	//$('a[href="#save-layout"]').parent('.button').hide();
 
 	// Click event to collapse all widgets.
 	$('a[href="#collapse"]').click(function() {
@@ -311,6 +312,38 @@ $().ready(function() {
 			$('a[href="#widgets"]').html('Widgets');
 		}
 	}); 
+	
+	// Click event to save current widget layout to DB.
+	$('a[href="#save-layout"]').click($.proxy(function (e) {
+		$('#dashSaveLayout').dialog({
+			resizable: false,
+			height:210,
+			width:350,
+			modal: true,
+			buttons: {
+				'Cancel': function() {
+					$(this).dialog("close");
+				},
+				'Save': $.proxy(function() {
+					$.ajax({
+						type: 'POST',
+						url: url + '/?D=cp&C=addons_modules&M=show_module_cp&module=dashee&method=save_layout',
+						data: $('#dashSaveLayout form').serialize(),
+						dataTyle: 'html',
+						success: $.proxy(function(html) {
+							$.ee_notice('Your layout has been saved. Click "Settings" to assign it to a member group.', {type: 'success', open: true});
+							$('#dashSaveLayout').dialog('close');
+						}, this),
+						error: $.proxy(function(html) {
+							$.ee_notice("ERROR: The widget you selected could not be removed.", {type: 'error', open: true});
+						}, this)
+					});
+				}, this)
+			},
+			title: 'Save Layout'
+		});
+		return false;
+	}, this));
 
 	dashEE.init();
 });

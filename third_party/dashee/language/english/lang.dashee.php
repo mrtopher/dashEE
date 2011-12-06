@@ -16,6 +16,7 @@ $lang = array(
 	'btn_expand'	=> '+ Expand All',
 	'btn_widgets'	=> 'Widgets',
 	'btn_settings'	=> 'Settings',
+	'btn_save'		=> 'Save Layout',
 	
 	'widget_added'	=> 'Widget added.',
 	
