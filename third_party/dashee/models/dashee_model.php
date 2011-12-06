@@ -410,9 +410,34 @@ class Dashee_model extends CI_Model {
      * @access  public
 	 * @return 	obj
 	 */
-	public function get_layouts()
+	public function get_all_layouts()
 	{
 		return $this->_EE->db->order_by('name')->get('dashee_layouts')->result();
+	}
+	
+	/**
+	 * Get selected saved layout from DB by ID.
+	 *
+     * @access  public
+     * @param 	int			$layout_id		ID of selected layout.
+	 * @return 	obj
+	 */
+	public function get_layout($layout_id)
+	{
+		return $this->db->get_where('dashee_layouts', array('id' => $layout_id))->row();
+	}
+	
+	/**
+	 * Set new default layout for module.
+	 *
+     * @access  public
+     * @param 	int			$layout_id		ID of selected layout.
+	 * @return 	obj
+	 */
+	public function set_default_layout($layout_id)
+	{
+		$this->_EE->db->update('dashee_layouts', array('is_default' => FALSE));
+		$this->_EE->db->update('dashee_layouts', array('is_default' => TRUE), array('id' => $layout_id));
 	}
 	
 	/**
@@ -435,6 +460,31 @@ class Dashee_model extends CI_Model {
 	}  
 	
 	/**
+	 * Update selected saved layout from DB by ID.
+	 *
+     * @access  public
+     * @param 	int			$layout_id		ID of selected layout.
+     * @param 	array		$params			Updated layout parameters.
+	 * @return 	obj
+	 */
+	public function update_layout($layout_id, $params)
+	{
+		$this->_EE->db->update('dashee_layouts', $params, array('id' => $layout_id));
+	}
+	
+	/**
+	 * Delete selected saved layout from DB by ID.
+	 *
+     * @access  public
+     * @param 	int			$layout_id		ID of selected layout.
+	 * @return 	obj
+	 */
+	public function delete_layout($layout_id)
+	{
+		$this->_EE->db->delete('dashee_layouts', array('id' => $layout_id));
+	}
+	
+	/**
 	 * Get all member groups in CMS for layout assignment.
 	 *
      * @access  public
@@ -442,9 +492,10 @@ class Dashee_model extends CI_Model {
 	 */
 	public function get_member_groups()
 	{
-		return $this->_EE->db->select('group_id, group_title AS title, group_description AS description')
+		return $this->_EE->db->select('group_id AS id, group_title AS title, group_description AS description')
 			->from('member_groups')
 			->order_by('group_title')
+			->where('can_access_cp', 'y')
 			->get()
 			->result();
 	}

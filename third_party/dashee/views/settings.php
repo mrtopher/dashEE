@@ -1,23 +1,7 @@
 <?php 
 
+// generate user setting options section o
 echo form_open($action_url);
-
-$col3_checked = '';
-$col2_checked = '';
-$col1_checked = '';
-
-if($settings['columns'] == 3)
-{
-	$col3_checked = 'checked';
-}
-elseif($settings['columns'] == 2)
-{
-	$col2_checked = 'checked';
-}
-else
-{
-	$col1_checked = 'checked';
-}
 
 $this->table->set_template($cp_pad_table_template);
 $this->table->template['thead_open'] = '<thead class="visualEscapism">';
@@ -26,13 +10,22 @@ $this->table->set_caption('General');
 
 $this->table->set_heading(
    'Preference',
-   'Setting');
+   'Setting'
+   );
 
+$col_options = '';
+for($i=3; $i>=1; --$i)
+{
+	$checked = '';
+	if($settings['columns'] == $i)
+	{
+		$checked = 'checked';
+	}
+	$col_options .= '<input type="radio" name="columns" '.$checked.' value="'.$i.'" /> '.$i.NBS.NBS.NBS.NBS;
+}
 $this->table->add_row(
    'Number of columns?',
-   '<input type="radio" name="columns" '.$col3_checked.' value="3" /> 3'.NBS.NBS.NBS.NBS.
-   '<input type="radio" name="columns" '.$col2_checked.' value="2" /> 2'.NBS.NBS.NBS.NBS.
-   '<input type="radio" name="columns" '.$col1_checked.' value="1" /> 1'
+   $col_options
    );
 
 echo $this->table->generate();
@@ -43,64 +36,66 @@ echo $this->table->generate();
 	<?php echo form_submit(array('name' => 'submit', 'value' => lang('submit'), 'class' => 'submit')); ?>
 </div>
 
-
 <?php 
 
-echo form_close(); 
+echo form_close();
 
-$this->table->set_template($cp_pad_table_template);
-$this->table->template['thead_open'] = '<thead class="visualEscapism">';
-
-$this->table->set_caption('Saved Layouts');
-
-$this->table->set_heading(
-   'Name',
-   'Description',
-   'Options');
-
-if(count($layouts) > 0)
-{
+if($is_admin)
+{ 		
+	$this->table->set_caption('Saved Layouts');
+	
+	$this->table->set_heading(
+	   'Name',
+	   'Description',
+	   'Options'
+	   );
+	
 	foreach($layouts as $layout)
 	{
-		$this->table->add_row($layout->name,
-								$layout->description ? $layout->description : '--',
-								anchor('#', 'Use layout').' | '.anchor('#', 'Delete'));
+		$options = anchor($base_url.AMP.'method=set_default_layout'.AMP.'layout_id='.$layout->id, 'Make default').' | '.
+					anchor($base_url.AMP.'method=load_layout'.AMP.'layout_id='.$layout->id, 'Load').' | '.
+					anchor($base_url.AMP.'method=delete_layout'.AMP.'layout_id='.$layout->id, 'Delete');
+		if($layout->is_default)
+		{
+			$options = anchor($base_url.AMP.'method=load_layout'.AMP.'layout_id='.$layout->id, 'Load');
+		}
+		$this->table->add_row(
+			$layout->name,
+			$layout->description ? $layout->description : '--',
+			$options
+			);
 	}
 	
 	echo $this->table->generate();
-}
-else
-{
-
-}
-?>
-<p>&nbsp;</p>
-<?php
-$this->table->set_template($cp_pad_table_template);
-$this->table->template['thead_open'] = '<thead class="visualEscapism">';
-
-$this->table->set_caption('Member Group Layouts');
-
-$this->table->set_heading(
-   'Member Group',
-   'Description',
-   'Layout');
-
-if(count($member_groups) > 0)
-{
+	echo '<div align="right">* Default layout.</div>';
+	echo '<p>&nbsp;</p>';
+		
+	echo form_open();
+	
+	$this->table->set_caption('Member Group Layouts');
+	
+	$this->table->set_heading(
+	   'Member Group',
+	   'Description',
+	   'Layout'
+	   );
+	
 	foreach($member_groups as $group)
 	{
-		$this->table->add_row($group->title,
-								$group->description ? $group->description : '--',
-								form_dropdown('', $opts_layouts));
+		$this->table->add_row(
+			$group->title,
+			$group->description ? $group->description : '--',
+			form_dropdown('group_layouts['.$group->id.']', $opts_layouts)
+			);
 	}
 	
 	echo $this->table->generate();
-}
-else
-{
-
-}
-
+} 
 
 ?>
+
+<div class="tableFooter">
+	<?php echo form_submit(array('name' => 'submit', 'value' => lang('submit'), 'class' => 'submit')); ?>
+</div>
+
+<?php echo form_close(); ?>
