@@ -188,22 +188,6 @@ var dashEE = {
 			}, this));
 		}
 
-		/*if (widgetSettings.collapsible) {
-			$('<a href="#" title="Collapse" class="collapse"></a>').mousedown(function (e) {
-				e.stopPropagation();	
-			}).toggle(function () {
-				$(this).css({backgroundPosition: '0 100%'})
-					.parents(this.settings.widgetSelector)
-						.find(this.settings.contentSelector).hide();
-				return false;
-			},function () {
-				$(this).css({backgroundPosition: ''})
-					.parents(this.settings.widgetSelector)
-						.find(this.settings.contentSelector).show();
-				return false;
-			}).appendTo($(this.settings.buttonsSelector,this));
-		}*/
-
 		// -------------------------------------------
 		//  Show buttons on hover
 		// -------------------------------------------
@@ -228,20 +212,7 @@ var dashEE = {
 	 */
 	makeSortable : function () {
 		var $sortableItems = this.getWidgets();
-			/*$sortableItems = (function () {
-				var notSortable = '';
-				$(this.settings.widgetSelector,$(this.settings.columnSelector)).each(function (i) {
-					if (!dashEE.getWidgetSettings(this.id).movable) {
-						if(!this.id) {
-							this.id = 'widget-no-id-' + i;
-						}
-						notSortable += '#' + this.id + ',';
-					}
-				});
-				return $('> li:not(' + notSortable + ')', this.settings.columnSelector);
-			})();*/
-			
-		//$sortableItems.find(this.settings.headingSelector).css({
+
 		$sortableItems.find(this.settings.headingSelector).css({
 			cursor: 'move'
 		}).mousedown($.proxy(function (e) {
