@@ -69,7 +69,7 @@ class Dashee_mcp {
 		$js  = $this->_theme_url .'js/dashee.js';
 		
         $this->_EE->cp->add_to_head('<link rel="stylesheet" type="text/css" href="'.$css.'" />');
-        $this->_EE->cp->add_to_head($this->_EE->extensions->last_call.'<script type="text/javascript" src="'.$js.'"></script>');
+        $this->_EE->cp->add_to_head('<script type="text/javascript" src="'.$js.'"></script>');
 	
 		$this->_EE->cp->set_variable('cp_page_title', lang('dashee_term'));
 		

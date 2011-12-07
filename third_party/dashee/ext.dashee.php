@@ -116,7 +116,7 @@ class Dashee_ext {
 	 */
 	public function crumb_remap()
 	{
-		return "
+		return $this->_EE->extensions->last_call . "
 			$().ready(function() {			
 				$('ul#navigationTabs li.home a').attr('href', '".htmlspecialchars_decode($this->_base_url)."');
 				$('#breadCrumb ol li:nth-child(2) a').attr('href', '".htmlspecialchars_decode($this->_base_url)."').html('Dashboard');
