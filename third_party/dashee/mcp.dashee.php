@@ -36,6 +36,7 @@ class Dashee_mcp {
 	private $_css_url;
 	private $_js_url;
 	private $_member_id;
+	private $_super_admin = FALSE;
 	private $_settings;
 	
 	/**
@@ -53,8 +54,13 @@ class Dashee_mcp {
         $this->_theme_url   = $this->_model->get_package_theme_url();
         $this->_css_url   	= $this->_theme_url .'css/cp.css';
         $this->_js_url   	= $this->_theme_url .'js/dashee.js';
+        //$this->_js_url   	= $this->_theme_url .'js/dashee.min.js';
         
         $this->_member_id = $this->_EE->session->userdata('member_id');
+        if($this->_EE->session->userdata('group_id') == 1)
+        {
+        	$this->_super_admin = TRUE;
+        }
         
         // get current members dash configuration for use throughout module
         $this->_get_member_settings($this->_member_id);
@@ -74,16 +80,20 @@ class Dashee_mcp {
 	
 		$this->_EE->cp->set_variable('cp_page_title', lang('dashee_term'));
 		
-		$button_data = array(
-			'btn_collapse' 	=> '#collapse', 
-			'btn_expand' 	=> '#expand',
-			'btn_save'		=> '#save-layout', 
-			'btn_widgets' 	=> '#widgets', 
-			'btn_settings' 	=> $this->_base_url.AMP.'method=settings'
-			);
+		// set button data appropriately based on type of user
+		$button_data['btn_collapse'] = '#collapse';
+		$button_data['btn_expand'] 	 = '#expand';
+			
+		if($this->_super_admin)
+		{
+			$button_data['btn_save'] = '#save-layout'; 
+		}
+		
+		$button_data['btn_widgets']  = '#widgets'; 
+		$button_data['btn_settings'] = $this->_base_url.AMP.'method=settings';
 		$this->_EE->cp->set_right_nav($button_data);
 		
-		// Override default breadcrumb display to make module look like default CP homepage.
+		// override default breadcrumb display to make module look like default CP homepage
 		$this->_EE->javascript->output("
 			$('#breadCrumb ol li').slice(2).remove();
 			$('#breadCrumb ol li:last-child').attr('class', 'last').html('Dashboard');
@@ -155,13 +165,14 @@ class Dashee_mcp {
 		}
 		
 		$page_data = array(
-			'action_url' 	=> $this->_base_qs.AMP.'method=update_settings',
+			'base_qs' 		=> $this->_base_qs,
 			'base_url'		=> $this->_base_url,
 			'settings' 		=> $this->_settings,
-			'is_admin'		=> $this->_EE->session->userdata('group_id') == 1 ? TRUE : FALSE,
+			'is_admin'		=> $this->_super_admin,
 			'layouts' 		=> $layouts,
 			'opts_layouts' 	=> $layout_options,
-			'member_groups'	=> $this->_model->get_member_groups()
+			'member_groups'	=> $this->_model->get_member_groups(),
+			'group_layouts' => $this->_model->get_all_group_layouts()
 			);
 		return $this->_EE->load->view('settings', $page_data, TRUE);
 	}
@@ -233,6 +244,30 @@ class Dashee_mcp {
 		}
 		
 		$this->_EE->functions->redirect($this->_base_url);
+	}
+	
+	/**
+	 * Update Member Group Defaults Function
+	 * Attempt to save member group default settings to DB.
+	 *
+	 * @return 	void
+	 */
+	public function update_group_defaults()
+	{
+		$group_layouts = $this->_EE->input->post('group_layouts');
+		
+		if($group_layouts != '' AND is_array($group_layouts))
+		{
+			$this->_model->update_group_layouts($group_layouts);
+			
+			$this->_EE->session->set_flashdata('dashee_msg', 'Member group defaults have been updated.');
+		}
+		else
+		{
+			$this->_EE->session->set_flashdata('dashee_msg', 'Member group defaults could not be updated.');
+		}
+		
+		$this->_EE->functions->redirect($this->_base_url.AMP.'method=settings');
 	}
 	
 	/**
@@ -484,7 +519,7 @@ class Dashee_mcp {
 		$name 			= $this->_EE->input->post('layout_name');
 		$description 	= $this->_EE->input->post('layout_desc');
 		
-		if($name != '')
+		if($this->_super_admin AND $name != '')
 		{
 			$this->_model->add_layout($name, $description, $this->_settings);
 		}
@@ -499,7 +534,7 @@ class Dashee_mcp {
 	{
 		$layout_id = $this->_EE->input->get('layout_id');
 		
-		if($layout_id != '' AND is_numeric($layout_id))
+		if($this->_super_admin AND $layout_id != '' AND is_numeric($layout_id))
 		{
 			$this->_model->set_default_layout($layout_id);
 			
@@ -522,7 +557,7 @@ class Dashee_mcp {
 	{
 		$layout_id = $this->_EE->input->get('layout_id');
 		
-		if($layout_id != '' AND is_numeric($layout_id))
+		if($this->_super_admin AND $layout_id != '' AND is_numeric($layout_id))
 		{
 			$layout = $this->_model->get_layout($layout_id);
 			$this->_settings = json_decode($layout->config);
@@ -548,7 +583,7 @@ class Dashee_mcp {
 	{
 		$layout_id = $this->_EE->input->get('layout_id');
 		
-		if($layout_id != '' AND is_numeric($layout_id))
+		if($this->_super_admin AND $layout_id != '' AND is_numeric($layout_id))
 		{
 			$layout = $this->_model->get_layout($layout_id);
 			

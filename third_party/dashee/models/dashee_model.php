@@ -280,7 +280,7 @@ class Dashee_model extends CI_Model {
 			
 		$this->_EE->dbforge->add_field($fields);
 		$this->_EE->dbforge->add_key('id', TRUE);
-		$this->_EE->dbforge->create_table('dashee_layouts_members', TRUE);
+		$this->_EE->dbforge->create_table('dashee_member_groups_layouts', TRUE);
 
 		// add standard default layout to new layouts DB table
 		$default_config = array(
@@ -373,12 +373,24 @@ class Dashee_model extends CI_Model {
 		
 		if($result->num_rows() < 1)
 		{
-			// This is a new user with no preferences, return default configuration.
-			$qry = $this->_EE->db->get_where('dashee_layouts', array('is_default' => TRUE))->row();
+			// This is a new user with no preferences, return default configuration for membership group.
+			$qry = $this->_EE->db->get_where('dashee_member_groups_layouts', array('member_group_id' => $this->_EE->session->userdata('group_id')));
+			
+			if($qry->num_rows() > 0)
+			{
+				$layout_id = $qry->row()->layout_id;
+				$layout = $this->get_layout($layout_id);
+				$config = $layout->config;
+			}
+			else
+			{			
+				$qry = $this->_EE->db->get_where('dashee_layouts', array('is_default' => TRUE))->row();
+				$config = $qry->config;
+			}
 		
 			$params = array(
 				'member_id' => $member_id,
-				'config' 	=> $qry->config
+				'config' 	=> $config
 				);
 				
 			$this->_EE->db->insert('dashee_members', $params);
@@ -428,6 +440,28 @@ class Dashee_model extends CI_Model {
 	}
 	
 	/**
+	 * Get member group default layouts for display in setting form.
+	 *
+     * @access  public
+	 * @return 	array
+	 */
+	public function get_all_group_layouts()
+	{
+		$qry = $this->_EE->db->get('dashee_member_groups_layouts');
+		
+		$groups = array();
+		if($qry->num_rows() > 0)
+		{
+			foreach($qry->result() as $row)
+			{
+				$groups[$row->member_group_id] = $row->layout_id;
+			}
+		}
+		
+		return $groups;
+	}
+	
+	/**
 	 * Set new default layout for module.
 	 *
      * @access  public
@@ -470,6 +504,23 @@ class Dashee_model extends CI_Model {
 	public function update_layout($layout_id, $params)
 	{
 		$this->_EE->db->update('dashee_layouts', $params, array('id' => $layout_id));
+	}
+	
+	/**
+	 * Update default member group layouts.
+	 *
+     * @access  public
+     * @param 	array		$group_layouts		Assoc. array of group_id with assigned layout_id.
+	 * @return 	void
+	 */
+	public function update_group_layouts($group_layouts)
+	{
+		$this->_EE->db->truncate('dashee_member_groups_layouts');
+		
+		foreach($group_layouts as $group_id => $layout_id)
+		{
+			$this->_EE->db->insert('dashee_member_groups_layouts', array('member_group_id' => $group_id, 'layout_id' => $layout_id));
+		}
 	}
 	
 	/**

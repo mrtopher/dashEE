@@ -344,7 +344,26 @@ $().ready(function() {
 		});
 		return false;
 	}, this));
-
+	
+	// Click event to save current widget layout to DB.
+	$('a.dashLoad').click($.proxy(function (e) {
+		$('#dashConfirmLoad').dialog({
+			resizable: false,
+			height:140,
+			modal: true,
+			buttons: {
+				'Cancel': function() {
+					$(this).dialog("close");
+				},
+				'OK': $.proxy(function() {
+					
+				}, this)
+			},
+			title: 'Save Layout'
+		});
+		return false;
+	}, this));
+	
 	dashEE.init();
 });
 

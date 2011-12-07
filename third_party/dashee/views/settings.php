@@ -1,7 +1,7 @@
 <?php 
 
 // generate user setting options section o
-echo form_open($action_url);
+echo form_open($base_qs.AMP.'method=update_settings');
 
 $this->table->set_template($cp_pad_table_template);
 $this->table->template['thead_open'] = '<thead class="visualEscapism">';
@@ -52,15 +52,17 @@ if($is_admin)
 	
 	foreach($layouts as $layout)
 	{
+		$name = $layout->name;
 		$options = anchor($base_url.AMP.'method=set_default_layout'.AMP.'layout_id='.$layout->id, 'Make default').' | '.
-					anchor($base_url.AMP.'method=load_layout'.AMP.'layout_id='.$layout->id, 'Load').' | '.
+					anchor($base_url.AMP.'method=load_layout'.AMP.'layout_id='.$layout->id, 'Load', 'dashLoad').' | '.
 					anchor($base_url.AMP.'method=delete_layout'.AMP.'layout_id='.$layout->id, 'Delete');
 		if($layout->is_default)
 		{
+			$name = '<strong>' . $layout->name . '*</strong>';
 			$options = anchor($base_url.AMP.'method=load_layout'.AMP.'layout_id='.$layout->id, 'Load');
 		}
 		$this->table->add_row(
-			$layout->name,
+			$name,
 			$layout->description ? $layout->description : '--',
 			$options
 			);
@@ -70,9 +72,9 @@ if($is_admin)
 	echo '<div align="right">* Default layout.</div>';
 	echo '<p>&nbsp;</p>';
 		
-	echo form_open();
+	echo form_open($base_qs.AMP.'method=update_group_defaults');
 	
-	$this->table->set_caption('Member Group Layouts');
+	$this->table->set_caption('Default Member Group Layouts');
 	
 	$this->table->set_heading(
 	   'Member Group',
@@ -85,7 +87,7 @@ if($is_admin)
 		$this->table->add_row(
 			$group->title,
 			$group->description ? $group->description : '--',
-			form_dropdown('group_layouts['.$group->id.']', $opts_layouts)
+			form_dropdown('group_layouts['.$group->id.']', $opts_layouts, $group_layouts[$group->id])
 			);
 	}
 	
@@ -99,3 +101,11 @@ if($is_admin)
 </div>
 
 <?php echo form_close(); ?>
+
+<div id="dashConfirmLoad" style="display:none;">
+	<p>WARNING: this will reset your current dashboard and replace it with this saved layout.</p>
+</div>
+
+<div id="dashConfirmDelete" style="display:none;">
+	<p>Are you sure you want to delete this layout?</p>
+</div>
