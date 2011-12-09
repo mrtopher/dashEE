@@ -436,7 +436,18 @@ class Dashee_model extends CI_Model {
 	 */
 	public function get_layout($layout_id)
 	{
-		return $this->db->get_where('dashee_layouts', array('id' => $layout_id))->row();
+		return $this->_EE->db->get_where('dashee_layouts', array('id' => $layout_id))->row();
+	}
+	
+	/**
+	 * Get default layout from DB.
+	 *
+     * @access  public
+	 * @return 	obj
+	 */
+	public function get_default_layout()
+	{
+		return $this->_EE->db->get_where('dashee_layouts', array('is_default' => TRUE))->row();
 	}
 	
 	/**
@@ -524,7 +535,39 @@ class Dashee_model extends CI_Model {
 	}
 	
 	/**
-	 * Delete selected saved layout from DB by ID.
+	 * Reset member layouts according to the assigned member group layout.
+	 *
+     * @access  public
+     * @param 	array		$group_layouts		Assoc. array of group_id with assigned layout_id.
+	 * @return 	void
+	 */
+	public function reset_member_layouts()
+	{
+		$member_qry = $this->_EE->db->select('dashee_members.*, members.group_id')
+			->from('dashee_members')
+			->join('members', 'dashee_members.member_id = members.member_id')
+			->result();
+	
+		if(count($member_qry) > 0)
+		{
+			$group_layouts = $this->get_all_group_layouts();
+			
+			$layout_qry = $this->get_all_layouts();
+			$layouts = array();
+			foreach($layout_qry as $layout)
+			{
+				$layouts[$layout->id] = $layout->config;
+			}
+			
+			foreach($member_qry as $member)
+			{
+				$this->_EE->db->update('dashee_members', array('config' => $layouts[$group_layouts[$member->group_id]]), array('id' => $member->id));
+			}
+		}
+	}
+	
+	/**
+	 * Delete selected saved layout from DB by ID and updates any associated member groups.
 	 *
      * @access  public
      * @param 	int			$layout_id		ID of selected layout.
@@ -533,6 +576,8 @@ class Dashee_model extends CI_Model {
 	public function delete_layout($layout_id)
 	{
 		$this->_EE->db->delete('dashee_layouts', array('id' => $layout_id));
+		$default = $this->_EE->db->get_where('dashee_layouts', array('is_default' => TRUE))->row();
+		$this->_EE->db->update('dashee_member_groups_layouts', array('layout_id' => $default->id), array('layout_id' => $layout_id));
 	}
 	
 	/**

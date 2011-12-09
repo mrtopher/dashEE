@@ -172,6 +172,7 @@ class Dashee_mcp {
 			'layouts' 		=> $layouts,
 			'opts_layouts' 	=> $layout_options,
 			'member_groups'	=> $this->_model->get_member_groups(),
+			'default_id' 	=> $this->_model->get_default_layout()->id,
 			'group_layouts' => $this->_model->get_all_group_layouts()
 			);
 		return $this->_EE->load->view('settings', $page_data, TRUE);
@@ -245,31 +246,7 @@ class Dashee_mcp {
 		
 		$this->_EE->functions->redirect($this->_base_url);
 	}
-	
-	/**
-	 * Update Member Group Defaults Function
-	 * Attempt to save member group default settings to DB.
-	 *
-	 * @return 	void
-	 */
-	public function update_group_defaults()
-	{
-		$group_layouts = $this->_EE->input->post('group_layouts');
 		
-		if($group_layouts != '' AND is_array($group_layouts))
-		{
-			$this->_model->update_group_layouts($group_layouts);
-			
-			$this->_EE->session->set_flashdata('dashee_msg', 'Member group defaults have been updated.');
-		}
-		else
-		{
-			$this->_EE->session->set_flashdata('dashee_msg', 'Member group defaults could not be updated.');
-		}
-		
-		$this->_EE->functions->redirect($this->_base_url.AMP.'method=settings');
-	}
-	
 	/**
 	 * AJAX METHOD
 	 * Get listing of all available widgets from installed modules.
@@ -597,6 +574,35 @@ class Dashee_mcp {
 		else
 		{
 			$this->_EE->session->set_flashdata('dashee_msg', 'Unable to load selected layout.');
+		}
+		
+		$this->_EE->functions->redirect($this->_base_url.AMP.'method=settings');
+	}
+	
+	/**
+	 * Update Member Group Defaults Function
+	 * Attempt to save member group default settings to DB.
+	 *
+	 * @return 	void
+	 */
+	public function update_group_defaults()
+	{
+		$group_layouts = $this->_EE->input->post('group_layouts');
+		
+		if($group_layouts != '' AND is_array($group_layouts))
+		{
+			$this->_model->update_group_layouts($group_layouts);
+		
+			/*if($this->_EE->input->post('reset') == 'yes')
+			{
+				$this->_model->reset_member_layouts();
+			}*/
+			
+			$this->_EE->session->set_flashdata('dashee_msg', 'Member group defaults have been updated.');
+		}
+		else
+		{
+			$this->_EE->session->set_flashdata('dashee_msg', 'Member group defaults could not be updated.');
 		}
 		
 		$this->_EE->functions->redirect($this->_base_url.AMP.'method=settings');

@@ -18,6 +18,30 @@ $lang = array(
 	'btn_settings'	=> 'Settings',
 	'btn_save'		=> 'Save Layout',
 	
+	'capGeneral'	=> 'General',
+	'capLayouts'	=> 'Saved Layouts',
+	'capGroupLayouts'	=> 'Default Member Group Layouts',
+	
+	'thPreference' 	=> 'Preference',
+	'thSetting' 	=> 'Setting',
+	'thName' 		=> 'Name',
+	'thDescription' => 'Description',
+	'thOptions'		=> 'Options',
+	'thMemberGroup' => 'Member Group',
+	'thLayout'		=> 'Layout',
+	
+	'prefNumColumns'=> 'Number of columns?',
+	'prefReset'		=> 'Reset all user dashboards to the new defaults set above.',
+	
+	'lblLayoutName' => 'Layout name',
+	'lblLayoutDesc' => 'Description',
+	
+	'confRemoveWidget'  => 'Are you sure you want to remove this widget from your dashboard?',
+	'confDeleteLayout'  => 'Are you sure you want to delete this layout?',
+	'confLoadLayout'	=> '<strong>WARNING:</strong> this will reset your current dashboard and replace it with this saved layout.',
+	
+	'default_layout' => 'Default layout',
+	
 	'widget_added'	=> 'Widget added.',
 	
 	'permission_denied' => 'You do not have permission to use this widget.',

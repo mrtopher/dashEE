@@ -346,7 +346,9 @@ $().ready(function() {
 	}, this));
 	
 	// Click event to save current widget layout to DB.
-	$('a.dashLoad').click($.proxy(function (e) {
+	$('a.dashLoad').click(function (e) {
+		e.preventDefault();
+		href = $(this).attr('href');
 		$('#dashConfirmLoad').dialog({
 			resizable: false,
 			height:140,
@@ -355,14 +357,35 @@ $().ready(function() {
 				'Cancel': function() {
 					$(this).dialog("close");
 				},
-				'OK': $.proxy(function() {
-					
-				}, this)
+				'OK': function() {
+					$(this).dialog("close");
+					window.location = href;
+				}
 			},
-			title: 'Save Layout'
+			title: 'Please Confirm'
 		});
-		return false;
-	}, this));
+	});
+	
+	// Click event to save current widget layout to DB.
+	$('a.dashDelete').click(function (e) {
+		e.preventDefault();
+		href = $(this).attr('href');
+		$('#dashConfirmDelete').dialog({
+			resizable: false,
+			height:140,
+			modal: true,
+			buttons: {
+				'No': function() {
+					$(this).dialog("close");
+				},
+				'Yes': function() {
+					$(this).dialog("close");
+					window.location = href;
+				}
+			},
+			title: 'Please Confirm'
+		});
+	});
 	
 	dashEE.init();
 });

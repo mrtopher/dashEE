@@ -13,15 +13,16 @@
 </div>
 
 <div id="dashConfirm" style="display:none;">
-	<p>Are you sure you want to remove this widget from your dashboard?</p>
+	<p><?php echo lang('confRemoveWidget'); ?></p>
 </div>
 
 <div id="dashSaveLayout" style="display:none;">
 	<?php echo form_open(); ?>
-		<label for="layout_name">Layout name:</label>
-		<input type="text" name="layout_name" id="layout_name" class="text ui-widget-content ui-corner-all" /> 
-		<label for="layout_desc">Description:</label>
-		<textarea name="layout_desc" id="layout_desc" class="text ui-widget-content ui-corner-all"></textarea>
+		<p><label for="layout_name"><?php echo lang('lblLayoutName'); ?>:</label>
+		<input type="text" name="layout_name" id="layout_name" class="text ui-widget-content ui-corner-all" /></p>
+		
+		<p><label for="layout_desc"><?php echo lang('lblLayoutDesc'); ?>:</label>
+		<input type="text" name="layout_desc" id="layout_desc" class="text ui-widget-content ui-corner-all" /></p>
 	<?php echo form_close(); ?>
 </div>
 

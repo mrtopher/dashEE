@@ -194,7 +194,8 @@ img#dashLoader { display:none; }
 
 img#dashLoader { display:none; }
 
-#dashSaveLayout input, #dashSaveLayout textarea { background:#FFF; }
+#dashSaveLayout p { margin:10px 0; }
+#dashSaveLayout input { background:#FFF; }
 
 
 /* Widget Specific Styling */
