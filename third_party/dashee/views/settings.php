@@ -29,7 +29,7 @@ $this->table->add_row(
    );
 
 echo $this->table->generate();
-
+$this->table->clear();
 ?>
 
 <div class="tableFooter">
@@ -42,7 +42,7 @@ echo form_close();
 
 if($is_admin)
 { 		
-	$this->table->set_caption(lang('capLayouts'));
+	$this->table->set_caption(lang('capLayouts').' <a class="dashHelp" href="#">What\'s this?</a>');
 	
 	$this->table->set_heading(
 	   lang('thName'),
@@ -69,6 +69,11 @@ if($is_admin)
 	}
 	
 	echo $this->table->generate();
+
+	$this->table->clear();
+	
+	$this->table->template['thead_open'] = '<thead class="visualEscapism">';
+
 	echo '<div align="right">* ' . lang('default_layout') . '.</div>';
 	echo '<p>&nbsp;</p>';
 		
@@ -111,3 +116,5 @@ if($is_admin)
 <div id="dashConfirmDelete" style="display:none;">
 	<p><?php echo lang('confDeleteLayout'); ?></p>
 </div>
+
+<div class="dashLayoutHelp" style="display:none;"><?php echo lang('help_layouts'); ?></div>

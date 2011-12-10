@@ -387,6 +387,16 @@ $().ready(function() {
 		});
 	});
 	
+	// Click event to display settings help.
+	$('a.dashHelp').click(function() {
+		$('.dashLayoutHelp').dialog({
+			resizable: false,
+			width:450,
+			modal: true,
+			title: 'dashEE Layouts'
+		});
+	});
+	
 	dashEE.init();
 });
 

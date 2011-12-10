@@ -53,8 +53,8 @@ class Dashee_mcp {
         $this->_base_url    = BASE .AMP .$this->_base_qs;
         $this->_theme_url   = $this->_model->get_package_theme_url();
         $this->_css_url   	= $this->_theme_url .'css/cp.css';
-        $this->_js_url   	= $this->_theme_url .'js/dashee.js';
-        //$this->_js_url   	= $this->_theme_url .'js/dashee.min.js';
+        //$this->_js_url   	= $this->_theme_url .'js/dashee.js';
+        $this->_js_url   	= $this->_theme_url .'js/dashee.min.js';
         
         $this->_member_id = $this->_EE->session->userdata('member_id');
         if($this->_EE->session->userdata('group_id') == 1)
@@ -131,6 +131,7 @@ class Dashee_mcp {
 	{
 		$this->_EE->load->library('table');
 	
+        $this->_EE->cp->add_to_head('<link rel="stylesheet" type="text/css" href="'.$this->_theme_url.'css/settings.css" />');
         $this->_EE->cp->add_to_head('<script type="text/javascript" src="'.$this->_js_url.'"></script>');
 	
 		$this->_EE->cp->set_variable('cp_page_title', lang('dashee_settings'));
