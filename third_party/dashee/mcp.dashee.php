@@ -33,7 +33,10 @@ class Dashee_mcp {
 	private $_base_qs;
 	private $_base_url;
 	private $_theme_url;
+	private $_css_url;
+	private $_js_url;
 	private $_member_id;
+	private $_super_admin = FALSE;
 	private $_settings;
 	
 	/**
@@ -49,8 +52,15 @@ class Dashee_mcp {
         $this->_base_qs     = 'C=addons_modules' .AMP .'M=show_module_cp' .AMP .'module=dashee';
         $this->_base_url    = BASE .AMP .$this->_base_qs;
         $this->_theme_url   = $this->_model->get_package_theme_url();
+        $this->_css_url   	= $this->_theme_url .'css/cp.css';
+        //$this->_js_url   	= $this->_theme_url .'js/dashee.js';
+        $this->_js_url   	= $this->_theme_url .'js/dashee.min.js';
         
         $this->_member_id = $this->_EE->session->userdata('member_id');
+        if($this->_EE->session->userdata('group_id') == 1)
+        {
+        	$this->_super_admin = TRUE;
+        }
         
         // get current members dash configuration for use throughout module
         $this->_get_member_settings($this->_member_id);
@@ -65,22 +75,179 @@ class Dashee_mcp {
 	 */
 	public function index()
 	{
-        $css = $this->_theme_url .'css/cp.css';
-		$js  = $this->_theme_url .'js/dashee.js';
-		
-        $this->_EE->cp->add_to_head('<link rel="stylesheet" type="text/css" href="'.$css.'" />');
-        $this->_EE->cp->add_to_head('<script type="text/javascript" src="'.$js.'"></script>');
+        $this->_EE->cp->add_to_head('<link rel="stylesheet" type="text/css" href="'.$this->_css_url.'" />');
+        $this->_EE->cp->add_to_head('<script type="text/javascript" src="'.$this->_js_url.'"></script>');
 	
 		$this->_EE->cp->set_variable('cp_page_title', lang('dashee_term'));
 		
-		$this->_EE->cp->set_right_nav(array('btn_collapse' => '#collapse', 'btn_expand' => '#expand', 'btn_widgets' => '#widgets'));
+		// set button data appropriately based on type of user
+		$button_data['btn_collapse'] = '#collapse';
+		$button_data['btn_expand'] 	 = '#expand';
+			
+		if($this->_super_admin)
+		{
+			$button_data['btn_save'] = '#save-layout'; 
+		}
+		
+		$button_data['btn_widgets']  = '#widgets'; 
+		$button_data['btn_settings'] = $this->_base_url.AMP.'method=settings';
+		$this->_EE->cp->set_right_nav($button_data);
+		
+		// override default breadcrumb display to make module look like default CP homepage
+		$this->_EE->javascript->output("
+			$('#breadCrumb ol li').slice(2).remove();
+			$('#breadCrumb ol li:last-child').attr('class', 'last').html('Dashboard');
+		");
+		
+		$msg = $this->_EE->session->flashdata('dashee_msg');
+		if($msg != '')
+		{
+			$this->_EE->javascript->output("
+				$.ee_notice('".$msg."', {type: 'success'});
+			");
+		}
+		
+		$this->_EE->javascript->compile();
 		
 		// load widgets
 		$widgets = $this->_widget_loader($this->_settings['widgets']);
 		
-		return $this->_EE->load->view('index', array('settings' => $this->_settings, 'content' => $widgets, 'theme_url' => $this->_theme_url), TRUE);
+		$page_data = array(
+			'settings' 	=> $this->_settings, 
+			'content' 	=> $widgets, 
+			'theme_url' => $this->_theme_url
+			);
+		
+		return $this->_EE->load->view('index', $page_data, TRUE);
 	}
 	
+	/**
+	 * Settings Function
+	 * Display module settings form.
+	 *
+	 * @return 	void
+	 */
+	public function settings()
+	{
+		$this->_EE->load->library('table');
+	
+        $this->_EE->cp->add_to_head('<link rel="stylesheet" type="text/css" href="'.$this->_theme_url.'css/settings.css" />');
+        $this->_EE->cp->add_to_head('<script type="text/javascript" src="'.$this->_js_url.'"></script>');
+	
+		$this->_EE->cp->set_variable('cp_page_title', lang('dashee_settings'));
+		
+		$this->_EE->cp->set_breadcrumb($this->_base_url, lang('btn_settings'));
+		
+		// override default breadcrumb display
+		$this->_EE->javascript->output("
+			$('#breadCrumb ol li').slice(2,4).remove();
+		");
+		$this->_EE->javascript->compile();
+		
+		$msg = $this->_EE->session->flashdata('dashee_msg');
+		if($msg != '')
+		{
+			$this->_EE->javascript->output("
+				$.ee_notice('".$msg."', {type: 'success'});
+			");
+		}
+		
+		// get layout options for display and use as dropdown options
+		$layouts 		= array();
+		$layout_options = array();
+		if($this->_EE->session->userdata('group_id') == 1)
+		{
+			$layouts = $this->_model->get_all_layouts();
+			$layout_options = array();
+			foreach($layouts as $layout)
+			{
+				$layout_options[$layout->id] = $layout->name;
+			}
+		}
+		
+		$page_data = array(
+			'base_qs' 		=> $this->_base_qs,
+			'base_url'		=> $this->_base_url,
+			'settings' 		=> $this->_settings,
+			'is_admin'		=> $this->_super_admin,
+			'layouts' 		=> $layouts,
+			'opts_layouts' 	=> $layout_options,
+			'member_groups'	=> $this->_model->get_member_groups(),
+			'default_id' 	=> $this->_model->get_default_layout()->id,
+			'group_layouts' => $this->_model->get_all_group_layouts()
+			);
+		return $this->_EE->load->view('settings', $page_data, TRUE);
+	}
+	
+	/**
+	 * Update Settings Function
+	 * Attempt to save users module settings to DB.
+	 *
+	 * @return 	void
+	 */
+	public function update_settings()
+	{
+		$post_columns = $this->_EE->input->post('columns');
+		if($post_columns != '' AND is_numeric($post_columns) AND $post_columns <= 3)
+		{
+			$current = $this->_settings['columns'];
+			$new = $this->_EE->input->post('columns');
+			$widgets = $this->_settings['widgets'];
+			
+			// modify widget placement based on newly selected # of columns
+			if($new < $current)
+			{
+				if($new > 1)
+				{
+					foreach($widgets[3] as $id => $settings)
+					{
+						$widgets[2][$id] = $settings;
+					}
+					unset($widgets[3]);
+				}
+				else
+				{
+					if(array_key_exists(3,$widgets) && array_key_exists(2,$widgets))
+					{
+						$combined = array_merge($widgets[2],$widgets[3]);	
+					}
+					else
+					{
+						$combined = $widgets[2];
+					}
+					
+					foreach($combined as $id => $settings)
+					{
+						$widgets[1][$id] = $settings;
+					}
+
+					unset($widgets[3]);
+					unset($widgets[2]);
+				}
+			}
+			elseif($new > $current)
+			{
+				if($new == 2)
+				{
+					$widgets[2] = array();
+				}
+				else
+				{
+					$widgets[3] = array();
+				}
+			}
+			
+			// save new config to DB
+			$this->_settings['widgets'] = $widgets;
+			$this->_settings['columns'] = $new;
+			$this->_update_member(FALSE);
+			
+			$this->_EE->session->set_flashdata('dashee_msg', 'Your settings have been updated.');
+		}
+		
+		$this->_EE->functions->redirect($this->_base_url);
+	}
+		
 	/**
 	 * AJAX METHOD
 	 * Get listing of all available widgets from installed modules.
@@ -293,7 +460,7 @@ class Dashee_mcp {
 	 *
 	 * @return 	NULL
 	 */
-	public function update_settings()
+	public function update_widget_settings()
 	{
 		$data 		= $_POST;
 		$settings 	= array();
@@ -317,6 +484,129 @@ class Dashee_mcp {
 			);
 		echo json_encode($result);
 		exit();
+	}
+	
+	/**
+	 * AJAX METHOD
+	 * Attempt to save current dashboard layout in DB.
+	 *
+	 * @return 	NULL
+	 */
+	public function save_layout()
+	{
+		$name 			= $this->_EE->input->post('layout_name');
+		$description 	= $this->_EE->input->post('layout_desc');
+		
+		if($this->_super_admin AND $name != '')
+		{
+			$this->_model->add_layout($name, $description, $this->_settings);
+		}
+	}
+	
+	/**
+	 * Change default layout in DB.
+	 *
+	 * @return 	void
+	 */
+	public function set_default_layout()
+	{
+		$layout_id = $this->_EE->input->get('layout_id');
+		
+		if($this->_super_admin AND $layout_id != '' AND is_numeric($layout_id))
+		{
+			$this->_model->set_default_layout($layout_id);
+			
+			$this->_EE->session->set_flashdata('dashee_msg', 'Default layout has been updated.');
+		}
+		else
+		{
+			$this->_EE->session->set_flashdata('dashee_msg', 'Unable to load selected layout.');
+		}
+		
+		$this->_EE->functions->redirect($this->_base_url.AMP.'method=settings');
+	}
+	
+	/**
+	 * Load selected saved layout for current user.
+	 *
+	 * @return 	void
+	 */
+	public function load_layout()
+	{
+		$layout_id = $this->_EE->input->get('layout_id');
+		
+		if($this->_super_admin AND $layout_id != '' AND is_numeric($layout_id))
+		{
+			$layout = $this->_model->get_layout($layout_id);
+			$this->_settings = json_decode($layout->config);
+			
+			$this->_update_member(FALSE);
+			
+			$this->_EE->session->set_flashdata('dashee_msg', $layout->name.' has been loaded to your dashboard.');
+		}
+		else
+		{
+			$this->_EE->session->set_flashdata('dashee_msg', 'Unable to load selected layout.');
+		}
+		
+		$this->_EE->functions->redirect($this->_base_url);
+	}
+	
+	/**
+	 * Delete selected saved layout from DB.
+	 *
+	 * @return 	void
+	 */
+	public function delete_layout()
+	{
+		$layout_id = $this->_EE->input->get('layout_id');
+		
+		if($this->_super_admin AND $layout_id != '' AND is_numeric($layout_id))
+		{
+			$layout = $this->_model->get_layout($layout_id);
+			
+			if(!$layout->is_default)
+			{
+				$this->_model->delete_layout($layout->id);
+
+				$this->_EE->session->set_flashdata('dashee_msg', $layout->name.' has been deleted.');
+			}
+		}
+		else
+		{
+			$this->_EE->session->set_flashdata('dashee_msg', 'Unable to load selected layout.');
+		}
+		
+		$this->_EE->functions->redirect($this->_base_url.AMP.'method=settings');
+	}
+	
+	/**
+	 * Update Member Group Defaults Function
+	 * Attempt to save member group default settings to DB.
+	 *
+	 * @return 	void
+	 */
+	public function update_group_defaults()
+	{
+		$group_layouts = $this->_EE->input->post('group_layouts');
+		
+		if($group_layouts != '' AND is_array($group_layouts))
+		{
+			$this->_model->update_group_layouts($group_layouts);
+		
+			/*if($this->_EE->input->post('reset') == 'yes')
+			{
+				$this->_model->reset_member_layouts();
+			}*/
+			
+			$this->_EE->session->set_flashdata('dashee_msg', 'Member group defaults have been updated.');
+		}
+		else
+		{
+			$this->_EE->session->set_flashdata('dashee_msg', 'Member group defaults could not be updated.');
+		}
+		
+		$this->_EE->functions->redirect($this->_base_url.AMP.'method=settings');
 	}
 	
 	/**
@@ -393,7 +683,10 @@ class Dashee_mcp {
 	 */
 	private function _widget_loader(array $widgets)
 	{
-		$cols = array(1 => '', 2 => '', 3 => '');
+		for($i=1; $i <= $this->_settings['columns']; ++$i)
+		{
+			$cols[$i] = '';
+		}
 
 		foreach($widgets as $col => $widget)
 		{

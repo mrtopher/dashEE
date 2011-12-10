@@ -24,6 +24,7 @@ class Wgt_recent_comments
 	public function __construct()
 	{
 		$this->title = 'Recent Comments';
+		$this->wclass = 'contentMenu';
 	
 		$this->_EE =& get_instance();
 	}

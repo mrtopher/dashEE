@@ -155,7 +155,7 @@ var dashEE = {
 		
 							$.ajax({
 								type: 'POST',
-								url: url + '?D=cp&C=addons_modules&M=show_module_cp&module=dashee&method=update_settings',
+								url: url + '?D=cp&C=addons_modules&M=show_module_cp&module=dashee&method=update_widget_settings',
 								data: $(this).serialize()+'&col='+col+'&wgt='+id,
 								dataTyle: 'json',
 								success: function(html) {
@@ -189,22 +189,6 @@ var dashEE = {
 			}, this));
 		}
 
-		/*if (widgetSettings.collapsible) {
-			$('<a href="#" title="Collapse" class="collapse"></a>').mousedown(function (e) {
-				e.stopPropagation();	
-			}).toggle(function () {
-				$(this).css({backgroundPosition: '0 100%'})
-					.parents(this.settings.widgetSelector)
-						.find(this.settings.contentSelector).hide();
-				return false;
-			},function () {
-				$(this).css({backgroundPosition: ''})
-					.parents(this.settings.widgetSelector)
-						.find(this.settings.contentSelector).show();
-				return false;
-			}).appendTo($(this.settings.buttonsSelector,this));
-		}*/
-
 		// -------------------------------------------
 		//  Show buttons on hover
 		// -------------------------------------------
@@ -229,20 +213,7 @@ var dashEE = {
 	 */
 	makeSortable : function () {
 		var $sortableItems = this.getWidgets();
-			/*$sortableItems = (function () {
-				var notSortable = '';
-				$(this.settings.widgetSelector,$(this.settings.columnSelector)).each(function (i) {
-					if (!dashEE.getWidgetSettings(this.id).movable) {
-						if(!this.id) {
-							this.id = 'widget-no-id-' + i;
-						}
-						notSortable += '#' + this.id + ',';
-					}
-				});
-				return $('> li:not(' + notSortable + ')', this.settings.columnSelector);
-			})();*/
-			
-		//$sortableItems.find(this.settings.headingSelector).css({
+
 		$sortableItems.find(this.settings.headingSelector).css({
 			cursor: 'move'
 		}).mousedown($.proxy(function (e) {
@@ -305,10 +276,10 @@ var dashEE = {
 };
 
 $().ready(function() {
-	// Override default breadcrumb display to make module look like default CP homepage.
-	$('#breadCrumb ol li').slice(2).remove();
-	$('#breadCrumb ol li:last-child').attr('class', 'last').html('Dashboard');
-	
+	$('a[href="#collapse"]').parent('.button').css('float', 'left');
+	$('a[href="#expand"]').parent('.button').css('float', 'left');
+	//$('a[href="#save-layout"]').parent('.button').hide();
+
 	// Click event to collapse all widgets.
 	$('a[href="#collapse"]').click(function() {
 		dashEE.getWidgets().addClass('collapsed');
@@ -335,14 +306,98 @@ $().ready(function() {
 					$('#dashListing .content').html('<p>There was a problem.</p>');
 				}
 			});
-			$('a[href="#widgets"]').html('Close');
+			$('a[href="#widgets"]').html('Close Widgets');
 		}
 		else {
 			$('#dashListing').slideUp();
 			$('a[href="#widgets"]').html('Widgets');
 		}
 	}); 
-
+	
+	// Click event to save current widget layout to DB.
+	$('a[href="#save-layout"]').click($.proxy(function (e) {
+		$('#dashSaveLayout').dialog({
+			resizable: false,
+			height:210,
+			width:350,
+			modal: true,
+			buttons: {
+				'Cancel': function() {
+					$(this).dialog("close");
+				},
+				'Save': $.proxy(function() {
+					$.ajax({
+						type: 'POST',
+						url: url + '/?D=cp&C=addons_modules&M=show_module_cp&module=dashee&method=save_layout',
+						data: $('#dashSaveLayout form').serialize(),
+						dataTyle: 'html',
+						success: $.proxy(function(html) {
+							$.ee_notice('Your layout has been saved. Click "Settings" to assign it to a member group.', {type: 'success', open: true});
+							$('#dashSaveLayout').dialog('close');
+						}, this),
+						error: $.proxy(function(html) {
+							$.ee_notice("ERROR: The widget you selected could not be removed.", {type: 'error', open: true});
+						}, this)
+					});
+				}, this)
+			},
+			title: 'Save Layout'
+		});
+		return false;
+	}, this));
+	
+	// Click event to save current widget layout to DB.
+	$('a.dashLoad').click(function (e) {
+		e.preventDefault();
+		href = $(this).attr('href');
+		$('#dashConfirmLoad').dialog({
+			resizable: false,
+			height:140,
+			modal: true,
+			buttons: {
+				'Cancel': function() {
+					$(this).dialog("close");
+				},
+				'OK': function() {
+					$(this).dialog("close");
+					window.location = href;
+				}
+			},
+			title: 'Please Confirm'
+		});
+	});
+	
+	// Click event to save current widget layout to DB.
+	$('a.dashDelete').click(function (e) {
+		e.preventDefault();
+		href = $(this).attr('href');
+		$('#dashConfirmDelete').dialog({
+			resizable: false,
+			height:140,
+			modal: true,
+			buttons: {
+				'No': function() {
+					$(this).dialog("close");
+				},
+				'Yes': function() {
+					$(this).dialog("close");
+					window.location = href;
+				}
+			},
+			title: 'Please Confirm'
+		});
+	});
+	
+	// Click event to display settings help.
+	$('a.dashHelp').click(function() {
+		$('.dashLayoutHelp').dialog({
+			resizable: false,
+			width:450,
+			modal: true,
+			title: 'dashEE Layouts'
+		});
+	});
+	
 	dashEE.init();
 });
 

@@ -9,17 +9,19 @@
 
 
 /* Module CSS */
-#dashListing { height:275px; overflow:auto; margin: 0 3.3% 25px; }
+#dashListing { height:300px; overflow:auto; margin: 0 3.3% 25px; }
 
 #dashContainer .column { 
     float: left;
-    width: 29%;
     margin-left:3.3%;
 	/* Min-height: */
 	min-height: 400px;
 	height: auto !important; 
 	height: 400px;
 }
+#dashContainer .columns3 .column { width:29%; }
+#dashContainer .columns2 .column { width:45%; }
+#dashContainer .columns1 .column { width:94%; }
 
 .widget {
     margin-bottom: 25px;
@@ -48,8 +50,8 @@
 .widget .heading .buttons {
 	display: none;
 	position: absolute;
-	top: 6px;
-	right: 0;
+	top: 14px;
+	right: 8px;
 }
 .widget .heading .buttons a {
 	display: block;
@@ -60,14 +62,25 @@
 	outline: none;
 	background: no-repeat;
 }
-.widget .heading .buttons a.remove  {
-    background-image: url(../images/icon-remove.png);
+.widget .heading .buttons a.remove {
+    background-image: url(../images/icon-sprite.png);
+    background-position: -40px -1px;
 }
-.widget .heading .buttons a.edit  {
-    background-image: url(../images/icon-settings.png);
+.widget .heading .buttons a.remove:hover {
+	background-position: -40px -21px;
 }
-.widget .heading .buttons a.collapse  {
-    background-image: url(../images/icon-collapse.png);
+.widget .heading .buttons a.edit {
+    background-image: url(../images/icon-sprite.png);
+    background-position: -60px -1px;
+}
+.widget .heading .buttons a.edit:hover {
+	background-position: -60px -21px;
+}
+.widget .heading .buttons a.collapse {
+    background-image: url(../images/icon-sprite.png);
+}
+.widget .heading .buttons a.collapse:hover {
+	background-position: 0 -21px;
 }
 
 .widget .widget-content {
@@ -171,7 +184,8 @@
 .widget form input[type=text] { width:96%; }
 
 .widget.collapsed .heading { border-radius: 10px; }
-.widget.collapsed .heading .buttons a.collapse { background-position: 0 100%; }
+.widget.collapsed .heading .buttons a.collapse { background-position: -20px 0; }
+.widget.collapsed .heading .buttons a.collapse:hover { background-position: -20px -21px; }
 .widget.collapsed .widget-content { display: none; }
 
 .widget-placeholder { margin-bottom: 21px; border: 2px dashed #999; }
@@ -180,6 +194,8 @@ img#dashLoader { display:none; }
 
 img#dashLoader { display:none; }
 
+#dashSaveLayout p { margin:10px 0; }
+#dashSaveLayout input { background:#FFF; }
 
 /* Widget Specific Styling */
 .widget.welcome .heading {

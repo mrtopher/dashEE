@@ -10,14 +10,50 @@ $lang = array(
 	'module_home' => 'dashEE Home',
 	
 	'dashee_term' 	=> 'Dashboard',	
+	'dashee_settings' 	=> 'Settings',	
 	
 	'btn_collapse'	=> '- Collapse All',
 	'btn_expand'	=> '+ Expand All',
 	'btn_widgets'	=> 'Widgets',
+	'btn_settings'	=> 'Settings',
+	'btn_save'		=> 'Save Layout',
+	
+	'capGeneral'	=> 'General',
+	'capLayouts'	=> 'Saved Layouts',
+	'capGroupLayouts'	=> 'Default Member Group Layouts',
+	
+	'thPreference' 	=> 'Preference',
+	'thSetting' 	=> 'Setting',
+	'thName' 		=> 'Name',
+	'thDescription' => 'Description',
+	'thOptions'		=> 'Options',
+	'thMemberGroup' => 'Member Group',
+	'thLayout'		=> 'Layout',
+	
+	'prefNumColumns'=> 'Number of columns?',
+	'prefReset'		=> 'Reset all user dashboards to the new defaults set above.',
+	
+	'lblLayoutName' => 'Layout name',
+	'lblLayoutDesc' => 'Description',
+	
+	'confRemoveWidget'  => 'Are you sure you want to remove this widget from your dashboard?',
+	'confDeleteLayout'  => 'Are you sure you want to delete this layout?',
+	'confLoadLayout'	=> '<strong>WARNING:</strong> this will reset your current dashboard and replace it with this saved layout.',
+	
+	'default_layout' => 'Default layout',
 	
 	'widget_added'	=> 'Widget added.',
 	
 	'permission_denied' => 'You do not have permission to use this widget.',
+	
+	'help_layouts' => '	<p>Saved layouts give EE Super Admins the ability to save dashboard configurations for later use or assign those configurations as the 
+						default for users of a specific member group. Use the options below to <strong>load</strong> a saved layout to your own dashboard, mark a 
+						new layout as <strong>default</strong> or <strong>delete</strong> obsolete saved layouts.</p><br />
+						<p>The default layout is used for new users accessing the dashboard for the first time with no other layout assigned.</p><br />
+						<p>The default member group layouts listed below allow you to assign specific saved layouts as the default for selected membership groups. 
+						This allows you to create different dashboard layouts tailored for different member groups. <strong>Please note:</strong> the defaults 
+						set here will only affect new users who are visiting the module for the first time. If they have already logged in and viewed the dashEE 
+						module their existing configuration will remain the same.</p>',
 
 	
 	// Widgets
