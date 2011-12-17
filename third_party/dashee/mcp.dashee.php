@@ -348,12 +348,18 @@ class Dashee_mcp {
 			
 			// determine which column has the least number of widgets in it so you can add the 
 			// new one to the one with the least
-			$totals 	= array();
-			$totals[1] 	= @count($this->_settings['widgets'][1]);
-			$totals[2] 	= @count($this->_settings['widgets'][2]);
-			$totals[3] 	= @count($this->_settings['widgets'][3]);	
-			$col 		= array_keys($totals, min($totals));
+			$totals = array();
+			for($i=1; $i <= $this->_settings['columns']; ++$i)
+			{
+				$totals[$i] = @count($this->_settings['widgets'][$i]);
+			}
+			
+			$col = array_keys($totals, min($totals));
 		
+			/*echo '<pre>';
+			print_r($totals);
+			exit();*/
+
 			$new_widget = array(
 				'mod' => $mod,
 				'wgt' => $wgt,				
@@ -657,8 +663,13 @@ class Dashee_mcp {
 		if($reindex)
 		{
 			// reindex widgets array before saving it to the DB
+			$widgets = array();
+			for($x=1; $x <= $this->_settings['columns']; ++$x)
+			{
+				$widgets[$x] = array();
+			}
+			
 			$i = 1;
-			$widgets = array(1 => array(), 2 => array(), 3 => array());
 			foreach($this->_settings['widgets'] as $col => $widget)
 			{
 				if(is_array($widget))
