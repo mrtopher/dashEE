@@ -733,7 +733,7 @@ class Dashee_mcp {
 				}
 			}
 
-			$cols[$col] .= '&nbsp;';
+			//$cols[$col] .= '&nbsp;';
 		}
 		
 		return $cols;
