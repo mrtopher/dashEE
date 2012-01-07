@@ -29,9 +29,9 @@ class Dashee_ext {
 	public $settings 		= array();
 	public $description		= 'Handle redirection and link remapping to alternate dashEE dashboard instead of defaule CP Home.';
 	public $docs_url		= 'http://dash-ee.com';
-	public $name			= 'dashEE';
-	public $settings_exist	= 'n';
-	public $version			= '1.0';
+	public $name			= 'DashEE';
+	public $settings_exist	= 'y';
+	public $version			= '1.1';
 	
 	private $_EE;
 	
@@ -49,6 +49,15 @@ class Dashee_ext {
         $this->_base_url    = BASE .AMP .$this->_base_qs;
 	}
 	
+function settings()
+{
+    $settings = array();
+
+    $settings['redirect_admins'] = array('c', array('yes' => "Yes"), 'yes');
+
+    return $settings;
+}
+
 	// ----------------------------------------------------------------------
 	
 	/**
@@ -64,12 +73,15 @@ class Dashee_ext {
 	public function activate_extension()
 	{
 		// Setup custom settings in this array.
-		$this->settings = array();
+		$this->settings = array(
+			'redirect_admins' => 'yes',
+		);
 		
 		$hooks = array(
 			'cp_css_end'		=> 'crumb_hide',
 			'cp_js_end'			=> 'crumb_remap',
 			'cp_member_login'	=> 'member_redirect',
+			'sessions_end'		=> 'sessions_end',
 			);
 
 		foreach ($hooks as $hook => $method)
@@ -139,6 +151,46 @@ class Dashee_ext {
 	{
 		$this->_EE->functions->redirect($this->_base_url);  
 	}
+
+	// ----------------------------------------------------------------------
+	
+	/**
+	 * Redirect CP home to DashEE
+	 *
+	 * @return NULL 
+	 */
+	public function sessions_end( &$data )
+	{
+		if (REQ == 'CP' && $this->_EE->input->get('C') == 'homepage')
+		{
+			$u = $data->userdata;
+
+			// redirect super admins?
+			if($u['group_id'] == 1 && $this->settings['redirect_admins'] != 'yes') return;
+
+			// can user access modules at all?
+			if ($u['can_access_cp']=='y' && $u['can_access_addons']=='y' && $u['can_access_modules']=='y')
+			{
+				// Is DashEE installed? fetch module_id and check user can access it
+				$dashee_id = $this->_EE->db->where('module_name','DashEE')->get('modules')->row('module_id');
+
+				if(empty($dashee_id)) return;
+
+				if($u['assigned_modules'][$dashee_id] != TRUE && $u['group_id'] != 1) return;
+
+				//all ok, build the url
+				$s = 0;
+				if ($u['admin_session_type'] != 'c')
+				{
+					$s = $u['session_id'];
+				}
+				$this->_EE->functions->redirect(SELF.'?S='.$s.AMP.'D=cp'.AMP.$this->_base_qs);  
+
+			}
+		}
+	}
+
+
 
 	// ----------------------------------------------------------------------
 
