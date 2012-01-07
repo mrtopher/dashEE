@@ -9,7 +9,7 @@
 
 
 /* Module CSS */
-#dashListing { height:300px; overflow:auto; margin: 0 3.3% 25px; }
+#dashListing { height:320px; overflow:auto; margin: 0 3.3% 25px; }
 
 #dashContainer .column { 
     float: left;

@@ -29,6 +29,7 @@ $lang = array(
 	'thOptions'		=> 'Options',
 	'thMemberGroup' => 'Member Group',
 	'thLayout'		=> 'Layout',
+	'thLocked'		=> 'Lock layout',
 	
 	'prefNumColumns'=> 'Number of columns?',
 	'prefReset'		=> 'Reset all user dashboards to the new defaults set above.',
@@ -83,6 +84,9 @@ $lang = array(
 	
 	'wgt_blank_name' => 'Blank Widget',
 	'wgt_blank_description' => 'Blank text widget, can be configured with whatever content you wish.',
+
+	'wgt_text_name' => 'Static text widget',
+	'wgt_text_description' => 'A basic widget with static text.',
 	
 );
 
