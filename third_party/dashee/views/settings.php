@@ -40,8 +40,7 @@ $this->table->clear();
 
 echo form_close();
 
-if($is_admin)
-{ 		
+if($is_admin):
 	$this->table->set_caption(lang('capLayouts').' <a class="dashHelp" href="#">What\'s this?</a>');
 	
 	$this->table->set_heading(
@@ -97,8 +96,6 @@ if($is_admin)
 	}
 	
 	echo $this->table->generate();
-} 
-
 ?>
 
 <!--<p><input type="checkbox" name="reset" value="yes" /> <?php echo lang('prefReset'); ?></p>-->
@@ -118,3 +115,5 @@ if($is_admin)
 </div>
 
 <div class="dashLayoutHelp" style="display:none;"><?php echo lang('help_layouts'); ?></div>
+
+<?php endif; ?>

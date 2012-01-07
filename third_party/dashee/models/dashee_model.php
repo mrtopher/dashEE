@@ -89,6 +89,8 @@ class Dashee_model extends CI_Model {
     {
         $this->install_module_register();
         $this->install_module_members_table();
+        $this->install_module_layouts_table();
+        $this->install_module_layouts_groups_table();
 
         return TRUE;
     }
@@ -110,7 +112,8 @@ class Dashee_model extends CI_Model {
     }
 
     /**
-     * Creates the OmniLog entries table.
+     * Creates the dashEE members entries table.
+     * Stores each members module configuration data.
      *
      * @access  public
      * @return  void
@@ -143,6 +146,122 @@ class Dashee_model extends CI_Model {
     }
     
     /**
+     * Creates the dashEE layouts table.
+     * Stores saved dashboard layouts for later use.
+     *
+     * @access  public
+     * @return  void
+     */
+    public function install_module_layouts_table()
+    {
+		$this->_EE->load->dbforge();
+				
+		$fields = array(
+			'id' => array(
+				'type' 			 => 'INT',
+				'constraint'  	 => 10,
+				'unsigned'		 => TRUE,
+				'auto_increment' => TRUE
+				),
+			'name' => array(
+				'type' 			=> 'VARCHAR',
+				'constraint' 	=> 200
+				),
+			'description' => array(
+				'type' 			=> 'TEXT',
+				'null'			=> TRUE,
+				),
+			'config' => array(
+				'type'			=> 'TEXT',
+				'null'			=> TRUE,
+				),
+			'is_default' => array(
+				'type'			=> 'TINYINT',
+				'constraint'	=> 1,
+				'default'		=> 0
+				)
+			);
+			
+		$this->_EE->dbforge->add_field($fields);
+		$this->_EE->dbforge->add_key('id', TRUE);
+		$this->_EE->dbforge->create_table('dashee_layouts', TRUE);
+		
+		// add standard default layout to new layouts DB table
+		$default_config = array(
+			'widgets' => array(
+				1 => array(
+					'wgt1' => array(
+						'mod' => 'dashee', 
+						'wgt' => 'wgt.welcome.php'
+						),
+					'wgt2' => array(
+						'mod' => 'dashee',
+						'wgt' => 'wgt.create_links.php'
+						)
+					),
+				2 => array(
+					'wgt3' => array(
+						'mod' => 'dashee',
+						'wgt' => 'wgt.modify_links.php'
+						)
+					),
+				3 => array(
+					'wgt4' => array(
+						'mod' => 'dashee',
+						'wgt' => 'wgt.view_links.php'
+						)
+					)
+				),
+			'columns' => 3
+			);
+	
+		$params = array(
+			'name' 			=> 'Default EE layout',
+			'description'	=> 'Default dashEE layout that mimics standard EE CP.',
+			'config' 		=> json_encode($default_config),
+			'is_default' 	=> TRUE
+			);
+			
+		$this->_EE->db->insert('dashee_layouts', $params);
+
+    }
+    
+    /**
+     * Creates the dashEE member groups layouts table.
+     * Stores relationships between saved dashboard layouts and membership groups.
+     *
+     * @access  public
+     * @return  void
+     */
+    public function install_module_layouts_groups_table()
+    {
+    	$this->_EE->load->dbforge();
+    
+		$fields = array(
+			'id' => array(
+				'type' 			 => 'INT',
+				'constraint'  	 => 10,
+				'unsigned'		 => TRUE,
+				'auto_increment' => TRUE
+				),
+			'member_group_id' => array(
+				'type' 			=> 'INT',
+				'constraint' 	=> 10,
+				'unsigned'		=> TRUE,
+				),
+			'layout_id' => array(
+				'type' 			=> 'INT',
+				'constraint' 	=> 10,
+				'unsigned'		=> TRUE,
+				)
+			);
+			
+		$this->_EE->dbforge->add_field($fields);
+		$this->_EE->dbforge->add_key('id', TRUE);
+		$this->_EE->dbforge->create_table('dashee_member_groups_layouts', TRUE);
+    }
+    
+    /**
      * Uninstalls the module.
      *
      * @access  public
@@ -168,6 +287,8 @@ class Dashee_model extends CI_Model {
         // Drop the log entries table.
         $this->_EE->load->dbforge();
         $this->_EE->dbforge->drop_table('dashee_members');
+        $this->_EE->dbforge->drop_table('dashee_layouts');
+        $this->_EE->dbforge->drop_table('dashee_member_groups_layouts');
 
         return TRUE;
     }
@@ -226,99 +347,8 @@ class Dashee_model extends CI_Model {
     	}
     	
     	// add DB tables for storing layouts and assigning them to member groups
-		$this->_EE->load->dbforge();
-				
-		$fields = array(
-			'id' => array(
-				'type' 			 => 'INT',
-				'constraint'  	 => 10,
-				'unsigned'		 => TRUE,
-				'auto_increment' => TRUE
-				),
-			'name' => array(
-				'type' 			=> 'VARCHAR',
-				'constraint' 	=> 200
-				),
-			'description' => array(
-				'type' 			=> 'TEXT',
-				'null'			=> TRUE,
-				),
-			'config' => array(
-				'type'			=> 'TEXT',
-				'null'			=> TRUE,
-				),
-			'is_default' => array(
-				'type'			=> 'TINYINT',
-				'constraint'	=> 1,
-				'default'		=> 0
-				)
-			);
-			
-		$this->_EE->dbforge->add_field($fields);
-		$this->_EE->dbforge->add_key('id', TRUE);
-		$this->_EE->dbforge->create_table('dashee_layouts', TRUE);
-		unset($fields);
-		
-		$fields = array(
-			'id' => array(
-				'type' 			 => 'INT',
-				'constraint'  	 => 10,
-				'unsigned'		 => TRUE,
-				'auto_increment' => TRUE
-				),
-			'member_group_id' => array(
-				'type' 			=> 'INT',
-				'constraint' 	=> 10,
-				'unsigned'		=> TRUE,
-				),
-			'layout_id' => array(
-				'type' 			=> 'INT',
-				'constraint' 	=> 10,
-				'unsigned'		=> TRUE,
-				)
-			);
-			
-		$this->_EE->dbforge->add_field($fields);
-		$this->_EE->dbforge->add_key('id', TRUE);
-		$this->_EE->dbforge->create_table('dashee_member_groups_layouts', TRUE);
-
-		// add standard default layout to new layouts DB table
-		$default_config = array(
-			'widgets' => array(
-				1 => array(
-					'wgt1' => array(
-						'mod' => 'dashee', 
-						'wgt' => 'wgt.welcome.php'
-						),
-					'wgt2' => array(
-						'mod' => 'dashee',
-						'wgt' => 'wgt.create_links.php'
-						)
-					),
-				2 => array(
-					'wgt3' => array(
-						'mod' => 'dashee',
-						'wgt' => 'wgt.modify_links.php'
-						)
-					),
-				3 => array(
-					'wgt4' => array(
-						'mod' => 'dashee',
-						'wgt' => 'wgt.view_links.php'
-						)
-					)
-				),
-			'columns' => 3
-			);
-	
-		$params = array(
-			'name' 			=> 'Default EE layout',
-			'description'	=> 'Default dashEE layout that mimics standard EE CP.',
-			'config' 		=> json_encode($default_config),
-			'is_default' 	=> TRUE
-			);
-			
-		$this->_EE->db->insert('dashee_layouts', $params);
+    	$this->install_module_layouts_table();
+		$this->install_module_layouts_groups_table();		
     }
         
     /**
