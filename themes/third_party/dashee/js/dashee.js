@@ -137,6 +137,7 @@ var dashEE = {
 
 			$editButton.click($.proxy(function () {
 				$content.html('<p><center><img src="'+$('#dashLoader').attr('src')+'" /></center></p>');
+
 				col = widget.parents(this.settings).attr('id').substr(-1);
 				
 				$.ajax({
