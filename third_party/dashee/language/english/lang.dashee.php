@@ -34,7 +34,7 @@ $lang = array(
 	'prefReset'		=> 'Reset all user dashboards to the new defaults set above.',
 
 	// extension settings
-	'redirect_admins'	=> 'Redirect Super-Admins to DashEE from CP Homepage?',
+	'redirect_admins'	=> 'Redirect Super-Admins to dashEE from CP Homepage?',
 	
 	'lblLayoutName' => 'Layout name',
 	'lblLayoutDesc' => 'Description',
