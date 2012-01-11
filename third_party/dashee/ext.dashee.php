@@ -30,8 +30,8 @@ class Dashee_ext {
 	public $description		= 'Handle redirection and link remapping to alternate dashEE dashboard instead of defaule CP Home.';
 	public $docs_url		= 'http://dash-ee.com';
 	public $name			= 'dashEE';
-	public $settings_exist	= 'n';
-	public $version			= '1.0';
+	public $settings_exist	= 'y';
+	public $version			= '1.1';
 	
 	private $_EE;
 	
@@ -46,9 +46,27 @@ class Dashee_ext {
 		$this->settings = $settings;
 		
         $this->_base_qs     = 'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=dashee';
-        $this->_base_url    = BASE .AMP .$this->_base_qs;
+        $this->_base_url    = (defined('BASE') ? BASE : SELF).AMP.$this->_base_qs;
 	}
 	
+	// ----------------------------------------------------------------------
+
+	/**
+	 * Extension Settings
+	 *
+	 * Display extension settings form
+	 *
+	 * @return void
+	 */
+	function settings()
+	{
+	    $settings = array();
+	
+	    $settings['redirect_admins'] = array('c', array('yes' => "Yes"));
+	
+	    return $settings;
+	}
+
 	// ----------------------------------------------------------------------
 	
 	/**
@@ -56,20 +74,20 @@ class Dashee_ext {
 	 *
 	 * This function enters the extension into the exp_extensions table
 	 *
-	 * @see http://codeigniter.com/user_guide/database/index.html for
-	 * more information on the db class.
-	 *
 	 * @return void
 	 */
 	public function activate_extension()
 	{
 		// Setup custom settings in this array.
-		$this->settings = array();
+		$this->settings = array(
+			'redirect_admins' => 'yes',
+			);
 		
 		$hooks = array(
 			'cp_css_end'		=> 'crumb_hide',
 			'cp_js_end'			=> 'crumb_remap',
 			'cp_member_login'	=> 'member_redirect',
+			'sessions_end'		=> 'sessions_end',
 			);
 
 		foreach ($hooks as $hook => $method)
@@ -81,7 +99,7 @@ class Dashee_ext {
 				'settings'	=> serialize($this->settings),
 				'version'	=> $this->version,
 				'enabled'	=> 'y'
-			);
+				);
 
 			$this->_EE->db->insert('extensions', $data);			
 		}
@@ -141,6 +159,44 @@ class Dashee_ext {
 	}
 
 	// ----------------------------------------------------------------------
+	
+	/**
+	 * Redirect CP home to DashEE
+	 *
+	 * @return NULL 
+	 */
+	public function sessions_end( &$data )
+	{	
+		if(REQ == 'CP' && $this->_EE->input->get('C') == 'homepage')
+		{
+			$u = $data->userdata;
+
+			// redirect super admins?
+			if($u['group_id'] == 1 && $this->settings['redirect_admins'][0] != 'yes') return;
+
+			// can user access modules at all?
+			if($u['can_access_cp']=='y' && $u['can_access_addons']=='y' && $u['can_access_modules']=='y')
+			{
+				// is dashEE installed? fetch module_id and check user can access it
+				$dashee_id = $this->_EE->db->where('module_name','DashEE')->get('modules')->row('module_id');
+
+				if(empty($dashee_id)) return;
+
+				if( @$u['assigned_modules'][$dashee_id] != TRUE && $u['group_id'] != 1) return;
+
+				// all ok, build the url
+				$s = 0;
+				if ($this->_EE->config->item('admin_session_type') != 'c')
+				{
+					$s = $u['session_id'];
+				}
+				header('Location: '.SELF. str_replace('&amp;', '&', '?S=' . $s . AMP . 'D=cp' . AMP . $this->_base_qs) );
+				exit;
+			}
+		}
+	}
+
+	// ----------------------------------------------------------------------
 
 	/**
 	 * Disable Extension
@@ -167,13 +223,39 @@ class Dashee_ext {
 	 */
 	function update_extension($current = '')
 	{
-		if ($current == '' OR $current == $this->version)
+		if(version_compare($current, $this->version, '>='))
 		{
 			return FALSE;
+		}
+		
+		if(version_compare($current, '1.1', '<'))
+		{
+			$this->update_extension_to_version_11();
 		}
 	}	
 	
 	// ----------------------------------------------------------------------
+	
+	/**
+	 * Update Extension to Version 1.1
+	 *
+	 * Add session_end hook to extensions table.
+	 *
+	 * @return 	mixed	void on update / false if none
+	 */
+	function update_extension_to_version_11()
+	{
+		$data = array(
+			'class'		=> __CLASS__,
+			'method'	=> 'sessions_end',
+			'hook'		=> 'sessions_end',
+			'settings'	=> serialize(array('redirect_admins' => array('yes'))),
+			'version'	=> $this->version,
+			'enabled'	=> 'y'
+			);
+
+		$this->_EE->db->insert('extensions', $data);
+	}
 }
 
 /* End of file ext.dashee.php */

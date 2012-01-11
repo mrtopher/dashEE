@@ -41,7 +41,7 @@ $this->table->clear();
 echo form_close();
 
 if($is_admin):
- 	
+
 	$this->table->set_caption(lang('capLayouts').' <a class="dashHelp" href="#">What\'s this?</a>');
 	
 	$this->table->set_heading(
