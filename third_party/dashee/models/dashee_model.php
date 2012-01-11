@@ -40,7 +40,7 @@ class Dashee_model extends CI_Model {
         $this->_EE =& get_instance();
         
         $this->_package_name    = 'dashEE';
-        $this->_package_version = '1.4';
+        $this->_package_version = '1.4.2';
     }
     
     /**
