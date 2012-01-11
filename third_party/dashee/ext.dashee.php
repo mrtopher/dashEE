@@ -62,7 +62,7 @@ class Dashee_ext {
 	{
 	    $settings = array();
 	
-	    $settings['redirect_admins'] = array('c', array('yes' => "Yes"), 'yes');
+	    $settings['redirect_admins'] = array('c', array('yes' => "Yes"));
 	
 	    return $settings;
 	}
@@ -166,13 +166,13 @@ class Dashee_ext {
 	 * @return NULL 
 	 */
 	public function sessions_end( &$data )
-	{
+	{	
 		if(REQ == 'CP' && $this->_EE->input->get('C') == 'homepage')
 		{
 			$u = $data->userdata;
 
 			// redirect super admins?
-			if($u['group_id'] == 1 && $this->settings['redirect_admins'] != 'yes') return;
+			if($u['group_id'] == 1 && $this->settings['redirect_admins'][0] != 'yes') return;
 
 			// can user access modules at all?
 			if($u['can_access_cp']=='y' && $u['can_access_addons']=='y' && $u['can_access_modules']=='y')
@@ -249,7 +249,7 @@ class Dashee_ext {
 			'class'		=> __CLASS__,
 			'method'	=> 'sessions_end',
 			'hook'		=> 'sessions_end',
-			'settings'	=> serialize($this->settings),
+			'settings'	=> serialize(array('redirect_admins' => array('yes'))),
 			'version'	=> $this->version,
 			'enabled'	=> 'y'
 			);
