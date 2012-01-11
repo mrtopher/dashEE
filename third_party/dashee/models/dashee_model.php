@@ -40,7 +40,7 @@ class Dashee_model extends CI_Model {
         $this->_EE =& get_instance();
         
         $this->_package_name    = 'dashEE';
-        $this->_package_version = '1.4';
+        $this->_package_version = '1.4.2';
     }
     
     /**
@@ -284,7 +284,7 @@ class Dashee_model extends CI_Model {
         $this->_EE->db->delete('module_member_groups', array('module_id' => $result->row()->module_id));
         $this->_EE->db->delete('modules', array('module_name' => $module_name));
 
-        // Drop the log entries table.
+        // Drop the module entries table.
         $this->_EE->load->dbforge();
         $this->_EE->dbforge->drop_table('dashee_members');
         $this->_EE->dbforge->drop_table('dashee_layouts');
