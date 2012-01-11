@@ -40,7 +40,7 @@ class Dashee_model extends CI_Model {
         $this->_EE =& get_instance();
         
         $this->_package_name    = 'dashEE';
-        $this->_package_version = '1.4.2';
+        $this->_package_version = '1.5';
     }
     
     /**
@@ -253,7 +253,13 @@ class Dashee_model extends CI_Model {
 				'type' 			=> 'INT',
 				'constraint' 	=> 10,
 				'unsigned'		=> TRUE,
-				)
+				),
+			'locked' => array(
+				'type' 			=> 'INT',
+				'constraint' 	=> 1,
+				'unsigned'		=> TRUE,
+				'null'			=> FALSE,
+				),
 			);
 			
 		$this->_EE->dbforge->add_field($fields);
@@ -313,6 +319,11 @@ class Dashee_model extends CI_Model {
             $this->_update_package_to_version_14();
         }
 
+        if(version_compare($installed_version, '1.5', '<'))
+        {
+            $this->_update_package_to_version_15();
+        }
+
         // Forcibly update the module version number?
         if($force === TRUE)
         {
@@ -349,6 +360,23 @@ class Dashee_model extends CI_Model {
     	// add DB tables for storing layouts and assigning them to member groups
     	$this->install_module_layouts_table();
 		$this->install_module_layouts_groups_table();		
+    }
+
+    /**
+     * Add collumn 'locked' tot dashee_member_groups_layouts
+     *
+     * @access  private
+     * @return  void
+     */
+    private function _update_package_to_version_15()
+    {
+		$this->_EE->load->dbforge();
+
+		$fields = array(
+		  'locked' => array('type' => 'int', 'constraint' => '1', 'unsigned' => TRUE, 'null' => FALSE)
+		);
+		
+		$this->_EE->dbforge->add_column('dashee_member_groups_layouts', $fields);
     }
         
     /**
@@ -411,25 +439,38 @@ class Dashee_model extends CI_Model {
 				$layout_id = $qry->row()->layout_id;
 				$layout = $this->get_layout($layout_id);
 				$config = $layout->config;
+				$locked_group = ($qry->row()->locked == 1) ? TRUE : FALSE;
 			}
 			else
 			{			
 				$qry = $this->_EE->db->get_where('dashee_layouts', array('is_default' => TRUE))->row();
 				$config = $qry->config;
+				$locked_group = FALSE;
 			}
 		
 			$params = array(
 				'member_id' => $member_id,
 				'config' 	=> $config
 				);
-				
-			$this->_EE->db->insert('dashee_members', $params);
 			
-			return json_decode($params['config'], TRUE);
+			$this->_EE->db->insert('dashee_members', $params);
+
+			$config = json_decode($params['config'], TRUE);
+			$config['locked'] = $locked_group;
+
+			return $config;
 		}
 		else
 		{
-			return json_decode($result->row()->config, TRUE);
+			// config fetched from DB
+			$config = json_decode($result->row()->config, TRUE);
+
+			// check if the member group has a locked layout
+			$qry = $this->_EE->db->get_where('dashee_member_groups_layouts', array('locked' => 1,'member_group_id' => $this->_EE->session->userdata('group_id')));
+
+			$config['locked'] = ($qry->num_rows() == 1) ? TRUE : FALSE;
+
+			return $config;
 		}
 	}
 	
@@ -495,7 +536,10 @@ class Dashee_model extends CI_Model {
 		{
 			foreach($qry->result() as $row)
 			{
-				$groups[$row->member_group_id] = $row->layout_id;
+				$groups[$row->member_group_id] = array(
+					'layout_id' => $row->layout_id,
+					'locked' => (boolean) $row->locked,
+				);
 			}
 		}
 		
@@ -554,13 +598,14 @@ class Dashee_model extends CI_Model {
      * @param 	array		$group_layouts		Assoc. array of group_id with assigned layout_id.
 	 * @return 	void
 	 */
-	public function update_group_layouts($group_layouts)
+	public function update_group_layouts($group_layouts, $group_locked)
 	{
 		$this->_EE->db->truncate('dashee_member_groups_layouts');
 		
 		foreach($group_layouts as $group_id => $layout_id)
 		{
-			$this->_EE->db->insert('dashee_member_groups_layouts', array('member_group_id' => $group_id, 'layout_id' => $layout_id));
+			$locked = (isset($group_locked[$group_id])&& $group_locked[$group_id]=='locked') ? 1 : 0;
+			$this->_EE->db->insert('dashee_member_groups_layouts', array('member_group_id' => $group_id, 'layout_id' => $layout_id, 'locked'=>$locked));
 		}
 	}
 	
@@ -571,12 +616,15 @@ class Dashee_model extends CI_Model {
      * @param 	array		$group_layouts		Assoc. array of group_id with assigned layout_id.
 	 * @return 	void
 	 */
-	public function reset_member_layouts()
+	public function reset_member_layouts($group_id = FALSE)
 	{
-		$member_qry = $this->_EE->db->select('dashee_members.*, members.group_id')
+		$this->_EE->db->select('dashee_members.*, members.group_id')
 			->from('dashee_members')
-			->join('members', 'dashee_members.member_id = members.member_id')
-			->result();
+			->join('members', 'dashee_members.member_id = members.member_id');
+
+		if($group_id) $this->_EE->db->where('members.group_id', $group_id);
+
+		$member_qry = $this->_EE->db->get()->result();
 	
 		if(count($member_qry) > 0)
 		{
@@ -591,7 +639,7 @@ class Dashee_model extends CI_Model {
 			
 			foreach($member_qry as $member)
 			{
-				$this->_EE->db->update('dashee_members', array('config' => $layouts[$group_layouts[$member->group_id]]), array('id' => $member->id));
+				$this->_EE->db->update('dashee_members', array('config' => $layouts[$group_layouts[$member->group_id]['layout_id']]), array('id' => $member->id));
 			}
 		}
 	}

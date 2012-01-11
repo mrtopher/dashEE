@@ -84,15 +84,28 @@ if($is_admin):
 	$this->table->set_heading(
 	   lang('thMemberGroup'),
 	   lang('thDescription'),
+	   lang('thLocked'),
 	   lang('thLayout')
 	   );
 	
 	foreach($member_groups as $group)
 	{
+		if(array_key_exists($group->id, $group_layouts))
+		{
+			$layout_id = $group_layouts[$group->id]['layout_id'];
+			$locked = $group_layouts[$group->id]['locked'];
+		}
+		else
+		{
+			$layout_id = $default_id;
+			$locked = FALSE;
+		}
+
 		$this->table->add_row(
-			$group->title,
+			$group->title.' '.anchor($base_url.AMP.'method=reset_group_defaults'.AMP.'group_id='.$group->id, 'reset'),
 			$group->description ? $group->description : '--',
-			form_dropdown('group_layouts['.$group->id.']', $opts_layouts, array_key_exists($group->id, $group_layouts) ? $group_layouts[$group->id] : $default_id)
+			form_checkbox('group_locked['.$group->id.']','locked', $locked, ($group->id == 1 ? 'disabled="disabled"' : '')),
+			form_dropdown('group_layouts['.$group->id.']', $opts_layouts, $layout_id)
 			);
 	}
 	

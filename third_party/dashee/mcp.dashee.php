@@ -65,7 +65,7 @@ class Dashee_mcp {
         // get current members dash configuration for use throughout module
         $this->_get_member_settings($this->_member_id);
 	}
-	
+
 	// ----------------------------------------------------------------
 
 	/**
@@ -76,7 +76,9 @@ class Dashee_mcp {
 	public function index()
 	{
         $this->_EE->cp->add_to_head('<link rel="stylesheet" type="text/css" href="'.$this->_css_url.'" />');
-        $this->_EE->cp->add_to_head('<script type="text/javascript" src="'.$this->_js_url.'"></script>');
+
+        // is the member_group layout locked?
+        if($this->_settings['locked'] == FALSE) $this->_EE->cp->add_to_head('<script type="text/javascript" src="'.$this->_js_url.'"></script>');
 	
 		$this->_EE->cp->set_variable('cp_page_title', lang('dashee_term'));
 		
@@ -91,7 +93,9 @@ class Dashee_mcp {
 		
 		$button_data['btn_widgets']  = '#widgets'; 
 		$button_data['btn_settings'] = $this->_base_url.AMP.'method=settings';
-		$this->_EE->cp->set_right_nav($button_data);
+
+        // is the member_group layout locked?
+        if($this->_settings['locked'] == FALSE) $this->_EE->cp->set_right_nav($button_data);
 		
 		// override default breadcrumb display to make module look like default CP homepage
 		$this->_EE->javascript->output("
@@ -594,11 +598,17 @@ class Dashee_mcp {
 	 */
 	public function update_group_defaults()
 	{
+		if($this->_super_admin == FALSE)
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		$group_layouts = $this->_EE->input->post('group_layouts');
+		$group_locked = $this->_EE->input->post('group_locked');
 		
 		if($group_layouts != '' AND is_array($group_layouts))
 		{
-			$this->_model->update_group_layouts($group_layouts);
+			$this->_model->update_group_layouts($group_layouts, $group_locked);
 		
 			/*if($this->_EE->input->post('reset') == 'yes')
 			{
@@ -613,6 +623,35 @@ class Dashee_mcp {
 		}
 		
 		$this->_EE->functions->redirect($this->_base_url.AMP.'method=settings');
+	}
+	
+	/**
+	 * Reset layout for a member group
+	 *
+	 * @return 	void
+	 */
+	public function reset_group_defaults()
+	{
+		$group_id = $this->_EE->input->get('group_id');
+
+		if($this->_super_admin == false)
+		{
+            show_error(lang('unauthorized_access'));
+		}
+		
+		if($group_id != '' AND is_numeric($group_id))
+		{
+			$this->_model->reset_member_layouts($group_id);
+			
+			$this->_EE->session->set_flashdata('dashee_msg', 'Config has been reset for member group '.$group_id);
+		}
+		else
+		{
+			$this->_EE->session->set_flashdata('dashee_msg', 'No group_id to reset');
+		}
+		
+		$this->_EE->functions->redirect($this->_base_url.AMP.'method=settings');
+
 	}
 	
 	/**
