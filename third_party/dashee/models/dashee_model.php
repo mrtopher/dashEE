@@ -673,6 +673,22 @@ class Dashee_model extends CI_Model {
 			->get()
 			->result();
 	}
+
+	/**
+	 * Get selected member group by ID.
+	 *
+     * @access  public
+	 * @param	int
+	 * @return 	obj
+	 */
+	public function get_member_group($group_id)
+	{
+		return $this->_EE->db->select('*')
+			->from('member_groups')
+			->where('group_id', $group_id)
+			->get()
+			->row();
+	}
 }
 /* End of file dashee_model.php */
 /* Location: /system/expressionengine/third_party/dashee/models/dashee_model.php */

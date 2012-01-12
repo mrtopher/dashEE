@@ -346,7 +346,7 @@ $().ready(function() {
 		return false;
 	}, this));
 	
-	// Click event to save current widget layout to DB.
+	// Click event to display "load layout" confirmation message.
 	$('a.dashLoad').click(function (e) {
 		e.preventDefault();
 		href = $(this).attr('href');
@@ -367,13 +367,34 @@ $().ready(function() {
 		});
 	});
 	
-	// Click event to save current widget layout to DB.
+	// Click event to display "delete layout" confirmation message.
 	$('a.dashDelete').click(function (e) {
 		e.preventDefault();
 		href = $(this).attr('href');
 		$('#dashConfirmDelete').dialog({
 			resizable: false,
 			height:140,
+			modal: true,
+			buttons: {
+				'No': function() {
+					$(this).dialog("close");
+				},
+				'Yes': function() {
+					$(this).dialog("close");
+					window.location = href;
+				}
+			},
+			title: 'Please Confirm'
+		});
+	});
+	
+	// Click event to display "reset layout" confirmation message.
+	$('a.dashReset').click(function (e) {
+		e.preventDefault();
+		href = $(this).attr('href');
+		$('#dashConfirmReset').dialog({
+			resizable: false,
+			height:190,
 			modal: true,
 			buttons: {
 				'No': function() {

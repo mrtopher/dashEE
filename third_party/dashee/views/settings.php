@@ -102,9 +102,9 @@ if($is_admin):
 		}
 
 		$this->table->add_row(
-			$group->title.' '.anchor($base_url.AMP.'method=reset_group_defaults'.AMP.'group_id='.$group->id, 'reset'),
+			$group->title.' '.anchor($base_url.AMP.'method=reset_group_defaults'.AMP.'group_id='.$group->id, 'Reset', 'class="dashReset"'),
 			$group->description ? $group->description : '--',
-			form_checkbox('group_locked['.$group->id.']','locked', $locked, ($group->id == 1 ? 'disabled="disabled"' : '')),
+			form_checkbox('group_locked['.$group->id.']','locked', $locked, ($group->id == 1 ? 'disabled="disabled"' : '')) . ' ' . lang('lblLock'),
 			form_dropdown('group_layouts['.$group->id.']', $opts_layouts, $layout_id)
 			);
 	}
@@ -113,21 +113,15 @@ if($is_admin):
 
 ?>
 
-<!--<p><input type="checkbox" name="reset" value="yes" /> <?php echo lang('prefReset'); ?></p>-->
-
 <div class="tableFooter">
 	<?php echo form_submit(array('name' => 'submit', 'value' => lang('submit'), 'class' => 'submit')); ?> 
 </div>
 
 <?php echo form_close(); ?>
 
-<div id="dashConfirmLoad" style="display:none;">
-	<p><?php echo lang('confLoadLayout'); ?></p>
-</div>
-
-<div id="dashConfirmDelete" style="display:none;">
-	<p><?php echo lang('confDeleteLayout'); ?></p>
-</div>
+<div id="dashConfirmLoad" style="display:none;"><p><?php echo lang('confLoadLayout'); ?></p></div>
+<div id="dashConfirmDelete" style="display:none;"><p><?php echo lang('confDeleteLayout'); ?></p></div>
+<div id="dashConfirmReset" style="display:none;"><p><?php echo lang('confResetLayout'); ?></p></div>
 
 <div class="dashLayoutHelp" style="display:none;"><?php echo lang('help_layouts'); ?></div>
 

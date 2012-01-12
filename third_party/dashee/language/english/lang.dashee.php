@@ -39,10 +39,23 @@ $lang = array(
 	
 	'lblLayoutName' => 'Layout name',
 	'lblLayoutDesc' => 'Description',
+	'lblLock'		=> 'Lock layout',
 	
 	'confRemoveWidget'  => 'Are you sure you want to remove this widget from your dashboard?',
 	'confDeleteLayout'  => 'Are you sure you want to delete this layout?',
+	'confResetLayout'  => 'This action will reset the dashboard for all members belonging to this group to the default you have specified.<br /><br />Are you sure you want to reset?',
 	'confLoadLayout'	=> '<strong>WARNING:</strong> this will reset your current dashboard and replace it with this saved layout.',
+	
+	'flashLayoutUpdated' 			=> 'Default layout has been updated.',
+	'flashLayoutNotUpdated'			=> 'Unable to load selected layout.',
+	'flashLayoutLoaded'				=> ' has been loaded to your dashboard.',
+	'flashLayoutNotLoaded'			=> 'Unable to load selected layout.',
+	'flashLayoutDeleted'			=> ' has been deleted.',
+	'flashLayoutNotDeleted'			=> 'Unable to delete selected layout.',
+	'flashGroupDefaultUpdated'		=> 'Member group defaults have been updated.',
+	'flashGroupDefaultNotUpdated'	=> 'Member group defaults could not be updated.',
+	'flashGroupLayoutReset'			=> 'Layout has been reset for ',
+	'flashGroupLayoutNotReset'		=> 'Layout could not be reset for ',
 	
 	'default_layout' => 'Default layout',
 	

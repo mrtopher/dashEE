@@ -526,11 +526,11 @@ class Dashee_mcp {
 		{
 			$this->_model->set_default_layout($layout_id);
 			
-			$this->_EE->session->set_flashdata('dashee_msg', 'Default layout has been updated.');
+			$this->_EE->session->set_flashdata('dashee_msg', lang('flashLayoutUpdated'));
 		}
 		else
 		{
-			$this->_EE->session->set_flashdata('dashee_msg', 'Unable to load selected layout.');
+			$this->_EE->session->set_flashdata('dashee_msg', lang('flashLayoutNotUpdated'));
 		}
 		
 		$this->_EE->functions->redirect($this->_base_url.AMP.'method=settings');
@@ -552,11 +552,11 @@ class Dashee_mcp {
 			
 			$this->_update_member(FALSE);
 			
-			$this->_EE->session->set_flashdata('dashee_msg', $layout->name.' has been loaded to your dashboard.');
+			$this->_EE->session->set_flashdata('dashee_msg', $layout->name . lang('flashLayoutLoaded'));
 		}
 		else
 		{
-			$this->_EE->session->set_flashdata('dashee_msg', 'Unable to load selected layout.');
+			$this->_EE->session->set_flashdata('dashee_msg', lang('flashLayoutNotLoaded'));
 		}
 		
 		$this->_EE->functions->redirect($this->_base_url);
@@ -579,12 +579,12 @@ class Dashee_mcp {
 			{
 				$this->_model->delete_layout($layout->id);
 
-				$this->_EE->session->set_flashdata('dashee_msg', $layout->name.' has been deleted.');
+				$this->_EE->session->set_flashdata('dashee_msg', $layout->name . lang('flashLayoutDeleted'));
 			}
 		}
 		else
 		{
-			$this->_EE->session->set_flashdata('dashee_msg', 'Unable to load selected layout.');
+			$this->_EE->session->set_flashdata('dashee_msg', lang('flashLayoutNotDeleted'));
 		}
 		
 		$this->_EE->functions->redirect($this->_base_url.AMP.'method=settings');
@@ -610,16 +610,11 @@ class Dashee_mcp {
 		{
 			$this->_model->update_group_layouts($group_layouts, $group_locked);
 		
-			/*if($this->_EE->input->post('reset') == 'yes')
-			{
-				$this->_model->reset_member_layouts();
-			}*/
-			
-			$this->_EE->session->set_flashdata('dashee_msg', 'Member group defaults have been updated.');
+			$this->_EE->session->set_flashdata('dashee_msg', lang('flashGroupDefaultUpdated'));
 		}
 		else
 		{
-			$this->_EE->session->set_flashdata('dashee_msg', 'Member group defaults could not be updated.');
+			$this->_EE->session->set_flashdata('dashee_msg', lang('flashGroupDefaultNotUpdated'));
 		}
 		
 		$this->_EE->functions->redirect($this->_base_url.AMP.'method=settings');
@@ -639,15 +634,16 @@ class Dashee_mcp {
             show_error(lang('unauthorized_access'));
 		}
 		
+		$group = $this->_model->get_member_group($group_id);
 		if($group_id != '' AND is_numeric($group_id))
 		{
 			$this->_model->reset_member_layouts($group_id);
 			
-			$this->_EE->session->set_flashdata('dashee_msg', 'Config has been reset for member group '.$group_id);
+			$this->_EE->session->set_flashdata('dashee_msg', lang('flashGroupLayoutReset') . $group->group_title . '.');
 		}
 		else
 		{
-			$this->_EE->session->set_flashdata('dashee_msg', 'No group_id to reset');
+			$this->_EE->session->set_flashdata('dashee_msg', lang('flashGroupLayoutNotReset') . $group->group_title . '.');
 		}
 		
 		$this->_EE->functions->redirect($this->_base_url.AMP.'method=settings');
