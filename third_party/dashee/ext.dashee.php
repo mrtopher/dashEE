@@ -46,7 +46,7 @@ class Dashee_ext {
 		$this->settings = $settings;
 		
         $this->_base_qs     = 'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=dashee';
-        $this->_base_url    = BASE .AMP .$this->_base_qs;
+        $this->_base_url    = (defined('BASE') ? BASE : SELF).AMP.$this->_base_qs;
 	}
 	
 function settings()
@@ -163,6 +163,7 @@ function settings()
 	{
 		if (REQ == 'CP' && $this->_EE->input->get('C') == 'homepage')
 		{
+
 			$u = $data->userdata;
 
 			// redirect super admins?
@@ -176,16 +177,16 @@ function settings()
 
 				if(empty($dashee_id)) return;
 
-				if($u['assigned_modules'][$dashee_id] != TRUE && $u['group_id'] != 1) return;
+				if( @$u['assigned_modules'][$dashee_id] != TRUE && $u['group_id'] != 1) return;
 
 				//all ok, build the url
 				$s = 0;
-				if ($u['admin_session_type'] != 'c')
+				if ($this->_EE->config->item('admin_session_type') != 'c')
 				{
 					$s = $u['session_id'];
 				}
-				$this->_EE->functions->redirect(SELF.'?S='.$s.AMP.'D=cp'.AMP.$this->_base_qs);  
-
+				header('Location: '.SELF. str_replace('&amp;', '&', '?S=' . $s . AMP . 'D=cp' . AMP . $this->_base_qs) );
+				exit;
 			}
 		}
 	}
