@@ -130,11 +130,11 @@
 	text-align: left;
 	vertical-align: top;
 }
-.widget.contentMenu .widget-content table th:last-child,
+/*.widget.contentMenu .widget-content table th:last-child,
 .widget.contentMenu .widget-content table td:last-child {
 	padding-right: 17px;
 	text-align: right;
-}
+}*/
 .widget.contentMenu .widget-content table thead th,
 .widget.contentMenu .widget-content table thead td {
 	border-top: 1px solid #fff;

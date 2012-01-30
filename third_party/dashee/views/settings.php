@@ -42,7 +42,7 @@ echo form_close();
 
 if($is_admin):
 
-	$this->table->set_caption(lang('capLayouts').' <a class="dashHelp" href="#">What\'s this?</a>');
+	$this->table->set_caption(lang('capLayouts').' <a class="dashLayoutHelp" href="#">What\'s this?</a>');
 	
 	$this->table->set_heading(
 	   lang('thName'),
@@ -104,7 +104,7 @@ if($is_admin):
 		$this->table->add_row(
 			$group->title.' '.anchor($base_url.AMP.'method=reset_group_defaults'.AMP.'group_id='.$group->id, 'Reset', 'class="dashReset"'),
 			$group->description ? $group->description : '--',
-			form_checkbox('group_locked['.$group->id.']','locked', $locked, ($group->id == 1 ? 'disabled="disabled"' : '')) . ' ' . lang('lblLock'),
+			form_checkbox('group_locked['.$group->id.']','locked', $locked, ($group->id == 1 ? 'disabled="disabled"' : '')) . ' ' . lang('lblLock') . ' (<a href="#" class="dashLockHelp">?</a>)',
 			form_dropdown('group_layouts['.$group->id.']', $opts_layouts, $layout_id)
 			);
 	}
@@ -123,6 +123,7 @@ if($is_admin):
 <div id="dashConfirmDelete" style="display:none;"><p><?php echo lang('confDeleteLayout'); ?></p></div>
 <div id="dashConfirmReset" style="display:none;"><p><?php echo lang('confResetLayout'); ?></p></div>
 
-<div class="dashLayoutHelp" style="display:none;"><?php echo lang('help_layouts'); ?></div>
+<div id="dashLayoutHelp" style="display:none;"><?php echo lang('help_layouts'); ?></div>
+<div id="dashLockHelp" style="display:none;"><?php echo lang('help_lock'); ?></div>
 
 <?php endif; ?>
