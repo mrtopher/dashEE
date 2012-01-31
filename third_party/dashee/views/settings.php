@@ -42,11 +42,7 @@ echo form_close();
 
 if($is_admin):
 
-<<<<<<< HEAD
-	$this->table->set_caption(lang('capLayouts').' <a class="dashHelp" href="#">What\'s this?</a>');
-=======
 	$this->table->set_caption(lang('capLayouts').' <a class="dashLayoutHelp" href="#">What\'s this?</a>');
->>>>>>> dev
 	
 	$this->table->set_heading(
 	   lang('thName'),
@@ -88,21 +84,12 @@ if($is_admin):
 	$this->table->set_heading(
 	   lang('thMemberGroup'),
 	   lang('thDescription'),
-<<<<<<< HEAD
-=======
 	   lang('thLocked'),
->>>>>>> dev
 	   lang('thLayout')
 	   );
 	
 	foreach($member_groups as $group)
 	{
-<<<<<<< HEAD
-		$this->table->add_row(
-			$group->title,
-			$group->description ? $group->description : '--',
-			form_dropdown('group_layouts['.$group->id.']', $opts_layouts, array_key_exists($group->id, $group_layouts) ? $group_layouts[$group->id] : $default_id)
-=======
 		if(array_key_exists($group->id, $group_layouts))
 		{
 			$layout_id = $group_layouts[$group->id]['layout_id'];
@@ -119,7 +106,6 @@ if($is_admin):
 			$group->description ? $group->description : '--',
 			form_checkbox('group_locked['.$group->id.']','locked', $locked, ($group->id == 1 ? 'disabled="disabled"' : '')) . ' ' . lang('lblLock') . ' (<a href="#" class="dashLockHelp">?</a>)',
 			form_dropdown('group_layouts['.$group->id.']', $opts_layouts, $layout_id)
->>>>>>> dev
 			);
 	}
 	
@@ -127,34 +113,17 @@ if($is_admin):
 
 ?>
 
-<<<<<<< HEAD
-<!--<p><input type="checkbox" name="reset" value="yes" /> <?php echo lang('prefReset'); ?></p>-->
-
-=======
->>>>>>> dev
 <div class="tableFooter">
 	<?php echo form_submit(array('name' => 'submit', 'value' => lang('submit'), 'class' => 'submit')); ?> 
 </div>
 
 <?php echo form_close(); ?>
 
-<<<<<<< HEAD
-<div id="dashConfirmLoad" style="display:none;">
-	<p><?php echo lang('confLoadLayout'); ?></p>
-</div>
-
-<div id="dashConfirmDelete" style="display:none;">
-	<p><?php echo lang('confDeleteLayout'); ?></p>
-</div>
-
-<div class="dashLayoutHelp" style="display:none;"><?php echo lang('help_layouts'); ?></div>
-=======
 <div id="dashConfirmLoad" style="display:none;"><p><?php echo lang('confLoadLayout'); ?></p></div>
 <div id="dashConfirmDelete" style="display:none;"><p><?php echo lang('confDeleteLayout'); ?></p></div>
 <div id="dashConfirmReset" style="display:none;"><p><?php echo lang('confResetLayout'); ?></p></div>
 
 <div id="dashLayoutHelp" style="display:none;"><?php echo lang('help_layouts'); ?></div>
 <div id="dashLockHelp" style="display:none;"><?php echo lang('help_lock'); ?></div>
->>>>>>> dev
 
 <?php endif; ?>

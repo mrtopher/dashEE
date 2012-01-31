@@ -93,9 +93,6 @@ var dashEE = {
 					height:140,
 					modal: true,
 					buttons: {
-						'No': function() {
-							$(this).dialog("close");
-						},
 						'Yes': $.proxy(function() {
 							$.ajax({
 								type: 'GET',
@@ -116,7 +113,10 @@ var dashEE = {
 									$.ee_notice("ERROR: The widget you selected could not be removed.", {type: 'error', open: true});
 								}, this)
 							});
-						}, this)
+						}, this),
+						'No': function() {
+							$(this).dialog("close");
+						}
 					},
 					title: 'Remove Widget'
 				});

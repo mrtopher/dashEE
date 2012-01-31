@@ -72,12 +72,8 @@ $lang = array(
 						This allows you to create different dashboard layouts tailored for different member groups. <strong>Please note:</strong> the defaults 
 						set here will only affect new users who are visiting the module for the first time. If they have already logged in and viewed the dashEE 
 						module their existing configuration will remain the same.</p>',
-<<<<<<< HEAD
-
-=======
 	'help_lock'		=> '<p>Locking a member groups dashEE layout will prevent those users from making any changes to their dashboard. They will not see the 
 						standard Expand All, Collapse All, Widgets or Setting options. They will also not be able to move or modify widget settings.</p>',
->>>>>>> dev
 	
 	// Widgets
 	'wgt_create_links_name' => 'EE Create Links',
