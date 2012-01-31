@@ -29,6 +29,8 @@ $lang = array(
 	'thOptions'		=> 'Options',
 	'thMemberGroup' => 'Member Group',
 	'thLayout'		=> 'Layout',
+
+	'thLocked'		=> 'Lock layout',
 	
 	'prefNumColumns'=> 'Number of columns?',
 	'prefReset'		=> 'Reset all user dashboards to the new defaults set above.',
@@ -38,11 +40,24 @@ $lang = array(
 	
 	'lblLayoutName' => 'Layout name',
 	'lblLayoutDesc' => 'Description',
+	'lblLock'		=> 'Lock layout',
 	
 	'confRemoveWidget'  => 'Are you sure you want to remove this widget from your dashboard?',
 	'confDeleteLayout'  => 'Are you sure you want to delete this layout?',
+	'confResetLayout'  => 'This action will reset the dashboard for all members belonging to this group to the default you have specified.<br /><br />Are you sure you want to reset?',
 	'confLoadLayout'	=> '<strong>WARNING:</strong> this will reset your current dashboard and replace it with this saved layout.',
 	
+	'flashLayoutUpdated' 			=> 'Default layout has been updated.',
+	'flashLayoutNotUpdated'			=> 'Unable to load selected layout.',
+	'flashLayoutLoaded'				=> ' has been loaded to your dashboard.',
+	'flashLayoutNotLoaded'			=> 'Unable to load selected layout.',
+	'flashLayoutDeleted'			=> ' has been deleted.',
+	'flashLayoutNotDeleted'			=> 'Unable to delete selected layout.',
+	'flashGroupDefaultUpdated'		=> 'Member group defaults have been updated.',
+	'flashGroupDefaultNotUpdated'	=> 'Member group defaults could not be updated.',
+	'flashGroupLayoutReset'			=> 'Layout has been reset for ',
+	'flashGroupLayoutNotReset'		=> 'Layout could not be reset for ',
+
 	'default_layout' => 'Default layout',
 	
 	'widget_added'	=> 'Widget added.',
@@ -57,7 +72,12 @@ $lang = array(
 						This allows you to create different dashboard layouts tailored for different member groups. <strong>Please note:</strong> the defaults 
 						set here will only affect new users who are visiting the module for the first time. If they have already logged in and viewed the dashEE 
 						module their existing configuration will remain the same.</p>',
+<<<<<<< HEAD
 
+=======
+	'help_lock'		=> '<p>Locking a member groups dashEE layout will prevent those users from making any changes to their dashboard. They will not see the 
+						standard Expand All, Collapse All, Widgets or Setting options. They will also not be able to move or modify widget settings.</p>',
+>>>>>>> dev
 	
 	// Widgets
 	'wgt_create_links_name' => 'EE Create Links',
@@ -86,6 +106,9 @@ $lang = array(
 	
 	'wgt_blank_name' => 'Blank Widget',
 	'wgt_blank_description' => 'Blank text widget, can be configured with whatever content you wish.',
+
+	'wgt_text_name' => 'Static text widget',
+	'wgt_text_description' => 'A basic widget with static text.',
 	
 );
 

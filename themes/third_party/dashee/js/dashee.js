@@ -346,59 +346,78 @@ $().ready(function() {
 		return false;
 	}, this));
 	
-	// Click event to save current widget layout to DB.
+	// Click event to display "load layout" confirmation message.
 	$('a.dashLoad').click(function (e) {
 		e.preventDefault();
-		href = $(this).attr('href');
-		$('#dashConfirmLoad').dialog({
-			resizable: false,
-			height:140,
-			modal: true,
-			buttons: {
-				'Cancel': function() {
-					$(this).dialog("close");
-				},
-				'OK': function() {
-					$(this).dialog("close");
-					window.location = href;
-				}
-			},
-			title: 'Please Confirm'
-		});
+		confirm_popup('#dashConfirmLoad', $(this).attr('href'));
 	});
 	
-	// Click event to save current widget layout to DB.
+	// Click event to display "delete layout" confirmation message.
 	$('a.dashDelete').click(function (e) {
 		e.preventDefault();
-		href = $(this).attr('href');
-		$('#dashConfirmDelete').dialog({
-			resizable: false,
-			height:140,
-			modal: true,
-			buttons: {
-				'No': function() {
-					$(this).dialog("close");
-				},
-				'Yes': function() {
-					$(this).dialog("close");
-					window.location = href;
-				}
-			},
-			title: 'Please Confirm'
-		});
+		confirm_popup('#dashConfirmDelete', $(this).attr('href'));
+	});
+	
+	// Click event to display "reset layout" confirmation message.
+	$('a.dashReset').click(function (e) {
+		e.preventDefault();
+		confirm_popup('#dashConfirmReset', $(this).attr('href'), 190);
 	});
 	
 	// Click event to display settings help.
-	$('a.dashHelp').click(function() {
-		$('.dashLayoutHelp').dialog({
-			resizable: false,
-			width:450,
-			modal: true,
-			title: 'dashEE Layouts'
-		});
+	$('a.dashLayoutHelp').click(function() {
+		help_popup('#dashLayoutHelp', 'dashEE Layouts', 450);
+	});
+	
+	$('a.dashLockHelp').click(function() {
+		help_popup('#dashLockHelp', 'Lock Layouts');
 	});
 	
 	dashEE.init();
 });
 
 })(jQuery);
+
+function confirm_popup(txtid, href, boxheight) {
+	if(boxheight == '') {
+		boxheight = 140;
+	}
+
+	$(txtid).dialog({
+		resizable: false,
+		height:boxheight,
+		modal: true,
+		buttons: {
+			'OK': function() {
+				$(this).dialog("close");
+				window.location = href;
+			},
+			'Cancel': function() {
+				$(this).dialog("close");
+			}
+		},
+		title: 'Please Confirm'
+	});
+}
+
+function help_popup(txtid, boxtitle, boxwidth) {
+	if(boxtitle == '') {
+		boxtitle = 'dashEE Help';
+	}
+	
+	if(boxwidth == '') {
+		boxwidth = 250;
+	}
+
+	$(txtid).dialog({
+		resizable: false,
+		width:boxwidth,
+		modal: true,
+		buttons: {
+			'OK': function() {
+				$(this).dialog("close");
+			}
+		},
+		title: boxtitle
+	});
+}
