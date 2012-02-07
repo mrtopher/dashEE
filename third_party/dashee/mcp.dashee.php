@@ -116,6 +116,13 @@ class Dashee_mcp {
 		// load widgets
 		$widgets = $this->_widget_loader($this->_settings['widgets']);
 		
+		/**
+		 * Because add_package_path is called for each module with widgets in widget_loader, EE will incorrectly default the views 
+		 * drectory to the last module whose widget was called thus causing the index view for that module to be displayed 
+		 * instead of the dashboard... this line adds dashee path onto the end after widget_loader to ensure this doesn't happen
+		 */
+		$this->_EE->load->add_package_path(PATH_THIRD . 'dashee/');
+		
 		$page_data = array(
 			'settings' 	=> $this->_settings, 
 			'content' 	=> $widgets, 
@@ -316,26 +323,7 @@ class Dashee_mcp {
 		echo $this->_EE->load->view('widgets_listing', array('rows' => $table_data), TRUE);
 		exit();
 	}
-	
-	/**
-	 * Add Widget's Package Path
-	 *
-	 * Makes it possible for widgets to use $EE->load->view(), etc
-	 *
-	 * Should be called right before calling a widget's index() funciton
-	 */
-	private function _add_widget_package_path($name)
-	{
-		$path = PATH_THIRD . $name . '/';
-		$this->_EE->load->add_package_path($path);
-
-		// manually add the view path if this is less than EE 2.1.5
-		if (version_compare(APP_VER, '2.1.5', '<'))
-		{
-			$this->_EE->load->_ci_view_path = $path . 'views/';
-		}
-	}
-	
+		
 	/**
 	 * Add selected widget to users dashboard and update config.
 	 *
@@ -738,7 +726,7 @@ class Dashee_mcp {
 				foreach($widget as $id => $params)
 				{
 					$obj = $this->_get_widget_object($params['mod'], $params['wgt']);
-									
+											
 					$class 		= isset($obj->wclass) ? $obj->wclass : '';
 					$dash_code 	= method_exists($obj, 'settings_form') ? 'dashee="dynamic"' : '';
 
@@ -752,7 +740,7 @@ class Dashee_mcp {
 						$this->_add_widget_package_path($params['mod']);
 						$content = $obj->index(@json_decode($params['stng']));
 					}
-					
+										
 					$cols[$col] .= '
 						<li id="'.$id.'" class="widget '.$class.'" '.$dash_code.'>
 							<div class="heading">
@@ -796,6 +784,25 @@ class Dashee_mcp {
 	{
 		$str = str_replace('.', '_', substr($name, 0, -4));
 		return $cap ? ucfirst($str) : $str;
+	}
+	
+	/**
+	 * Add Widget's Package Path
+	 *
+	 * Makes it possible for widgets to use $EE->load->view(), etc
+	 *
+	 * Should be called right before calling a widget's index() funciton
+	 */
+	private function _add_widget_package_path($name)
+	{
+		$path = PATH_THIRD . $name . '/';
+		$this->_EE->load->add_package_path($path);
+
+		// manually add the view path if this is less than EE 2.1.5
+		if (version_compare(APP_VER, '2.1.5', '<'))
+		{
+			$this->_EE->load->_ci_view_path = $path . 'views/';
+		}
 	}
 	
 }
