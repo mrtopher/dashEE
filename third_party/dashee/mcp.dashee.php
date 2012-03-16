@@ -78,7 +78,10 @@ class Dashee_mcp {
         $this->_EE->cp->add_to_head('<link rel="stylesheet" type="text/css" href="'.$this->_css_url.'" />');
 
         // is the member_group layout locked?
-        if($this->_settings['locked'] == FALSE) $this->_EE->cp->add_to_head('<script type="text/javascript" src="'.$this->_js_url.'"></script>');
+        if($this->_settings['locked'] == FALSE)
+        {
+        	$this->_EE->cp->add_to_head('<script type="text/javascript" src="'.$this->_js_url.'"></script>');
+        }
 	
 		$this->_EE->cp->set_variable('cp_page_title', lang('dashee_term'));
 		
@@ -101,14 +104,14 @@ class Dashee_mcp {
 		$this->_EE->javascript->output("
 			$('#breadCrumb ol li').slice(2).remove();
 			$('#breadCrumb ol li:last-child').attr('class', 'last').html('Dashboard');
-		");
+			");
 		
 		$msg = $this->_EE->session->flashdata('dashee_msg');
 		if($msg != '')
 		{
 			$this->_EE->javascript->output("
 				$.ee_notice('".$msg."', {type: 'success'});
-			");
+				");
 		}
 		
 		$this->_EE->javascript->compile();

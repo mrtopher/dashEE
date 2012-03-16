@@ -40,7 +40,7 @@ class Dashee_model extends CI_Model {
         $this->_EE =& get_instance();
         
         $this->_package_name    = 'dashEE';
-        $this->_package_version = '1.5';
+        $this->_package_version = '1.6';
     }
     
     /**
@@ -108,7 +108,7 @@ class Dashee_model extends CI_Model {
             'module_version'        => $this->get_package_version(),
             'has_cp_backend'        => 'y',
             'has_publish_fields'    => 'n',
-        ));
+        	));
     }
 
     /**
@@ -128,6 +128,11 @@ class Dashee_model extends CI_Model {
 				'constraint'  	 => 10,
 				'unsigned'		 => TRUE,
 				'auto_increment' => TRUE
+				),
+			'site_id' => array(
+				'type' 			 => 'INT',
+				'constraint'  	 => 10,
+				'unsigned'		 => TRUE
 				),
 			'member_id' => array(
 				'type' 			=> 'INT',
@@ -163,17 +168,22 @@ class Dashee_model extends CI_Model {
 				'unsigned'		 => TRUE,
 				'auto_increment' => TRUE
 				),
+			'site_id' => array(
+				'type' 			 => 'INT',
+				'constraint'  	 => 10,
+				'unsigned'		 => TRUE
+				),
 			'name' => array(
 				'type' 			=> 'VARCHAR',
 				'constraint' 	=> 200
 				),
 			'description' => array(
 				'type' 			=> 'TEXT',
-				'null'			=> TRUE,
+				'null'			=> TRUE
 				),
 			'config' => array(
 				'type'			=> 'TEXT',
-				'null'			=> TRUE,
+				'null'			=> TRUE
 				),
 			'is_default' => array(
 				'type'			=> 'TINYINT',
@@ -216,6 +226,7 @@ class Dashee_model extends CI_Model {
 			);
 	
 		$params = array(
+			'site_id'		=> $this->_EE->session->userdata('site_id'),
 			'name' 			=> 'Default EE layout',
 			'description'	=> 'Default dashEE layout that mimics standard EE CP.',
 			'config' 		=> json_encode($default_config),
@@ -247,18 +258,18 @@ class Dashee_model extends CI_Model {
 			'member_group_id' => array(
 				'type' 			=> 'INT',
 				'constraint' 	=> 10,
-				'unsigned'		=> TRUE,
+				'unsigned'		=> TRUE
 				),
 			'layout_id' => array(
 				'type' 			=> 'INT',
 				'constraint' 	=> 10,
-				'unsigned'		=> TRUE,
+				'unsigned'		=> TRUE
 				),
 			'locked' => array(
 				'type' 			=> 'INT',
 				'constraint' 	=> 1,
 				'unsigned'		=> TRUE,
-				'null'			=> FALSE,
+				'null'			=> FALSE
 				),
 			);
 			
@@ -278,8 +289,7 @@ class Dashee_model extends CI_Model {
         $module_name = ucfirst($this->get_package_name());
 
         // Retrieve the module information.
-        $result = $this->_EE->db
-            ->select('module_id')
+        $result = $this->_EE->db->select('module_id')
             ->get_where('modules', array('module_name' => $module_name), 1);
 
         if($result->num_rows() !== 1)
@@ -324,6 +334,11 @@ class Dashee_model extends CI_Model {
             $this->_update_package_to_version_15();
         }
 
+        if(version_compare($installed_version, '1.6', '<'))
+        {
+            $this->_update_package_to_version_16();
+        }
+
         // Forcibly update the module version number?
         if($force === TRUE)
         {
@@ -363,7 +378,7 @@ class Dashee_model extends CI_Model {
     }
 
     /**
-     * Add collumn 'locked' tot dashee_member_groups_layouts
+     * Add column 'locked' to dashee_member_groups_layouts
      *
      * @access  private
      * @return  void
@@ -373,12 +388,42 @@ class Dashee_model extends CI_Model {
 		$this->_EE->load->dbforge();
 
 		$fields = array(
-		  'locked' => array('type' => 'int', 'constraint' => '1', 'unsigned' => TRUE, 'null' => FALSE)
-		);
+			'locked' => array(
+				'type' 			=> 'int', 
+				'constraint' 	=> '1',
+				'unsigned'		=> TRUE,
+				'null' 			=> FALSE
+				)
+			);
 		
 		$this->_EE->dbforge->add_column('dashee_member_groups_layouts', $fields);
     }
         
+    /**
+     * Add site_id columns to appropriate tables and populate as needed for MSM support.
+     *
+     * @access  private
+     * @return  void
+     */
+    private function _update_package_to_version_16()
+    {
+		$this->_EE->load->dbforge();
+
+		$fields = array(
+			'site_id' => array(
+				'type'			=> 'INT',
+				'constraint'  	=> 10,
+				'unsigned'		=> TRUE
+				)
+			);
+		
+		$this->_EE->dbforge->add_column('dashee_members', $fields, 'id');
+		$this->_EE->dbforge->add_column('dashee_layouts', $fields, 'id');
+		
+		$this->_EE->db->update('dashee_members', array('site_id' => $this->_EE->session->userdata('site_id')));
+		$this->_EE->db->update('dashee_layouts', array('site_id' => $this->_EE->session->userdata('site_id')));
+    }
+
     /**
      * Returns the package theme folder URL, appending a forward slash if required.
      *
@@ -426,6 +471,7 @@ class Dashee_model extends CI_Model {
 	{
 		$result = $this->_EE->db->select('*')
 			->from('dashee_members')
+			->where('site_id', $this->_EE->session->userdata('site_id'))
 			->where('member_id', $member_id)
 			->get();
 		
@@ -449,6 +495,7 @@ class Dashee_model extends CI_Model {
 			}
 		
 			$params = array(
+				'site_id'	=> $this->_EE->session->userdata('site_id'),
 				'member_id' => $member_id,
 				'config' 	=> $config
 				);
@@ -466,7 +513,11 @@ class Dashee_model extends CI_Model {
 			$config = json_decode($result->row()->config, TRUE);
 
 			// check if the member group has a locked layout
-			$qry = $this->_EE->db->get_where('dashee_member_groups_layouts', array('locked' => 1,'member_group_id' => $this->_EE->session->userdata('group_id')));
+			$params = array(
+				'locked' 			=> 1,
+				'member_group_id' 	=> $this->_EE->session->userdata('group_id')
+				);
+			$qry = $this->_EE->db->get_where('dashee_member_groups_layouts', $params);
 
 			$config['locked'] = ($qry->num_rows() == 1) ? TRUE : FALSE;
 
@@ -495,7 +546,10 @@ class Dashee_model extends CI_Model {
 	 */
 	public function get_all_layouts()
 	{
-		return $this->_EE->db->order_by('name')->get('dashee_layouts')->result();
+		return $this->_EE->db->where('site_id', $this->_EE->session->userdata('site_id'))
+			->order_by('name')
+			->get('dashee_layouts')
+			->result();
 	}
 	
 	/**
@@ -538,8 +592,8 @@ class Dashee_model extends CI_Model {
 			{
 				$groups[$row->member_group_id] = array(
 					'layout_id' => $row->layout_id,
-					'locked' => (boolean) $row->locked,
-				);
+					'locked' 	=> (boolean) $row->locked,
+					);
 			}
 		}
 		
