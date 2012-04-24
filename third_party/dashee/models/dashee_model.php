@@ -24,7 +24,8 @@
  * @link		http://chrismonnat.com
  */
 
-class Dashee_model extends CI_Model {
+class Dashee_model extends CI_Model 
+{
 
     private $_EE;
     private $_package_name;
@@ -417,9 +418,12 @@ class Dashee_model extends CI_Model {
 				)
 			);
 		
-		$this->_EE->dbforge->add_column('dashee_members', $fields, 'id');
-		$this->_EE->dbforge->add_column('dashee_layouts', $fields, 'id');
+		// add site_id column to both members and layouts table
+		// using query() instead of DB forge to take advantage of mysql AFTER operator
+		$this->_EE->db->query('ALTER TABLE exp_dashee_members ADD `site_id` INT(10) UNSIGNED NOT NULL AFTER `id`');
+		$this->_EE->db->query('ALTER TABLE exp_dashee_layouts ADD `site_id` INT(10) UNSIGNED NOT NULL AFTER `id`');
 		
+		// set new site_id column for all existing members/layouts
 		$this->_EE->db->update('dashee_members', array('site_id' => $this->_EE->session->userdata('site_id')));
 		$this->_EE->db->update('dashee_layouts', array('site_id' => $this->_EE->session->userdata('site_id')));
     }
@@ -535,7 +539,7 @@ class Dashee_model extends CI_Model {
 	 */
 	public function update_member($member_id, $config)
 	{
-		return $this->_EE->db->update('exp_dashee_members', array('config' => json_encode($config)), array('member_id' => $member_id));
+		return $this->_EE->db->update('exp_dashee_members', array('config' => json_encode($config)), array('site_id' => $this->_EE->session->userdata('site_id'), 'member_id' => $member_id));
 	}  
 	
 	/**
@@ -561,7 +565,7 @@ class Dashee_model extends CI_Model {
 	 */
 	public function get_layout($layout_id)
 	{
-		return $this->_EE->db->get_where('dashee_layouts', array('id' => $layout_id))->row();
+		return $this->_EE->db->get_where('dashee_layouts', array('id' => $layout_id, 'site_id' => $this->_EE->session->userdata('site_id')))->row();
 	}
 	
 	/**
@@ -572,7 +576,7 @@ class Dashee_model extends CI_Model {
 	 */
 	public function get_default_layout()
 	{
-		return $this->_EE->db->get_where('dashee_layouts', array('is_default' => TRUE))->row();
+		return $this->_EE->db->get_where('dashee_layouts', array('site_id' => $this->_EE->session->userdata('site_id'), 'is_default' => TRUE))->row();
 	}
 	
 	/**
@@ -625,6 +629,7 @@ class Dashee_model extends CI_Model {
 	public function add_layout($name, $description, $config)
 	{
 		$params = array(
+			'site_id'		=> $this->_EE->session->userdata('site_id'),
 			'name' 			=> $name,
 			'description' 	=> $description,
 			'config' 		=> json_encode($config)
@@ -642,7 +647,7 @@ class Dashee_model extends CI_Model {
 	 */
 	public function update_layout($layout_id, $params)
 	{
-		$this->_EE->db->update('dashee_layouts', $params, array('id' => $layout_id));
+		$this->_EE->db->update('dashee_layouts', $params, array('id' => $layout_id, 'site_id' => $this->_EE->session->userdata('site_id')));
 	}
 	
 	/**
@@ -659,7 +664,7 @@ class Dashee_model extends CI_Model {
 		foreach($group_layouts as $group_id => $layout_id)
 		{
 			$locked = (isset($group_locked[$group_id])&& $group_locked[$group_id]=='locked') ? 1 : 0;
-			$this->_EE->db->insert('dashee_member_groups_layouts', array('member_group_id' => $group_id, 'layout_id' => $layout_id, 'locked'=>$locked));
+			$this->_EE->db->insert('dashee_member_groups_layouts', array('member_group_id' => $group_id, 'layout_id' => $layout_id, 'locked' => $locked));
 		}
 	}
 	
@@ -723,6 +728,7 @@ class Dashee_model extends CI_Model {
 		return $this->_EE->db->select('group_id AS id, group_title AS title, group_description AS description')
 			->from('member_groups')
 			->order_by('group_title')
+			->where('site_id', $this->_EE->session->userdata('site_id'))
 			->where('can_access_cp', 'y')
 			->get()
 			->result();
@@ -740,9 +746,11 @@ class Dashee_model extends CI_Model {
 		return $this->_EE->db->select('*')
 			->from('member_groups')
 			->where('group_id', $group_id)
+			->where('site_id', $this->_EE->session->userdata('site_id'))
 			->get()
 			->row();
 	}
+	
 }
 /* End of file dashee_model.php */
 /* Location: /system/expressionengine/third_party/dashee/models/dashee_model.php */
