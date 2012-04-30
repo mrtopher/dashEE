@@ -148,7 +148,7 @@ class Dashee_mcp {
 		// override default breadcrumb display
 		$this->_EE->javascript->output("
 			$('#breadCrumb ol li').slice(2,4).remove();
-		");
+			");
 		$this->_EE->javascript->compile();
 		
 		$msg = $this->_EE->session->flashdata('dashee_msg');
@@ -156,8 +156,12 @@ class Dashee_mcp {
 		{
 			$this->_EE->javascript->output("
 				$.ee_notice('".$msg."', {type: 'success'});
-			");
+				");
 		}
+		
+		// get default layout ID
+		// run this function up here to ensure the default layout is in the table BEFORE generating layout options
+		$default_id = $this->_model->get_default_layout()->id;
 		
 		// get layout options for display and use as dropdown options
 		$layouts 		= array();
@@ -180,9 +184,10 @@ class Dashee_mcp {
 			'layouts' 		=> $layouts,
 			'opts_layouts' 	=> $layout_options,
 			'member_groups'	=> $this->_model->get_member_groups(),
-			'default_id' 	=> $this->_model->get_default_layout()->id,
+			'default_id' 	=> $default_id,
 			'group_layouts' => $this->_model->get_all_group_layouts()
 			);
+			
 		return $this->_EE->load->view('settings', $page_data, TRUE);
 	}
 	

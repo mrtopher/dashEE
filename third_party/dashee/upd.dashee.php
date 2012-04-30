@@ -55,7 +55,10 @@ class Dashee_upd {
 	 */
 	public function install()
 	{
-		return $this->_model->install_module();
+		$this->_model->install_module();
+		$this->_model->activate_extension();
+		
+		return TRUE;
 	}
 
 	// ----------------------------------------------------------------
@@ -67,7 +70,10 @@ class Dashee_upd {
 	 */	
 	public function uninstall()
 	{
-		return $this->_model->uninstall_module();
+		$this->_model->uninstall_module();
+		$this->_model->disable_extension();
+		
+		return TRUE;
 	}
 	
 	// ----------------------------------------------------------------
@@ -79,7 +85,10 @@ class Dashee_upd {
 	 */	
 	public function update($current = '')
 	{
-		return $this->_model->update_package($current);	
+		$this->_model->update_package($current);	
+		$this->_model->update_extension($current);	
+		
+		return TRUE;
 	}
 	
 }
