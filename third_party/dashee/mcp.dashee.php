@@ -53,8 +53,8 @@ class Dashee_mcp {
         $this->_base_url    = BASE .AMP .$this->_base_qs;
         $this->_theme_url   = $this->_model->get_package_theme_url();
         $this->_css_url   	= $this->_theme_url .'css/cp.css';
-        //$this->_js_url   	= $this->_theme_url .'js/dashee.js';
-        $this->_js_url   	= $this->_theme_url .'js/dashee.min.js';
+        $this->_js_url   	= $this->_theme_url .'js/dashee.js';
+        //$this->_js_url   	= $this->_theme_url .'js/dashee.min.js';
         
         $this->_member_id = $this->_EE->session->userdata('member_id');
         if($this->_EE->session->userdata('group_id') == 1)
@@ -102,6 +102,8 @@ class Dashee_mcp {
 		
 		// override default breadcrumb display to make module look like default CP homepage
 		$this->_EE->javascript->output("
+			$('a[href=\"#collapse\"]').parent('.button').css('float', 'left');
+			$('a[href=\"#expand\"]').parent('.button').css('float', 'left');
 			$('#breadCrumb ol li').slice(2).remove();
 			$('#breadCrumb ol li:last-child').attr('class', 'last').html('Dashboard');
 			");
@@ -368,10 +370,6 @@ class Dashee_mcp {
 			
 			$col = array_keys($totals, min($totals));
 		
-			/*echo '<pre>';
-			print_r($totals);
-			exit();*/
-
 			$new_widget = array(
 				'mod' => $mod,
 				'wgt' => $wgt,				

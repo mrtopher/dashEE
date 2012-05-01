@@ -41,7 +41,7 @@ class Dashee_model extends CI_Model
         parent::__construct();
 
         $this->_EE =& get_instance();
-        $this->_site_id = $this->_site_id;
+        $this->_site_id = $this->_EE->session->userdata('site_id');
         
         $this->_package_name    	= 'dashEE';
         $this->_package_version 	= '1.6';
@@ -271,9 +271,7 @@ class Dashee_model extends CI_Model
     public function activate_extension()
     {
 		// Setup custom settings in this array.
-		$this->settings = array(
-			'redirect_admins' => 'yes',
-			);
+		$this->settings = array('redirect_admins' => array('yes'));
 		
 		$hooks = array(
 			'cp_css_end'		=> 'crumb_hide',
@@ -874,9 +872,9 @@ class Dashee_model extends CI_Model
 	{
 		return $this->_EE->db->select('group_id AS id, group_title AS title, group_description AS description')
 			->from('member_groups')
-			->order_by('group_title')
 			->where('site_id', $this->_site_id)
 			->where('can_access_cp', 'y')
+			->order_by('group_title')
 			->get()
 			->result();
 	}

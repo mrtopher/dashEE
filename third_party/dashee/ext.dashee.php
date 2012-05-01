@@ -63,7 +63,7 @@ class Dashee_ext {
 	{
 	    $settings = array();
 	
-	    $settings['redirect_admins'] = array('c', array('yes' => "Yes"));
+	    $settings['redirect_admins'] = array('c', array('yes' => "Yes"), 'yes');
 	
 	    return $settings;
 	}
