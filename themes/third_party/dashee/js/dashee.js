@@ -27,12 +27,9 @@ $(function() {
 		},
 		
 		init : function() {
-			var $widgets = dash.getWidgets();
-	
-			for(var i = 0; i < $widgets.length; i++) {
-				var $widget = $($widgets[i]);
-				dash.initWidget($widget);
-			}
+			$(this.settings.widgetSelector).each(function() {
+				dash.initWidget($(this));			
+			});
 	
 			dash.makeSortable();
 		},
@@ -43,8 +40,7 @@ $(function() {
 				buttons : $(dash.settings.buttonsSelector, widget),
 				content : $(dash.settings.contentSelector, widget),
 				id : widget.attr('id'),
-				settings : dash.getWidgetSettings(widget.attr('dashee')),
-				col : widget.parents(this.settings).attr('id').substr(-1)
+				settings : dash.getWidgetSettings(widget.attr('dashee'))
 			};
 			
 			//  Remove button	
@@ -79,7 +75,29 @@ $(function() {
 			return $.extend({}, this.settings.widgetDefault, settings);
 		},
 		
-		addWidget : function() {},
+		addWidget : function(link) {
+			link.html('<img src="'+$('#widgetLoader').attr('src')+'" />');
+			
+			$.ajax({
+				type: 'GET',
+				url: url + '?D=cp&C=addons_modules&M=show_module_cp&module=dashee&method=add_widget&mod='+link.data('module')+'&wgt='+link.data('widget'),
+				dataTyle: 'html',
+				success: $.proxy(function(json) {
+					widget = $.parseJSON(json);
+					$rwidget = $(widget.html);
+					$rwidget.appendTo('#column'+widget.col);
+					
+					dash.initWidget($rwidget);
+					dash.makeSortable();
+				
+					link.html('Add');
+					$.ee_notice("Widget added.", {type: 'success'});
+				}, this),
+				error: $.proxy(function(html) {
+					$.ee_notice("ERROR: The widget you selected could not be added.", {type: 'error', open: true});
+				}, this)
+			});
+		},
 		
 		removeWidget : function(widget, wgt) {
 			var $button = $('<a href="#" title="Remove" class="remove"></a>').appendTo(wgt.buttons);
@@ -89,20 +107,17 @@ $(function() {
 			}, this));
 
 			$button.click($.proxy(function (e) {
-				col = widget.parents(this.settings).attr('id').substr(-1);
-				
 				$('#dashConfirm').dialog({
 					resizable: false,
 					height:140,
 					modal: true,
 					buttons: {
-						'No': function() {
-							$(this).dialog("close");
-						},
 						'Yes': $.proxy(function() {
+							$('.dialog-test-class > .ui-dialog-content').html('<p><center>Please wait...<br /><img src="'+$('#dashLoader').attr('src')+'" /></center></p>');
+							$('.dialog-test-class > .ui-dialog-buttonpane').hide();
 							$.ajax({
 								type: 'GET',
-								url: url + '/?D=cp&C=addons_modules&M=show_module_cp&module=dashee&method=remove_widget&col='+wgt.col+'&wgt='+wgt.id,
+								url: url + '/?D=cp&C=addons_modules&M=show_module_cp&module=dashee&method=remove_widget&wgt='+wgt.id,
 								dataTyle: 'html',
 								success: $.proxy(function(html) {
 									widget.animate({
@@ -119,8 +134,16 @@ $(function() {
 									$.ee_notice("ERROR: The widget you selected could not be removed.", {type: 'error', open: true});
 								}, this)
 							});
-						}, this)
+						}, this),
+						'No': function() {
+							$(this).dialog("close");
+						}
 					},
+					close : function() {
+						$('.dialog-test-class > .ui-dialog-content').html('<p>Are you sure you want to remove this widget from your dashboard?</p>');
+						$('.dialog-test-class > .ui-dialog-buttonpane').show();
+					},
+					dialogClass: 'dialog-test-class',
 					title: 'Remove Widget'
 				});
 				return false;
@@ -137,42 +160,59 @@ $(function() {
 			$button.click($.proxy(function () {
 				wgt.content.html('<p><center><img src="'+$('#dashLoader').attr('src')+'" /></center></p>');
 
-				col = widget.parents(this.settings).attr('id').substr(-1);
-				
-				$.ajax({
-					type: 'GET',
-					url: url + '?D=cp&C=addons_modules&M=show_module_cp&module=dashee&method=widget_settings&col='+wgt.col+'&wgt='+wgt.id,
-					dataTyle: 'html',
-					success: $.proxy(function(html) {
-						wgt.content.html(html);
-						wgt.content.addClass('settings');
+				if(wgt.content.hasClass('settings')) {
+					wgt.content.removeClass('settings');
 
-						$('form.dashForm').submit(function(event) {
-							event.preventDefault();
-							wgt.content.removeClass('settings');
-							wgt.content.html('<p><center><img src="'+$('#dashLoader').attr('src')+'" /></center></p>');
-		
-							$.ajax({
-								type: 'POST',
-								url: url + '?D=cp&C=addons_modules&M=show_module_cp&module=dashee&method=update_widget_settings',
-								data: $(this).serialize()+'&col='+wgt.col+'&wgt='+wgt.id,
-								dataTyle: 'json',
-								success: function(html) {
-									var response = $.parseJSON(html);
-									$('h2', wgt.heading).html(response.title);
-									wgt.content.html(response.content);
-								},
-								error: function(html) {
-									wgt.content.html('<p>There was a problem.</p>');
-								}
+					$.ajax({
+						type: 'GET',
+						url: url + '?D=cp&C=addons_modules&M=show_module_cp&module=dashee&method=get_widget&wgt='+wgt.id,
+						dataTyle: 'html',
+						success: $.proxy(function(html) {
+							var response = $.parseJSON(html);
+							$('h2', wgt.heading).html(response.title);
+							wgt.content.html(response.content);
+						}, this),
+						error: $.proxy(function(html) {
+							wgt.content.html('<p>There was a problem.</p>');
+						}, this)
+					});
+				} 
+				else { 
+					$.ajax({
+						type: 'GET',
+						url: url + '?D=cp&C=addons_modules&M=show_module_cp&module=dashee&method=widget_settings&wgt='+wgt.id,
+						dataTyle: 'html',
+						success: $.proxy(function(html) {
+							wgt.content.html(html);
+							wgt.content.addClass('settings');
+	
+							$('form.dashForm').submit(function(event) {
+								event.preventDefault();
+								wgt.content.removeClass('settings');
+								wgt.content.html('<p><center><img src="'+$('#dashLoader').attr('src')+'" /></center></p>');
+			
+								$.ajax({
+									type: 'POST',
+									url: url + '?D=cp&C=addons_modules&M=show_module_cp&module=dashee&method=update_widget_settings',
+									data: $(this).serialize()+'&wgt='+wgt.id,
+									dataTyle: 'json',
+									success: function(html) {
+										var response = $.parseJSON(html);
+										$('h2', wgt.heading).html(response.title);
+										wgt.content.html(response.content);
+									},
+									error: function(html) {
+										wgt.content.html('<p>There was a problem.</p>');
+									}
+								});
+			
 							});
-		
-						});
-					}, this),
-					error: $.proxy(function(html) {
-						wgt.content.html('<p>There was a problem.</p>');
-					}, this)
-				});
+						}, this),
+						error: $.proxy(function(html) {
+							wgt.content.html('<p>There was a problem.</p>');
+						}, this)
+					});
+				};
 			}, this));
 		},
 		
@@ -222,12 +262,12 @@ $(function() {
 					var $widgets = this.getWidgets(),
 						order = [];
 	
-					for (var i = 0; i < $widgets.length; i++) {
-						var $widget = $($widgets[i]),
+					$(this.settings.widgetSelector).each(function() {
+						var $widget = $(this),
 							col = parseInt($widget.parents('ul.column').attr('id').substr(-1));
 	
 						order.push(col+':'+$widget.attr('id'));
-					};
+					});
 	
 					// save new order to DB
 					$.ajax({
@@ -295,6 +335,12 @@ $(function() {
 	// Click event to expand all widgets.
 	$('a[href="#expand"]').on('click', function() {
 		dash.getWidgets().removeClass('collapsed');
+	});
+	
+	// Click event for adding new widgets.
+	$('#dashListing').on('click', 'a.addWidget', function(e) {
+		e.preventDefault();
+		dash.addWidget($(this));
 	});
 	
 	// Click event to display "load layout" confirmation message.

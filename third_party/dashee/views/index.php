@@ -27,3 +27,4 @@
 </div>
 
 <img src="<?php echo $theme_url; ?>images/ajax-loader.gif" id="dashLoader" />
+<img src="<?php echo $theme_url; ?>images/widget-loader.gif" id="widgetLoader" />

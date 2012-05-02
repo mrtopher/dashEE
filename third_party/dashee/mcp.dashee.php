@@ -24,7 +24,8 @@
  * @link		http://chrismonnat.com
  */
 
-class Dashee_mcp {
+class Dashee_mcp 
+{
 	
 	public $return_data;
 	
@@ -38,6 +39,7 @@ class Dashee_mcp {
 	private $_member_id;
 	private $_super_admin = FALSE;
 	private $_settings;
+	private $_widgets;
 	
 	/**
 	 * Constructor
@@ -64,6 +66,7 @@ class Dashee_mcp {
         
         // get current members dash configuration for use throughout module
         $this->_get_member_settings($this->_member_id);
+        $this->_get_widgets();
 	}
 
 	// ----------------------------------------------------------------
@@ -98,7 +101,10 @@ class Dashee_mcp {
 		$button_data['btn_settings'] = $this->_base_url.AMP.'method=settings';
 
         // is the member_group layout locked?
-        if($this->_settings['locked'] == FALSE) $this->_EE->cp->set_right_nav($button_data);
+        if($this->_settings['locked'] == FALSE)
+        {
+        	$this->_EE->cp->set_right_nav($button_data);
+        }
 		
 		// override default breadcrumb display to make module look like default CP homepage
 		$this->_EE->javascript->output("
@@ -279,11 +285,11 @@ class Dashee_mcp {
 		
 		// Determine which installed modules have widgets associated with them.
 		$mods_with_widgets = array();
-		foreach($map as $third_party => $jabber)
+		foreach($map as $third_party => $widgets)
 		{
-			if(is_array($jabber))
+			if(is_array($widgets))
 			{
-				if(in_array($third_party, $installed_mods) AND in_array('widgets', $jabber))
+				if(in_array($third_party, $installed_mods) AND in_array('widgets', $widgets))
 				{
 					$mods_with_widgets[] = $third_party;
 				}
@@ -317,7 +323,7 @@ class Dashee_mcp {
 						lang($this->_format_filename($widget).'_name'),
 						lang($this->_format_filename($widget).'_description'),
 						lang(strtolower($mod).'_module_name'),
-						anchor($this->_base_url.AMP.'method=add_widget'.AMP.'mod='.$mod.AMP.'wgt='.$widget, 'Add')
+						anchor($this->_base_url, 'Add', 'class="addWidget" data-module="' . $mod . '" data-widget="' . $widget . '"')
 						);			
 				}
 			}
@@ -358,7 +364,10 @@ class Dashee_mcp {
 
 		if(isset($mod) AND isset($wgt))
 		{
+			$this->_EE->load->helper('string');
+		
 			$obj = $this->_get_widget_object($mod, $wgt);
+			$wid = 'wgt'.random_string('numeric', 8);
 			
 			// determine which column has the least number of widgets in it so you can add the 
 			// new one to the one with the least
@@ -381,14 +390,14 @@ class Dashee_mcp {
 				$new_widget['stng'] = json_encode($obj->settings);
 			}
 			
-			$this->_settings['widgets'][$col[0]][] = $new_widget;
+			$this->_settings['widgets'][$col[0]][$wid] = $new_widget;
 			
 			// update members dashboard config in DB
-			$this->_update_member();
+			$this->_update_member(FALSE);
 		}
 		
-		$this->_EE->session->set_flashdata('message_success', lang('widget_added'));
-		$this->_EE->functions->redirect($this->_base_url);
+		echo json_encode(array('id' => $wid, 'col' => $col, 'html' => $this->_render_widget($wid, $mod, $wgt, @$new_widget['stng'])));
+		exit();
 	}
 	
 	/**
@@ -399,12 +408,12 @@ class Dashee_mcp {
 	 */
 	public function remove_widget()
 	{
-		$col = $this->_EE->input->get('col');
 		$wgt = $this->_EE->input->get('wgt');
 
-		if(isset($col) AND isset($wgt))
+		if(array_key_exists($wgt, $this->_widgets))
 		{
-			unset($this->_settings['widgets'][$col][$wgt]);
+			$widget = $this->_widgets[$wgt];
+			unset($this->_settings['widgets'][$widget['col']][$wgt]);
 			$this->_update_member(FALSE);
 		}
 	}
@@ -457,16 +466,19 @@ class Dashee_mcp {
 	 */
 	public function widget_settings()
 	{
-		$col = $this->_EE->input->get('col');
 		$wgt = $this->_EE->input->get('wgt');
-
-		if(isset($col) AND isset($wgt))
+		
+		if(array_key_exists($wgt, $this->_widgets))
 		{
-			$widget = $this->_settings['widgets'][$col][$wgt];
-			
+			$widget = $this->_widgets[$wgt];
+
 			$obj = $this->_get_widget_object($widget['mod'],$widget['wgt']);
 			echo $obj->settings_form(json_decode($widget['stng']));
 			exit();
+		}
+		else
+		{
+			echo '<p>Widget could not be found.</p>';
 		}
 	}
 	
@@ -480,7 +492,7 @@ class Dashee_mcp {
 	{
 		$data 		= $_POST;
 		$settings 	= array();
-		$widget 	= $this->_settings['widgets'][$data['col']][$data['wgt']];
+		$widget 	= $this->_widgets[$data['wgt']];
 				
 		foreach($data as $field => $value)
 		{
@@ -488,10 +500,10 @@ class Dashee_mcp {
 		}
 	
 		$settings_json = json_encode($settings);
-		$this->_settings['widgets'][$data['col']][$data['wgt']]['stng'] = $settings_json;
+		$this->_settings['widgets'][$widget['col']][$widget['id']]['stng'] = $settings_json;
 		$this->_update_member(FALSE);
 	
-		$obj = $this->_get_widget_object($widget['mod'],$widget['wgt']);
+		$obj = $this->_get_widget_object($widget['mod'], $widget['wgt']);
 		$this->_add_widget_package_path($widget['mod']);
 		$content = $obj->index(json_decode($settings_json));
 		$result = array(
@@ -661,7 +673,7 @@ class Dashee_mcp {
 	 *
 	 * @return 	array
 	 */
-	public function _get_member_settings($member_id)
+	private function _get_member_settings($member_id)
 	{
 		$settings = $this->_model->get_member_settings($member_id);
 
@@ -682,6 +694,12 @@ class Dashee_mcp {
 						
 						$update_member = TRUE;
 					}
+					else
+					{
+						$this->_widgets[$id] = $params;
+						$this->_widgets[$id]['col'] = $col;
+						$this->_widgets[$id]['id'] = $id;
+					}
 				}
 			}
 		}
@@ -691,6 +709,24 @@ class Dashee_mcp {
 		if($update_member)
 		{
 			$this->_update_member();
+		}
+	}
+	
+	/**
+	 * Get just widget data and put in array to easy access/reference.
+	 *
+	 * @return 	array
+	 */
+	private function _get_widgets()
+	{
+		foreach($this->_settings['widgets'] as $col => $widgets)
+		{
+			foreach($widgets as $wid => $widget)
+			{
+				$this->_widgets[$wid] = $widget;
+				$this->_widgets[$wid]['col'] = $col;
+				$this->_widgets[$wid]['id'] = $wid;
+			}
 		}
 	}
 	
@@ -726,6 +762,9 @@ class Dashee_mcp {
 		}
 
 		$this->_model->update_member($this->_member_id, $this->_settings);	
+		
+		// ensure widgets array is updated with most recent data
+		$this->_get_widgets();
 	}
 
 	/**
@@ -746,38 +785,67 @@ class Dashee_mcp {
 			{
 				foreach($widget as $id => $params)
 				{
-					$obj = $this->_get_widget_object($params['mod'], $params['wgt']);
-									
-					$class 		= isset($obj->wclass) ? $obj->wclass : '';
-					$dash_code 	= method_exists($obj, 'settings_form') ? 'dashee="dynamic"' : '';
-
-					// check widget permissions
-					if(method_exists($obj, 'permissions') && !$obj->permissions())
-					{
-						$content = '<p>'.lang('permission_denied').'</p>';
-					}
-					else
-					{
-						$this->_add_widget_package_path($params['mod']);
-						$content = $obj->index(@json_decode($params['stng']));
-					}
-					
-					$cols[$col] .= '
-						<li id="'.$id.'" class="widget '.$class.'" '.$dash_code.'>
-							<div class="heading">
-								<h2>'.$obj->title.'</h2>
-								<div class="buttons"></div>
-							</div>
-							<div class="widget-content">'.$content.'</div>
-						</li>
-					';
+					$cols[$col] .= $this->_render_widget($id, $params['mod'], $params['wgt'], @$params['stng']);
 				}
 			}
-
-			//$cols[$col] .= '&nbsp;';
 		}
 		
 		return $cols;
+	}
+	
+	/**
+	 * Render selected widget and return generated HTML.
+	 *
+	 * @return	string
+	 */
+	private function _render_widget($id, $module, $widget, $settings = '')
+	{
+		$obj = $this->_get_widget_object($module, $widget);
+						
+		$class 		= isset($obj->wclass) ? $obj->wclass : '';
+		$dash_code 	= method_exists($obj, 'settings_form') ? 'dashee="dynamic"' : '';
+
+		// check widget permissions
+		if(method_exists($obj, 'permissions') && !$obj->permissions())
+		{
+			$content = '<p>'.lang('permission_denied').'</p>';
+		}
+		else
+		{
+			$this->_add_widget_package_path($module);
+			$content = $obj->index(@json_decode($settings));
+		}
+		
+		return '
+			<li id="'.$id.'" class="widget '.$class.'" '.$dash_code.'>
+				<div class="heading">
+					<h2>'.$obj->title.'</h2>
+					<div class="buttons"></div>
+				</div>
+				<div class="widget-content">'.$content.'</div>
+			</li>
+		';
+	}
+	
+	/**
+	 * AJAX METHOD
+	 * Return JSON for selected widget for processing by javascript.
+	 * Used to return widgets back to load state after NOT submitting settings form.
+	 *
+	 * @return	string
+	 */
+	public function get_widget()
+	{
+		$widget = $this->_widgets[$this->_EE->input->get('wgt')];
+		$obj = $this->_get_widget_object($widget['mod'], $widget['wgt']);
+		$this->_add_widget_package_path($widget['mod']);
+		$content = $obj->index(json_decode($widget['stng']));
+		$result = array(
+			'title'		=> $obj->title,
+			'content' 	=> $content
+			);
+		echo json_encode($result);
+		exit();
 	}
 	
 	/**
@@ -806,7 +874,7 @@ class Dashee_mcp {
 		$str = str_replace('.', '_', substr($name, 0, -4));
 		return $cap ? ucfirst($str) : $str;
 	}
-	
+		
 }
 /* End of file mcp.dashee.php */
 /* Location: /system/expressionengine/third_party/dashee/mcp.dashee.php */

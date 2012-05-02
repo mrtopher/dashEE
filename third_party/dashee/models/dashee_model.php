@@ -456,6 +456,26 @@ class Dashee_model extends CI_Model
 		$this->_EE->db->update('dashee_members', array('site_id' => $this->_site_id));
 		$this->_EE->db->update('dashee_layouts', array('site_id' => $this->_site_id));
 		$this->_EE->db->update('dashee_member_groups_layouts', array('site_id' => $this->_site_id));
+		
+		// reindex existing member layouts with random IDs
+		$this->_EE->load->helper('string');
+		
+		$members = $this->_EE->db->get('dashee_members');
+		foreach($members->result() as $member)
+		{
+			$config = array();
+			$dash = json_decode($member->config, TRUE);
+			foreach($dash['widgets'] as $col => $widgets)
+			{
+				foreach($widgets as $id => $widget)
+				{
+					$config[$col][random_string('numeric', 8)] = $widget;
+				}
+			}
+			
+			$dash['widgets'] = $config;
+			$this->_EE->db->update('dashee_members', array('config' => json_encode($dash)), array('id' => $member->id));
+		}
     }
     
    	/**
@@ -656,26 +676,27 @@ class Dashee_model extends CI_Model
 	 */
 	private function _get_standard_default_template()
 	{
+		$this->_EE->load->helper('string');
 		return array(
 			'widgets' => array(
 				1 => array(
-					'wgt1' => array(
+					'wgt'.random_string('numeric', 8) => array(
 						'mod' => 'dashee', 
 						'wgt' => 'wgt.welcome.php'
 						),
-					'wgt2' => array(
+					'wgt'.random_string('numeric', 8) => array(
 						'mod' => 'dashee',
 						'wgt' => 'wgt.create_links.php'
 						)
 					),
 				2 => array(
-					'wgt3' => array(
+					'wgt'.random_string('numeric', 8) => array(
 						'mod' => 'dashee',
 						'wgt' => 'wgt.modify_links.php'
 						)
 					),
 				3 => array(
-					'wgt4' => array(
+					'wgt'.random_string('numeric', 8) => array(
 						'mod' => 'dashee',
 						'wgt' => 'wgt.view_links.php'
 						)
