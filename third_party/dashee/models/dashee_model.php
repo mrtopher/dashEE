@@ -450,7 +450,7 @@ class Dashee_model extends CI_Model
 		// using query() instead of DB forge to take advantage of mysql AFTER operator
 		$this->_EE->db->query('ALTER TABLE exp_dashee_members ADD `site_id` INT(10) UNSIGNED NOT NULL AFTER `id`');
 		$this->_EE->db->query('ALTER TABLE exp_dashee_layouts ADD `site_id` INT(10) UNSIGNED NOT NULL AFTER `id`');
-		$this->_EE->db->query('ALTER TABLE dashee_member_groups_layouts ADD `site_id` INT(10) UNSIGNED NOT NULL AFTER `member_group_id`');
+		$this->_EE->db->query('ALTER TABLE exp_dashee_member_groups_layouts ADD `site_id` INT(10) UNSIGNED NOT NULL AFTER `member_group_id`');
 		
 		// set new site_id column for all existing members/layouts
 		$this->_EE->db->update('dashee_members', array('site_id' => $this->_site_id));

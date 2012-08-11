@@ -566,7 +566,7 @@ class Dashee_mcp
 		if($this->_super_admin AND $layout_id != '' AND is_numeric($layout_id))
 		{
 			$layout = $this->_model->get_layout($layout_id);
-			$this->_settings = json_decode($layout->config);
+			$this->_settings = json_decode($layout->config, TRUE);
 			
 			$this->_update_member(FALSE);
 			
@@ -713,7 +713,7 @@ class Dashee_mcp
 	}
 	
 	/**
-	 * Get just widget data and put in array to easy access/reference.
+	 * Get just widget data and put in array for easy access/reference.
 	 *
 	 * @return 	array
 	 */

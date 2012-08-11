@@ -113,8 +113,8 @@ $(function() {
 					modal: true,
 					buttons: {
 						'Yes': $.proxy(function() {
-							$('.dialog-test-class > .ui-dialog-content').html('<p><center>Please wait...<br /><img src="'+$('#dashLoader').attr('src')+'" /></center></p>');
-							$('.dialog-test-class > .ui-dialog-buttonpane').hide();
+							$('.dialog-remove-widget > .ui-dialog-content').html('<p><center>Please wait...<br /><img src="'+$('#dashLoader').attr('src')+'" /></center></p>');
+							$('.dialog-remove-widget > .ui-dialog-buttonpane').hide();
 							$.ajax({
 								type: 'GET',
 								url: url + '/?D=cp&C=addons_modules&M=show_module_cp&module=dashee&method=remove_widget&wgt='+wgt.id,
@@ -140,10 +140,10 @@ $(function() {
 						}
 					},
 					close : function() {
-						$('.dialog-test-class > .ui-dialog-content').html('<p>Are you sure you want to remove this widget from your dashboard?</p>');
-						$('.dialog-test-class > .ui-dialog-buttonpane').show();
+						$('.dialog-remove-widget > .ui-dialog-content').html('<p>Are you sure you want to remove this widget from your dashboard?</p>');
+						$('.dialog-remove-widget > .ui-dialog-buttonpane').show();
 					},
-					dialogClass: 'dialog-test-class',
+					dialogClass: 'dialog-remove-widget',
 					title: 'Remove Widget'
 				});
 				return false;
@@ -286,7 +286,7 @@ $(function() {
 			});
 		},
 		
-		dialog : function(type, txtid, boxtitle, boxwidth, boxheight) {
+		dialog : function(type, txtid, href, boxtitle, boxwidth, boxheight) {
 			if(type == 'confirm') {
 				buttons = {
 					'OK': function() {
@@ -346,28 +346,28 @@ $(function() {
 	// Click event to display "load layout" confirmation message.
 	$('a.dashLoad').on('click', function(e) {
 		e.preventDefault();
-		dash.dialog('confirm', '#dashConfirmLoad', $(this).attr('href'), '', 140);
+		dash.dialog('confirm', '#dashConfirmLoad', $(this).attr('href'), '', '', 140);
 	});
 	
 	// Click event to display "delete layout" confirmation message.
 	$('a.dashDelete').click(function (e) {
 		e.preventDefault();
-		dash.dialog('confirm', '#dashConfirmDelete', $(this).attr('href'), '', 140);
+		dash.dialog('confirm', '#dashConfirmDelete', $(this).attr('href'), '', '', 140);
 	});
 	
 	// Click event to display "reset layout" confirmation message.
 	$('a.dashReset').click(function (e) {
 		e.preventDefault();
-		dash.dialog('confirm', '#dashConfirmReset', $(this).attr('href'), '', 190);
+		dash.dialog('confirm', '#dashConfirmReset', $(this).attr('href'), '', '', 190);
 	});
 	
 	// Click event to display settings help.
 	$('a.dashLayoutHelp').click(function() {
-		dash.dialog('help', '#dashLayoutHelp', 'dashEE Layouts', 450, 340);
+		dash.dialog('help', '#dashLayoutHelp', '', 'dashEE Layouts', 450, 340);
 	});
 	
 	$('a.dashLockHelp').click(function() {
-		dash.dialog('help', '#dashLockHelp', 'Lock Layouts');
+		dash.dialog('help', '#dashLockHelp', '', 'Lock Layouts', 310, 190);
 	});
 	
 	// Click event to display available widgets listing.
@@ -402,14 +402,14 @@ $(function() {
 			width:350,
 			modal: true,
 			buttons: {
-				'Cancel': function() {
-					$(this).dialog("close");
-				},
 				'Save': $.proxy(function() {
+					$('<span class="loading"><center>Please wait...<br /><img src="'+$('#dashLoader').attr('src')+'" /></center></span>').appendTo('.dialog-save-layout > .ui-dialog-content');
+					$('#dasheeLayoutForm').hide();
+					$('.dialog-save-layout > .ui-dialog-buttonpane').hide();
 					$.ajax({
 						type: 'POST',
 						url: url + '/?D=cp&C=addons_modules&M=show_module_cp&module=dashee&method=save_layout',
-						data: $('#dashSaveLayout form').serialize(),
+						data: $('#dasheeLayoutForm').serialize(),
 						dataTyle: 'html',
 						success: $.proxy(function(html) {
 							$.ee_notice('Your layout has been saved. Click "Settings" to assign it to a member group.', {type: 'success', open: true});
@@ -419,8 +419,18 @@ $(function() {
 							$.ee_notice("ERROR: The widget you selected could not be removed.", {type: 'error', open: true});
 						}, this)
 					});
-				}, this)
+				}, this),
+				'Cancel': function() {
+					$(this).dialog("close");
+				}
 			},
+			close : function() {
+				$('.dialog-save-layout > .ui-dialog-content .loading').remove();
+				$('#dasheeLayoutForm').show();
+				$('#dasheeLayoutForm input').val('');
+				$('.dialog-save-layout > .ui-dialog-buttonpane').show();
+			},
+			dialogClass: 'dialog-save-layout',
 			title: 'Save Layout'
 		});
 		return false;
