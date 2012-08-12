@@ -195,7 +195,6 @@ $(function() {
 									type: 'POST',
 									url: url + '?D=cp&C=addons_modules&M=show_module_cp&module=dashee&method=update_widget_settings',
 									data: $(this).serialize()+'&wgt='+wgt.id,
-									dataType: 'json',
 									success: function(html) {
 										var response = $.parseJSON(html);
 										$('h2', wgt.heading).html(response.title);
