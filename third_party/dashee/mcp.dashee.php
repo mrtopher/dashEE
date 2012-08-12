@@ -24,7 +24,8 @@
  * @link		http://chrismonnat.com
  */
 
-class Dashee_mcp {
+class Dashee_mcp 
+{
 	
 	public $return_data;
 	
@@ -38,6 +39,7 @@ class Dashee_mcp {
 	private $_member_id;
 	private $_super_admin = FALSE;
 	private $_settings;
+	private $_widgets;
 	
 	/**
 	 * Constructor
@@ -53,8 +55,8 @@ class Dashee_mcp {
         $this->_base_url    = BASE .AMP .$this->_base_qs;
         $this->_theme_url   = $this->_model->get_package_theme_url();
         $this->_css_url   	= $this->_theme_url .'css/cp.css';
-        //$this->_js_url   	= $this->_theme_url .'js/dashee.js';
-        $this->_js_url   	= $this->_theme_url .'js/dashee.min.js';
+        $this->_js_url   	= $this->_theme_url .'js/dashee.js';
+        //$this->_js_url   	= $this->_theme_url .'js/dashee.min.js';
         
         $this->_member_id = $this->_EE->session->userdata('member_id');
         if($this->_EE->session->userdata('group_id') == 1)
@@ -64,6 +66,7 @@ class Dashee_mcp {
         
         // get current members dash configuration for use throughout module
         $this->_get_member_settings($this->_member_id);
+        $this->_get_widgets();
 	}
 
 	// ----------------------------------------------------------------
@@ -78,7 +81,10 @@ class Dashee_mcp {
         $this->_EE->cp->add_to_head('<link rel="stylesheet" type="text/css" href="'.$this->_css_url.'" />');
 
         // is the member_group layout locked?
-        if($this->_settings['locked'] == FALSE) $this->_EE->cp->add_to_head('<script type="text/javascript" src="'.$this->_js_url.'"></script>');
+        if($this->_settings['locked'] == FALSE)
+        {
+        	$this->_EE->cp->add_to_head('<script type="text/javascript" src="'.$this->_js_url.'"></script>');
+        }
 	
 		$this->_EE->cp->set_variable('cp_page_title', lang('dashee_term'));
 		
@@ -95,33 +101,31 @@ class Dashee_mcp {
 		$button_data['btn_settings'] = $this->_base_url.AMP.'method=settings';
 
         // is the member_group layout locked?
-        if($this->_settings['locked'] == FALSE) $this->_EE->cp->set_right_nav($button_data);
+        if($this->_settings['locked'] == FALSE)
+        {
+        	$this->_EE->cp->set_right_nav($button_data);
+        }
 		
 		// override default breadcrumb display to make module look like default CP homepage
 		$this->_EE->javascript->output("
+			$('a[href=\"#collapse\"]').parent('.button').css('float', 'left');
+			$('a[href=\"#expand\"]').parent('.button').css('float', 'left');
 			$('#breadCrumb ol li').slice(2).remove();
 			$('#breadCrumb ol li:last-child').attr('class', 'last').html('Dashboard');
-		");
+			");
 		
 		$msg = $this->_EE->session->flashdata('dashee_msg');
 		if($msg != '')
 		{
 			$this->_EE->javascript->output("
 				$.ee_notice('".$msg."', {type: 'success'});
-			");
+				");
 		}
 		
 		$this->_EE->javascript->compile();
 		
 		// load widgets
 		$widgets = $this->_widget_loader($this->_settings['widgets']);
-		
-		/**
-		 * Because add_package_path is called for each module with widgets in widget_loader, EE will incorrectly default the views 
-		 * drectory to the last module whose widget was called thus causing the index view for that module to be displayed 
-		 * instead of the dashboard... this line adds dashee path onto the end after widget_loader to ensure this doesn't happen
-		 */
-		$this->_EE->load->add_package_path(PATH_THIRD . 'dashee/');
 		
 		$page_data = array(
 			'settings' 	=> $this->_settings, 
@@ -152,7 +156,7 @@ class Dashee_mcp {
 		// override default breadcrumb display
 		$this->_EE->javascript->output("
 			$('#breadCrumb ol li').slice(2,4).remove();
-		");
+			");
 		$this->_EE->javascript->compile();
 		
 		$msg = $this->_EE->session->flashdata('dashee_msg');
@@ -160,8 +164,12 @@ class Dashee_mcp {
 		{
 			$this->_EE->javascript->output("
 				$.ee_notice('".$msg."', {type: 'success'});
-			");
+				");
 		}
+		
+		// get default layout ID
+		// run this function up here to ensure the default layout is in the table BEFORE generating layout options
+		$default_id = $this->_model->get_default_layout()->id;
 		
 		// get layout options for display and use as dropdown options
 		$layouts 		= array();
@@ -184,9 +192,10 @@ class Dashee_mcp {
 			'layouts' 		=> $layouts,
 			'opts_layouts' 	=> $layout_options,
 			'member_groups'	=> $this->_model->get_member_groups(),
-			'default_id' 	=> $this->_model->get_default_layout()->id,
+			'default_id' 	=> $default_id,
 			'group_layouts' => $this->_model->get_all_group_layouts()
 			);
+			
 		return $this->_EE->load->view('settings', $page_data, TRUE);
 	}
 	
@@ -276,11 +285,11 @@ class Dashee_mcp {
 		
 		// Determine which installed modules have widgets associated with them.
 		$mods_with_widgets = array();
-		foreach($map as $third_party => $jabber)
+		foreach($map as $third_party => $widgets)
 		{
-			if(is_array($jabber))
+			if(is_array($widgets))
 			{
-				if(in_array($third_party, $installed_mods) AND in_array('widgets', $jabber))
+				if(in_array($third_party, $installed_mods) AND in_array('widgets', $widgets))
 				{
 					$mods_with_widgets[] = $third_party;
 				}
@@ -314,7 +323,7 @@ class Dashee_mcp {
 						lang($this->_format_filename($widget).'_name'),
 						lang($this->_format_filename($widget).'_description'),
 						lang(strtolower($mod).'_module_name'),
-						anchor($this->_base_url.AMP.'method=add_widget'.AMP.'mod='.$mod.AMP.'wgt='.$widget, 'Add')
+						anchor($this->_base_url, 'Add', 'class="addWidget" data-module="' . $mod . '" data-widget="' . $widget . '"')
 						);			
 				}
 			}
@@ -323,7 +332,26 @@ class Dashee_mcp {
 		echo $this->_EE->load->view('widgets_listing', array('rows' => $table_data), TRUE);
 		exit();
 	}
-		
+	
+	/**
+	 * Add Widget's Package Path
+	 *
+	 * Makes it possible for widgets to use $EE->load->view(), etc
+	 *
+	 * Should be called right before calling a widget's index() funciton
+	 */
+	private function _add_widget_package_path($name)
+	{
+		$path = PATH_THIRD . $name . '/';
+		$this->_EE->load->add_package_path($path);
+
+		// manually add the view path if this is less than EE 2.1.5
+		if (version_compare(APP_VER, '2.1.5', '<'))
+		{
+			$this->_EE->load->_ci_view_path = $path . 'views/';
+		}
+	}
+	
 	/**
 	 * Add selected widget to users dashboard and update config.
 	 *
@@ -336,7 +364,10 @@ class Dashee_mcp {
 
 		if(isset($mod) AND isset($wgt))
 		{
+			$this->_EE->load->helper('string');
+		
 			$obj = $this->_get_widget_object($mod, $wgt);
+			$wid = 'wgt'.random_string('numeric', 8);
 			
 			// determine which column has the least number of widgets in it so you can add the 
 			// new one to the one with the least
@@ -348,10 +379,6 @@ class Dashee_mcp {
 			
 			$col = array_keys($totals, min($totals));
 		
-			/*echo '<pre>';
-			print_r($totals);
-			exit();*/
-
 			$new_widget = array(
 				'mod' => $mod,
 				'wgt' => $wgt,				
@@ -363,14 +390,14 @@ class Dashee_mcp {
 				$new_widget['stng'] = json_encode($obj->settings);
 			}
 			
-			$this->_settings['widgets'][$col[0]][] = $new_widget;
+			$this->_settings['widgets'][$col[0]][$wid] = $new_widget;
 			
 			// update members dashboard config in DB
-			$this->_update_member();
+			$this->_update_member(FALSE);
 		}
 		
-		$this->_EE->session->set_flashdata('message_success', lang('widget_added'));
-		$this->_EE->functions->redirect($this->_base_url);
+		echo json_encode(array('id' => $wid, 'col' => $col, 'html' => $this->_render_widget($wid, $mod, $wgt, @$new_widget['stng'])));
+		exit();
 	}
 	
 	/**
@@ -381,12 +408,12 @@ class Dashee_mcp {
 	 */
 	public function remove_widget()
 	{
-		$col = $this->_EE->input->get('col');
 		$wgt = $this->_EE->input->get('wgt');
 
-		if(isset($col) AND isset($wgt))
+		if(array_key_exists($wgt, $this->_widgets))
 		{
-			unset($this->_settings['widgets'][$col][$wgt]);
+			$widget = $this->_widgets[$wgt];
+			unset($this->_settings['widgets'][$widget['col']][$wgt]);
 			$this->_update_member(FALSE);
 		}
 	}
@@ -439,16 +466,19 @@ class Dashee_mcp {
 	 */
 	public function widget_settings()
 	{
-		$col = $this->_EE->input->get('col');
 		$wgt = $this->_EE->input->get('wgt');
-
-		if(isset($col) AND isset($wgt))
+		
+		if(array_key_exists($wgt, $this->_widgets))
 		{
-			$widget = $this->_settings['widgets'][$col][$wgt];
-			
+			$widget = $this->_widgets[$wgt];
+
 			$obj = $this->_get_widget_object($widget['mod'],$widget['wgt']);
 			echo $obj->settings_form(json_decode($widget['stng']));
 			exit();
+		}
+		else
+		{
+			echo '<p>Widget could not be found.</p>';
 		}
 	}
 	
@@ -462,7 +492,7 @@ class Dashee_mcp {
 	{
 		$data 		= $_POST;
 		$settings 	= array();
-		$widget 	= $this->_settings['widgets'][$data['col']][$data['wgt']];
+		$widget 	= $this->_widgets[$data['wgt']];
 				
 		foreach($data as $field => $value)
 		{
@@ -470,10 +500,10 @@ class Dashee_mcp {
 		}
 	
 		$settings_json = json_encode($settings);
-		$this->_settings['widgets'][$data['col']][$data['wgt']]['stng'] = $settings_json;
+		$this->_settings['widgets'][$widget['col']][$widget['id']]['stng'] = $settings_json;
 		$this->_update_member(FALSE);
 	
-		$obj = $this->_get_widget_object($widget['mod'],$widget['wgt']);
+		$obj = $this->_get_widget_object($widget['mod'], $widget['wgt']);
 		$this->_add_widget_package_path($widget['mod']);
 		$content = $obj->index(json_decode($settings_json));
 		$result = array(
@@ -512,7 +542,9 @@ class Dashee_mcp {
 		
 		if($this->_super_admin AND $layout_id != '' AND is_numeric($layout_id))
 		{
-			$this->_model->set_default_layout($layout_id);			
+			$this->_model->set_default_layout($layout_id);
+			
+			$this->_EE->session->set_flashdata('dashee_msg', lang('flashLayoutUpdated'));
 		}
 		else
 		{
@@ -534,7 +566,7 @@ class Dashee_mcp {
 		if($this->_super_admin AND $layout_id != '' AND is_numeric($layout_id))
 		{
 			$layout = $this->_model->get_layout($layout_id);
-			$this->_settings = json_decode($layout->config);
+			$this->_settings = json_decode($layout->config, TRUE);
 			
 			$this->_update_member(FALSE);
 			
@@ -633,6 +665,7 @@ class Dashee_mcp {
 		}
 		
 		$this->_EE->functions->redirect($this->_base_url.AMP.'method=settings');
+
 	}
 	
 	/**
@@ -640,7 +673,7 @@ class Dashee_mcp {
 	 *
 	 * @return 	array
 	 */
-	public function _get_member_settings($member_id)
+	private function _get_member_settings($member_id)
 	{
 		$settings = $this->_model->get_member_settings($member_id);
 
@@ -661,6 +694,12 @@ class Dashee_mcp {
 						
 						$update_member = TRUE;
 					}
+					else
+					{
+						$this->_widgets[$id] = $params;
+						$this->_widgets[$id]['col'] = $col;
+						$this->_widgets[$id]['id'] = $id;
+					}
 				}
 			}
 		}
@@ -670,6 +709,24 @@ class Dashee_mcp {
 		if($update_member)
 		{
 			$this->_update_member();
+		}
+	}
+	
+	/**
+	 * Get just widget data and put in array for easy access/reference.
+	 *
+	 * @return 	array
+	 */
+	private function _get_widgets()
+	{
+		foreach($this->_settings['widgets'] as $col => $widgets)
+		{
+			foreach($widgets as $wid => $widget)
+			{
+				$this->_widgets[$wid] = $widget;
+				$this->_widgets[$wid]['col'] = $col;
+				$this->_widgets[$wid]['id'] = $wid;
+			}
 		}
 	}
 	
@@ -705,6 +762,9 @@ class Dashee_mcp {
 		}
 
 		$this->_model->update_member($this->_member_id, $this->_settings);	
+		
+		// ensure widgets array is updated with most recent data
+		$this->_get_widgets();
 	}
 
 	/**
@@ -725,38 +785,67 @@ class Dashee_mcp {
 			{
 				foreach($widget as $id => $params)
 				{
-					$obj = $this->_get_widget_object($params['mod'], $params['wgt']);
-											
-					$class 		= isset($obj->wclass) ? $obj->wclass : '';
-					$dash_code 	= method_exists($obj, 'settings_form') ? 'dashee="dynamic"' : '';
-
-					// check widget permissions
-					if(method_exists($obj, 'permissions') && !$obj->permissions())
-					{
-						$content = '<p>'.lang('permission_denied').'</p>';
-					}
-					else
-					{
-						$this->_add_widget_package_path($params['mod']);
-						$content = $obj->index(@json_decode($params['stng']));
-					}
-										
-					$cols[$col] .= '
-						<li id="'.$id.'" class="widget '.$class.'" '.$dash_code.'>
-							<div class="heading">
-								<h2>'.$obj->title.'</h2>
-								<div class="buttons"></div>
-							</div>
-							<div class="widget-content">'.$content.'</div>
-						</li>
-					';
+					$cols[$col] .= $this->_render_widget($id, $params['mod'], $params['wgt'], @$params['stng']);
 				}
 			}
-
-			//$cols[$col] .= '&nbsp;';
 		}
 		
 		return $cols;
+	}
+	
+	/**
+	 * Render selected widget and return generated HTML.
+	 *
+	 * @return	string
+	 */
+	private function _render_widget($id, $module, $widget, $settings = '')
+	{
+		$obj = $this->_get_widget_object($module, $widget);
+						
+		$class 		= isset($obj->wclass) ? $obj->wclass : '';
+		$dash_code 	= method_exists($obj, 'settings_form') ? 'dashee="dynamic"' : '';
+
+		// check widget permissions
+		if(method_exists($obj, 'permissions') && !$obj->permissions())
+		{
+			$content = '<p>'.lang('permission_denied').'</p>';
+		}
+		else
+		{
+			$this->_add_widget_package_path($module);
+			$content = $obj->index(@json_decode($settings));
+		}
+		
+		return '
+			<li id="'.$id.'" class="widget '.$class.'" '.$dash_code.'>
+				<div class="heading">
+					<h2>'.$obj->title.'</h2>
+					<div class="buttons"></div>
+				</div>
+				<div class="widget-content">'.$content.'</div>
+			</li>
+		';
+	}
+	
+	/**
+	 * AJAX METHOD
+	 * Return JSON for selected widget for processing by javascript.
+	 * Used to return widgets back to load state after NOT submitting settings form.
+	 *
+	 * @return	string
+	 */
+	public function get_widget()
+	{
+		$widget = $this->_widgets[$this->_EE->input->get('wgt')];
+		$obj = $this->_get_widget_object($widget['mod'], $widget['wgt']);
+		$this->_add_widget_package_path($widget['mod']);
+		$content = $obj->index(json_decode($widget['stng']));
+		$result = array(
+			'title'		=> $obj->title,
+			'content' 	=> $content
+			);
+		echo json_encode($result);
+		exit();
 	}
 	
 	/**
@@ -785,26 +874,7 @@ class Dashee_mcp {
 		$str = str_replace('.', '_', substr($name, 0, -4));
 		return $cap ? ucfirst($str) : $str;
 	}
-	
-	/**
-	 * Add Widget's Package Path
-	 *
-	 * Makes it possible for widgets to use $EE->load->view(), etc
-	 *
-	 * Should be called right before calling a widget's index() funciton
-	 */
-	private function _add_widget_package_path($name)
-	{
-		$path = PATH_THIRD . $name . '/';
-		$this->_EE->load->add_package_path($path);
-
-		// manually add the view path if this is less than EE 2.1.5
-		if (version_compare(APP_VER, '2.1.5', '<'))
-		{
-			$this->_EE->load->_ci_view_path = $path . 'views/';
-		}
-	}
-	
+		
 }
 /* End of file mcp.dashee.php */
 /* Location: /system/expressionengine/third_party/dashee/mcp.dashee.php */

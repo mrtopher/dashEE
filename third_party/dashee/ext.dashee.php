@@ -32,6 +32,7 @@ class Dashee_ext {
 	public $name			= 'dashEE';
 	public $settings_exist	= 'y';
 	public $version			= '1.1';
+	public $required_by 	= array('module');
 	
 	private $_EE;
 	
@@ -62,48 +63,10 @@ class Dashee_ext {
 	{
 	    $settings = array();
 	
-	    $settings['redirect_admins'] = array('c', array('yes' => "Yes"));
+	    $settings['redirect_admins'] = array('c', array('yes' => "Yes"), 'yes');
 	
 	    return $settings;
 	}
-
-	// ----------------------------------------------------------------------
-	
-	/**
-	 * Activate Extension
-	 *
-	 * This function enters the extension into the exp_extensions table
-	 *
-	 * @return void
-	 */
-	public function activate_extension()
-	{
-		// Setup custom settings in this array.
-		$this->settings = array(
-			'redirect_admins' => 'yes',
-			);
-		
-		$hooks = array(
-			'cp_css_end'		=> 'crumb_hide',
-			'cp_js_end'			=> 'crumb_remap',
-			'cp_member_login'	=> 'member_redirect',
-			'sessions_end'		=> 'sessions_end',
-			);
-
-		foreach ($hooks as $hook => $method)
-		{
-			$data = array(
-				'class'		=> __CLASS__,
-				'method'	=> $method,
-				'hook'		=> $hook,
-				'settings'	=> serialize($this->settings),
-				'version'	=> $this->version,
-				'enabled'	=> 'y'
-				);
-
-			$this->_EE->db->insert('extensions', $data);			
-		}
-	}	
 
 	// ----------------------------------------------------------------------
 	
@@ -199,16 +162,27 @@ class Dashee_ext {
 	// ----------------------------------------------------------------------
 
 	/**
-	 * Disable Extension
+	 * Activate Extension
 	 *
-	 * This method removes information from the exp_extensions table
+	 * This function enters the extension into the exp_extensions table
+	 *
+	 * @return void
+	 */
+	public function activate_extension()
+	{
+		return TRUE;
+	}	
+
+	// ----------------------------------------------------------------------
+
+	/**
+	 * Disable Extension
 	 *
 	 * @return void
 	 */
 	function disable_extension()
 	{
-		$this->_EE->db->where('class', __CLASS__);
-		$this->_EE->db->delete('extensions');
+		return TRUE;
 	}
 
 	// ----------------------------------------------------------------------
@@ -216,46 +190,12 @@ class Dashee_ext {
 	/**
 	 * Update Extension
 	 *
-	 * This function performs any necessary db updates when the extension
-	 * page is visited
-	 *
-	 * @return 	mixed	void on update / false if none
+	 * @return  void
 	 */
 	function update_extension($current = '')
 	{
-		if(version_compare($current, $this->version, '>='))
-		{
-			return FALSE;
-		}
-		
-		if(version_compare($current, '1.1', '<'))
-		{
-			$this->update_extension_to_version_11();
-		}
-	}	
-	
-	// ----------------------------------------------------------------------
-	
-	/**
-	 * Update Extension to Version 1.1
-	 *
-	 * Add session_end hook to extensions table.
-	 *
-	 * @return 	mixed	void on update / false if none
-	 */
-	function update_extension_to_version_11()
-	{
-		$data = array(
-			'class'		=> __CLASS__,
-			'method'	=> 'sessions_end',
-			'hook'		=> 'sessions_end',
-			'settings'	=> serialize(array('redirect_admins' => array('yes'))),
-			'version'	=> $this->version,
-			'enabled'	=> 'y'
-			);
-
-		$this->_EE->db->insert('extensions', $data);
-	}
+		return TRUE;
+	}		
 }
 
 /* End of file ext.dashee.php */

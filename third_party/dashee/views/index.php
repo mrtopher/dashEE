@@ -17,7 +17,7 @@
 </div>
 
 <div id="dashSaveLayout" style="display:none;">
-	<?php echo form_open(); ?>
+	<?php echo form_open('', array('id' => 'dasheeLayoutForm')); ?>	
 		<p><label for="layout_name"><?php echo lang('lblLayoutName'); ?>:</label>
 		<input type="text" name="layout_name" id="layout_name" class="text ui-widget-content ui-corner-all" /></p>
 		
@@ -27,3 +27,4 @@
 </div>
 
 <img src="<?php echo $theme_url; ?>images/ajax-loader.gif" id="dashLoader" />
+<img src="<?php echo $theme_url; ?>images/widget-loader.gif" id="widgetLoader" />

@@ -24,11 +24,14 @@
  * @link		http://chrismonnat.com
  */
 
-class Dashee_model extends CI_Model {
+class Dashee_model extends CI_Model 
+{
 
     private $_EE;
+    private $_site_id;
     private $_package_name;
     private $_package_version;
+    private $_extension_version;
 
     /**
      * Constructor.
@@ -38,9 +41,11 @@ class Dashee_model extends CI_Model {
         parent::__construct();
 
         $this->_EE =& get_instance();
+        $this->_site_id = $this->_EE->session->userdata('site_id');
         
-        $this->_package_name    = 'dashEE';
-        $this->_package_version = '1.5';
+        $this->_package_name    	= 'dashEE';
+        $this->_package_version 	= '1.6';
+        $this->_extension_version 	= '1.1';
     }
     
     /**
@@ -108,7 +113,7 @@ class Dashee_model extends CI_Model {
             'module_version'        => $this->get_package_version(),
             'has_cp_backend'        => 'y',
             'has_publish_fields'    => 'n',
-        ));
+        	));
     }
 
     /**
@@ -128,6 +133,11 @@ class Dashee_model extends CI_Model {
 				'constraint'  	 => 10,
 				'unsigned'		 => TRUE,
 				'auto_increment' => TRUE
+				),
+			'site_id' => array(
+				'type' 			 => 'INT',
+				'constraint'  	 => 10,
+				'unsigned'		 => TRUE
 				),
 			'member_id' => array(
 				'type' 			=> 'INT',
@@ -163,17 +173,22 @@ class Dashee_model extends CI_Model {
 				'unsigned'		 => TRUE,
 				'auto_increment' => TRUE
 				),
+			'site_id' => array(
+				'type' 			 => 'INT',
+				'constraint'  	 => 10,
+				'unsigned'		 => TRUE
+				),
 			'name' => array(
 				'type' 			=> 'VARCHAR',
 				'constraint' 	=> 200
 				),
 			'description' => array(
 				'type' 			=> 'TEXT',
-				'null'			=> TRUE,
+				'null'			=> TRUE
 				),
 			'config' => array(
 				'type'			=> 'TEXT',
-				'null'			=> TRUE,
+				'null'			=> TRUE
 				),
 			'is_default' => array(
 				'type'			=> 'TINYINT',
@@ -187,35 +202,10 @@ class Dashee_model extends CI_Model {
 		$this->_EE->dbforge->create_table('dashee_layouts', TRUE);
 		
 		// add standard default layout to new layouts DB table
-		$default_config = array(
-			'widgets' => array(
-				1 => array(
-					'wgt1' => array(
-						'mod' => 'dashee', 
-						'wgt' => 'wgt.welcome.php'
-						),
-					'wgt2' => array(
-						'mod' => 'dashee',
-						'wgt' => 'wgt.create_links.php'
-						)
-					),
-				2 => array(
-					'wgt3' => array(
-						'mod' => 'dashee',
-						'wgt' => 'wgt.modify_links.php'
-						)
-					),
-				3 => array(
-					'wgt4' => array(
-						'mod' => 'dashee',
-						'wgt' => 'wgt.view_links.php'
-						)
-					)
-				),
-			'columns' => 3
-			);
+		$default_config = $this->_get_standard_default_template();
 	
 		$params = array(
+			'site_id'		=> $this->_site_id,
 			'name' 			=> 'Default EE layout',
 			'description'	=> 'Default dashEE layout that mimics standard EE CP.',
 			'config' 		=> json_encode($default_config),
@@ -247,24 +237,74 @@ class Dashee_model extends CI_Model {
 			'member_group_id' => array(
 				'type' 			=> 'INT',
 				'constraint' 	=> 10,
-				'unsigned'		=> TRUE,
+				'unsigned'		=> TRUE
+				),
+			'site_id' => array(
+				'type' 			 => 'INT',
+				'constraint'  	 => 10,
+				'unsigned'		 => TRUE
 				),
 			'layout_id' => array(
 				'type' 			=> 'INT',
 				'constraint' 	=> 10,
-				'unsigned'		=> TRUE,
+				'unsigned'		=> TRUE
 				),
 			'locked' => array(
 				'type' 			=> 'INT',
 				'constraint' 	=> 1,
 				'unsigned'		=> TRUE,
-				'null'			=> FALSE,
+				'null'			=> FALSE
 				),
 			);
 			
 		$this->_EE->dbforge->add_field($fields);
 		$this->_EE->dbforge->add_key('id', TRUE);
 		$this->_EE->dbforge->create_table('dashee_member_groups_layouts', TRUE);
+    }
+    
+    /**
+     * Activate module extension.
+     *
+     * @access  public
+     * @return  void
+     */
+    public function activate_extension()
+    {
+		// Setup custom settings in this array.
+		$this->settings = array('redirect_admins' => array('yes'));
+		
+		$hooks = array(
+			'cp_css_end'		=> 'crumb_hide',
+			'cp_js_end'			=> 'crumb_remap',
+			'cp_member_login'	=> 'member_redirect',
+			'sessions_end'		=> 'sessions_end',
+			);
+
+		foreach ($hooks as $hook => $method)
+		{
+			$data = array(
+				'class'		=> 'Dashee_ext',
+				'method'	=> $method,
+				'hook'		=> $hook,
+				'settings'	=> serialize($this->settings),
+				'version'	=> $this->_extension_version,
+				'enabled'	=> 'y'
+				);
+
+			$this->_EE->db->insert('extensions', $data);			
+		}
+    }
+    
+    /**
+     * Activate module extension.
+     *
+     * @access  public
+     * @return  void
+     */
+    public function disable_extension()
+    {
+		$this->_EE->db->where('class', 'Dashee_ext');
+		$this->_EE->db->delete('extensions');
     }
     
     /**
@@ -278,8 +318,7 @@ class Dashee_model extends CI_Model {
         $module_name = ucfirst($this->get_package_name());
 
         // Retrieve the module information.
-        $result = $this->_EE->db
-            ->select('module_id')
+        $result = $this->_EE->db->select('module_id')
             ->get_where('modules', array('module_name' => $module_name), 1);
 
         if($result->num_rows() !== 1)
@@ -324,6 +363,11 @@ class Dashee_model extends CI_Model {
             $this->_update_package_to_version_15();
         }
 
+        if(version_compare($installed_version, '1.6', '<'))
+        {
+            $this->_update_package_to_version_16();
+        }
+
         // Forcibly update the module version number?
         if($force === TRUE)
         {
@@ -363,7 +407,7 @@ class Dashee_model extends CI_Model {
     }
 
     /**
-     * Add collumn 'locked' tot dashee_member_groups_layouts
+     * Add column 'locked' to dashee_member_groups_layouts
      *
      * @access  private
      * @return  void
@@ -373,12 +417,112 @@ class Dashee_model extends CI_Model {
 		$this->_EE->load->dbforge();
 
 		$fields = array(
-		  'locked' => array('type' => 'int', 'constraint' => '1', 'unsigned' => TRUE, 'null' => FALSE)
-		);
+			'locked' => array(
+				'type' 			=> 'int', 
+				'constraint' 	=> '1',
+				'unsigned'		=> TRUE,
+				'null' 			=> FALSE
+				)
+			);
 		
 		$this->_EE->dbforge->add_column('dashee_member_groups_layouts', $fields);
     }
         
+    /**
+     * Add site_id columns to appropriate tables and populate as needed for MSM support.
+     *
+     * @access  private
+     * @return  void
+     */
+    private function _update_package_to_version_16()
+    {
+		$this->_EE->load->dbforge();
+
+		$fields = array(
+			'site_id' => array(
+				'type'			=> 'INT',
+				'constraint'  	=> 10,
+				'unsigned'		=> TRUE
+				)
+			);
+		
+		// add site_id column to both members and layouts table
+		// using query() instead of DB forge to take advantage of mysql AFTER operator
+		$this->_EE->db->query('ALTER TABLE exp_dashee_members ADD `site_id` INT(10) UNSIGNED NOT NULL AFTER `id`');
+		$this->_EE->db->query('ALTER TABLE exp_dashee_layouts ADD `site_id` INT(10) UNSIGNED NOT NULL AFTER `id`');
+		$this->_EE->db->query('ALTER TABLE exp_dashee_member_groups_layouts ADD `site_id` INT(10) UNSIGNED NOT NULL AFTER `member_group_id`');
+		
+		// set new site_id column for all existing members/layouts
+		$this->_EE->db->update('dashee_members', array('site_id' => $this->_site_id));
+		$this->_EE->db->update('dashee_layouts', array('site_id' => $this->_site_id));
+		$this->_EE->db->update('dashee_member_groups_layouts', array('site_id' => $this->_site_id));
+		
+		// reindex existing member layouts with random IDs
+		$this->_EE->load->helper('string');
+		
+		$members = $this->_EE->db->get('dashee_members');
+		foreach($members->result() as $member)
+		{
+			$config = array();
+			$dash = json_decode($member->config, TRUE);
+			foreach($dash['widgets'] as $col => $widgets)
+			{
+				foreach($widgets as $id => $widget)
+				{
+					$config[$col][random_string('numeric', 8)] = $widget;
+				}
+			}
+			
+			$dash['widgets'] = $config;
+			$this->_EE->db->update('dashee_members', array('config' => json_encode($dash)), array('id' => $member->id));
+		}
+    }
+    
+   	/**
+	 * Update Extension
+	 *
+	 * This function performs any necessary db updates when the extension
+	 * page is visited
+	 *
+	 * @return 	mixed	void on update / false if none
+	 */
+	public function update_extension($current = '')
+	{
+		if(version_compare($current, $this->_extension_version, '>='))
+		{
+			return FALSE;
+		}
+		
+		if(version_compare($current, '1.1', '<'))
+		{
+			$this->_update_extension_to_version_11();
+		}
+		
+		return TRUE;
+	}	
+		
+	/**
+	 * Update Extension to Version 1.1
+	 *
+	 * Add session_end hook to extensions table.
+	 *
+	 * @return 	mixed	void on update / false if none
+	 */
+	private function _update_extension_to_version_11()
+	{
+		$data = array(
+			'class'		=> __CLASS__,
+			'method'	=> 'sessions_end',
+			'hook'		=> 'sessions_end',
+			'settings'	=> serialize(array('redirect_admins' => array('yes'))),
+			'version'	=> $this->_extension_version,
+			'enabled'	=> 'y'
+			);
+
+		$this->_EE->db->insert('extensions', $data);
+	}
+
+
     /**
      * Returns the package theme folder URL, appending a forward slash if required.
      *
@@ -424,15 +568,21 @@ class Dashee_model extends CI_Model {
 	 */
 	public function get_member_settings($member_id)
 	{
+		$site_id = 
 		$result = $this->_EE->db->select('*')
 			->from('dashee_members')
+			->where('site_id', $this->_site_id)
 			->where('member_id', $member_id)
 			->get();
 		
 		if($result->num_rows() < 1)
 		{
 			// This is a new user with no preferences, return default configuration for membership group.
-			$qry = $this->_EE->db->get_where('dashee_member_groups_layouts', array('member_group_id' => $this->_EE->session->userdata('group_id')));
+			$params = array(
+				'site_id' 			=> $this->_site_id,
+				'member_group_id' 	=> $this->_EE->session->userdata('group_id')
+				);
+			$qry = $this->_EE->db->get_where('dashee_member_groups_layouts', $params);
 			
 			if($qry->num_rows() > 0)
 			{
@@ -443,12 +593,13 @@ class Dashee_model extends CI_Model {
 			}
 			else
 			{			
-				$qry = $this->_EE->db->get_where('dashee_layouts', array('is_default' => TRUE))->row();
-				$config = $qry->config;
+				$layout = $this->get_default_layout();
+				$config = $layout->config;
 				$locked_group = FALSE;
 			}
 		
 			$params = array(
+				'site_id'	=> $this->_site_id,
 				'member_id' => $member_id,
 				'config' 	=> $config
 				);
@@ -466,7 +617,11 @@ class Dashee_model extends CI_Model {
 			$config = json_decode($result->row()->config, TRUE);
 
 			// check if the member group has a locked layout
-			$qry = $this->_EE->db->get_where('dashee_member_groups_layouts', array('locked' => 1,'member_group_id' => $this->_EE->session->userdata('group_id')));
+			$params = array(
+				'locked' 			=> 1,
+				'member_group_id' 	=> $this->_EE->session->userdata('group_id')
+				);
+			$qry = $this->_EE->db->get_where('dashee_member_groups_layouts', $params);
 
 			$config['locked'] = ($qry->num_rows() == 1) ? TRUE : FALSE;
 
@@ -484,7 +639,7 @@ class Dashee_model extends CI_Model {
 	 */
 	public function update_member($member_id, $config)
 	{
-		return $this->_EE->db->update('exp_dashee_members', array('config' => json_encode($config)), array('member_id' => $member_id));
+		return $this->_EE->db->update('exp_dashee_members', array('config' => json_encode($config)), array('site_id' => $this->_site_id, 'member_id' => $member_id));
 	}  
 	
 	/**
@@ -495,7 +650,10 @@ class Dashee_model extends CI_Model {
 	 */
 	public function get_all_layouts()
 	{
-		return $this->_EE->db->order_by('name')->get('dashee_layouts')->result();
+		return $this->_EE->db->where('site_id', $this->_site_id)
+			->order_by('name')
+			->get('dashee_layouts')
+			->result();
 	}
 	
 	/**
@@ -507,7 +665,45 @@ class Dashee_model extends CI_Model {
 	 */
 	public function get_layout($layout_id)
 	{
-		return $this->_EE->db->get_where('dashee_layouts', array('id' => $layout_id))->row();
+		return $this->_EE->db->get_where('dashee_layouts', array('id' => $layout_id, 'site_id' => $this->_site_id))->row();
+	}
+	
+	/**
+	 * Store standard default layout for use throughout model.
+	 *
+     * @access  private
+	 * @return 	array
+	 */
+	private function _get_standard_default_template()
+	{
+		$this->_EE->load->helper('string');
+		return array(
+			'widgets' => array(
+				1 => array(
+					'wgt'.random_string('numeric', 8) => array(
+						'mod' => 'dashee', 
+						'wgt' => 'wgt.welcome.php'
+						),
+					'wgt'.random_string('numeric', 8) => array(
+						'mod' => 'dashee',
+						'wgt' => 'wgt.create_links.php'
+						)
+					),
+				2 => array(
+					'wgt'.random_string('numeric', 8) => array(
+						'mod' => 'dashee',
+						'wgt' => 'wgt.modify_links.php'
+						)
+					),
+				3 => array(
+					'wgt'.random_string('numeric', 8) => array(
+						'mod' => 'dashee',
+						'wgt' => 'wgt.view_links.php'
+						)
+					)
+				),
+			'columns' => 3
+			);
 	}
 	
 	/**
@@ -518,7 +714,26 @@ class Dashee_model extends CI_Model {
 	 */
 	public function get_default_layout()
 	{
-		return $this->_EE->db->get_where('dashee_layouts', array('is_default' => TRUE))->row();
+		$qry = $this->_EE->db->get_where('dashee_layouts', array('site_id' => $this->_site_id, 'is_default' => TRUE));
+		
+		if($qry->num_rows() > 0)
+		{
+			return $qry->row();
+		}
+		else
+		{
+			$params = array(
+				'site_id'		=> $this->_site_id,
+				'name' 			=> 'Default EE layout',
+				'description'	=> 'Default dashEE layout that mimics standard EE CP.',
+				'config' 		=> json_encode($this->_get_standard_default_template()),
+				'is_default' 	=> TRUE
+				);
+				
+			$this->_EE->db->insert('dashee_layouts', $params);
+			
+			return $this->_EE->db->get_where('dashee_layouts', array('site_id' => $this->_site_id, 'is_default' => TRUE))->row();
+		}
 	}
 	
 	/**
@@ -538,8 +753,9 @@ class Dashee_model extends CI_Model {
 			{
 				$groups[$row->member_group_id] = array(
 					'layout_id' => $row->layout_id,
-					'locked' => (boolean) $row->locked,
-				);
+					'site_id'	=> $this->_site_id,
+					'locked' 	=> (boolean) $row->locked,
+					);
 			}
 		}
 		
@@ -555,8 +771,8 @@ class Dashee_model extends CI_Model {
 	 */
 	public function set_default_layout($layout_id)
 	{
-		$this->_EE->db->update('dashee_layouts', array('is_default' => FALSE));
-		$this->_EE->db->update('dashee_layouts', array('is_default' => TRUE), array('id' => $layout_id));
+		$this->_EE->db->update('dashee_layouts', array('is_default' => FALSE), array('site_id' => $this->_site_id));
+		$this->_EE->db->update('dashee_layouts', array('is_default' => TRUE), array('id' => $layout_id, 'site_id' => $this->_site_id));
 	}
 	
 	/**
@@ -571,6 +787,7 @@ class Dashee_model extends CI_Model {
 	public function add_layout($name, $description, $config)
 	{
 		$params = array(
+			'site_id'		=> $this->_site_id,
 			'name' 			=> $name,
 			'description' 	=> $description,
 			'config' 		=> json_encode($config)
@@ -588,7 +805,7 @@ class Dashee_model extends CI_Model {
 	 */
 	public function update_layout($layout_id, $params)
 	{
-		$this->_EE->db->update('dashee_layouts', $params, array('id' => $layout_id));
+		$this->_EE->db->update('dashee_layouts', $params, array('id' => $layout_id, 'site_id' => $this->_site_id));
 	}
 	
 	/**
@@ -605,7 +822,14 @@ class Dashee_model extends CI_Model {
 		foreach($group_layouts as $group_id => $layout_id)
 		{
 			$locked = (isset($group_locked[$group_id])&& $group_locked[$group_id]=='locked') ? 1 : 0;
-			$this->_EE->db->insert('dashee_member_groups_layouts', array('member_group_id' => $group_id, 'layout_id' => $layout_id, 'locked'=>$locked));
+			
+			$params = array(
+				'member_group_id' 	=> $group_id,
+				'site_id'			=> $this->_site_id,
+				'layout_id' 		=> $layout_id,
+				'locked' 			=> $locked
+				);
+			$this->_EE->db->insert('dashee_member_groups_layouts', $params);
 		}
 	}
 	
@@ -620,7 +844,8 @@ class Dashee_model extends CI_Model {
 	{
 		$this->_EE->db->select('dashee_members.*, members.group_id')
 			->from('dashee_members')
-			->join('members', 'dashee_members.member_id = members.member_id');
+			->join('members', 'dashee_members.member_id = members.member_id')
+			->where('dashee_members.site_id', $this->_site_id);
 
 		if($group_id) $this->_EE->db->where('members.group_id', $group_id);
 
@@ -668,8 +893,9 @@ class Dashee_model extends CI_Model {
 	{
 		return $this->_EE->db->select('group_id AS id, group_title AS title, group_description AS description')
 			->from('member_groups')
-			->order_by('group_title')
+			->where('site_id', $this->_site_id)
 			->where('can_access_cp', 'y')
+			->order_by('group_title')
 			->get()
 			->result();
 	}
@@ -686,9 +912,11 @@ class Dashee_model extends CI_Model {
 		return $this->_EE->db->select('*')
 			->from('member_groups')
 			->where('group_id', $group_id)
+			->where('site_id', $this->_site_id)
 			->get()
 			->row();
 	}
+	
 }
 /* End of file dashee_model.php */
 /* Location: /system/expressionengine/third_party/dashee/models/dashee_model.php */

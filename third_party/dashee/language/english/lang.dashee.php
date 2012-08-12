@@ -29,7 +29,6 @@ $lang = array(
 	'thOptions'		=> 'Options',
 	'thMemberGroup' => 'Member Group',
 	'thLayout'		=> 'Layout',
-
 	'thLocked'		=> 'Lock layout',
 	
 	'prefNumColumns'=> 'Number of columns?',
@@ -57,7 +56,7 @@ $lang = array(
 	'flashGroupDefaultNotUpdated'	=> 'Member group defaults could not be updated.',
 	'flashGroupLayoutReset'			=> 'Layout has been reset for ',
 	'flashGroupLayoutNotReset'		=> 'Layout could not be reset for ',
-
+	
 	'default_layout' => 'Default layout',
 	
 	'widget_added'	=> 'Widget added.',
