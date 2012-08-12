@@ -81,7 +81,7 @@ $(function() {
 			$.ajax({
 				type: 'GET',
 				url: url + '?D=cp&C=addons_modules&M=show_module_cp&module=dashee&method=add_widget&mod='+link.data('module')+'&wgt='+link.data('widget'),
-				dataTyle: 'html',
+				dataType: 'html',
 				success: $.proxy(function(json) {
 					widget = $.parseJSON(json);
 					$rwidget = $(widget.html);
@@ -118,7 +118,7 @@ $(function() {
 							$.ajax({
 								type: 'GET',
 								url: url + '/?D=cp&C=addons_modules&M=show_module_cp&module=dashee&method=remove_widget&wgt='+wgt.id,
-								dataTyle: 'html',
+								dataType: 'html',
 								success: $.proxy(function(html) {
 									widget.animate({
 										opacity: 0	  
@@ -166,7 +166,7 @@ $(function() {
 					$.ajax({
 						type: 'GET',
 						url: url + '?D=cp&C=addons_modules&M=show_module_cp&module=dashee&method=get_widget&wgt='+wgt.id,
-						dataTyle: 'html',
+						dataType: 'html',
 						success: $.proxy(function(html) {
 							var response = $.parseJSON(html);
 							$('h2', wgt.heading).html(response.title);
@@ -181,7 +181,7 @@ $(function() {
 					$.ajax({
 						type: 'GET',
 						url: url + '?D=cp&C=addons_modules&M=show_module_cp&module=dashee&method=widget_settings&wgt='+wgt.id,
-						dataTyle: 'html',
+						dataType: 'html',
 						success: $.proxy(function(html) {
 							wgt.content.html(html);
 							wgt.content.addClass('settings');
@@ -195,7 +195,7 @@ $(function() {
 									type: 'POST',
 									url: url + '?D=cp&C=addons_modules&M=show_module_cp&module=dashee&method=update_widget_settings',
 									data: $(this).serialize()+'&wgt='+wgt.id,
-									dataTyle: 'json',
+									dataType: 'json',
 									success: function(html) {
 										var response = $.parseJSON(html);
 										$('h2', wgt.heading).html(response.title);
@@ -274,7 +274,7 @@ $(function() {
 						type: 'GET',
 						url: url + '?D=cp&C=addons_modules&M=show_module_cp&module=dashee&method=update_widget_order',
 						data: 'order='+order.join('|'),
-						dataTyle: 'html',
+						dataType: 'html',
 						success: function(html) {
 							$.ee_notice("Widget order updated.", {type: 'success'});
 						},
@@ -378,7 +378,7 @@ $(function() {
 			$.ajax({
 				type: 'GET',
 				url: url + '?D=cp&C=addons_modules&M=show_module_cp&module=dashee&method=get_widget_listing',
-				dataTyle: 'html',
+				dataType: 'html',
 				success: function(html) {
 					$('#dashListing .content').html(html);
 				},
@@ -410,7 +410,7 @@ $(function() {
 						type: 'POST',
 						url: url + '/?D=cp&C=addons_modules&M=show_module_cp&module=dashee&method=save_layout',
 						data: $('#dasheeLayoutForm').serialize(),
-						dataTyle: 'html',
+						dataType: 'html',
 						success: $.proxy(function(html) {
 							$.ee_notice('Your layout has been saved. Click "Settings" to assign it to a member group.', {type: 'success', open: true});
 							$('#dashSaveLayout').dialog('close');
