@@ -531,10 +531,7 @@ class Dashee_model extends CI_Model
      */
     public function get_package_theme_url()
     {
-        $theme_url = $this->_EE->config->item('theme_folder_url');
-        $theme_url .= substr($theme_url, -1) == '/' ? 'third_party/' : '/third_party/';
-
-        return $theme_url.strtolower($this->get_package_name()).'/';
+        return URL_THIRD_THEMES.strtolower($this->get_package_name()).'/';
     }
     
     /**
