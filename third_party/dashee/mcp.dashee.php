@@ -41,8 +41,8 @@ class Dashee_mcp
         $this->_base_url    = BASE .AMP .$this->_base_qs;
         $this->_theme_url   = $this->_model->get_package_theme_url();
         $this->_css_url   	= $this->_theme_url .'css/cp.css';
-        $this->_js_url   	= $this->_theme_url .'js/dashee.js';
-        // $this->_js_url   	= $this->_theme_url .'js/dashee.min.js';
+        // $this->_js_url   	= $this->_theme_url .'js/dashee.js';
+        $this->_js_url   	= $this->_theme_url .'js/dashee.min.js';
         
         $this->_member_id = $this->_EE->session->userdata('member_id');
         if($this->_EE->session->userdata('group_id') == 1)
