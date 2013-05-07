@@ -30,8 +30,8 @@ class Dashee_model extends CI_Model
         $this->_site_id = $this->_EE->session->userdata('site_id');
         
         $this->_package_name    	= 'dashEE';
-        $this->_package_version 	= '1.6';
-        $this->_extension_version 	= '1.1';
+        $this->_package_version 	= '1.7';
+        $this->_extension_version 	= '1.2';
     }
     
     /**
@@ -89,7 +89,7 @@ class Dashee_model extends CI_Model
 				break;
 		}
 
-		return (defined('BASE') ? BASE : SELF) . str_replace('&amp;', '&', '?S=' . $s) . AMP . 'D=cp' . AMP . 'C=addons_modules' . AMP . 'M=show_module_cp' . AMP . 'module=dashee';
+		return SELF . str_replace('&amp;', '&', '?S=' . $s) . AMP . 'D=cp' . AMP . 'C=addons_modules' . AMP . 'M=show_module_cp' . AMP . 'module=dashee';
     }
     
     /**

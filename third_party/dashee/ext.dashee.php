@@ -112,8 +112,8 @@ class Dashee_ext
 	 */
 	public function member_redirect()
 	{
-		// $this->_EE->load->model('dashee_model');
-		// $this->_EE->functions->redirect($this->_EE->dashee_model->get_module_url());
+		$this->_EE->load->model('dashee_model');
+		$this->_EE->functions->redirect($this->_EE->dashee_model->get_module_url());
 	}
 
 	// ----------------------------------------------------------------------
@@ -123,9 +123,11 @@ class Dashee_ext
 	 *
 	 * @return NULL 
 	 */
-	public function sessions_end( &$data )
+	public function sessions_end(&$data)
 	{	
-		if(REQ == 'CP' && $this->_EE->input->get('C') == 'homepage')
+		$c = $this->_EE->input->get('C');
+
+		if(REQ == 'CP' AND ($c == 'homepage' OR $c == ''))
 		{
 			$u = $data->userdata;
 
@@ -140,15 +142,21 @@ class Dashee_ext
 
 				if(empty($dashee_id)) return;
 
-				if( @$u['assigned_modules'][$dashee_id] != TRUE && $u['group_id'] != 1) return;
+				if(@$u['assigned_modules'][$dashee_id] != TRUE && $u['group_id'] != 1) return;
 
 				// all ok, build the url
 				$s = 0;
-				if ($this->_EE->config->item('admin_session_type') != 'c')
+				switch($this->_EE->config->item('admin_session_type'))
 				{
-					$s = $u['session_id'];
+					case 's'	:
+						$s = $u['session_id'];
+						break;
+					case 'cs'	:
+						$s = $u['fingerprint'];
+						break;
 				}
-				header('Location: '.SELF. str_replace('&amp;', '&', '?S=' . $s . AMP . 'D=cp' . AMP . $this->_base_qs) );
+
+				header('Location: ' . SELF . str_replace('&amp;', '&', '?S=' . $s . AMP . 'D=cp' . AMP . $this->_base_qs));
 				exit;
 			}
 		}
