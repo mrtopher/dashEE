@@ -1,20 +1,6 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2011, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
- * @since		Version 2.0
- * @filesource
- */
- 
-// ------------------------------------------------------------------------
-
-/**
  * dashEE Extension
  *
  * @package		ExpressionEngine
@@ -24,8 +10,8 @@
  * @link		http://chrismonnat.com
  */
 
-class Dashee_ext {
-	
+class Dashee_ext 
+{	
 	public $settings 		= array();
 	public $description		= 'Handle redirection and link remapping to alternate dashEE dashboard instead of defaule CP Home.';
 	public $docs_url		= 'http://dash-ee.com';
@@ -43,8 +29,13 @@ class Dashee_ext {
 	 */
 	public function __construct($settings = '')
 	{
-		$this->_EE =& get_instance();
+		$this->_EE 		=& get_instance();
 		$this->settings = $settings;
+
+		if(version_compare(APP_VER, 2.6, '>=')) 
+		{
+			$this->_EE->load->library(array('localize', 'remember', 'session'));
+		}
 		
         $this->_base_qs     = 'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=dashee';
         $this->_base_url    = (defined('BASE') ? BASE : SELF).AMP.$this->_base_qs;
@@ -97,10 +88,13 @@ class Dashee_ext {
 	 */
 	public function crumb_remap()
 	{
-		return $this->_EE->extensions->last_call . "
+		$this->_EE->load->model('dashee_model');
+		$url = $this->_EE->dashee_model->get_module_url();
+
+		return "
 			$().ready(function() {			
-				$('ul#navigationTabs li.home a').attr('href', '".htmlspecialchars_decode($this->_base_url)."');
-				$('#breadCrumb ol li:nth-child(2) a').attr('href', '".htmlspecialchars_decode($this->_base_url)."').html('Dashboard');
+				$('ul#navigationTabs li.home a').attr('href', '" . htmlspecialchars_decode($url) . "');
+				$('#breadCrumb ol li:nth-child(2) a').attr('href', '" . htmlspecialchars_decode($url) . "').html('Dashboard');
 				$('#breadCrumb ol').show();
 			});
 		";
@@ -118,7 +112,8 @@ class Dashee_ext {
 	 */
 	public function member_redirect()
 	{
-		$this->_EE->functions->redirect($this->_base_url);  
+		$this->_EE->load->model('dashee_model');
+		$this->_EE->functions->redirect($this->_EE->dashee_model->get_module_url());
 	}
 
 	// ----------------------------------------------------------------------
@@ -128,9 +123,11 @@ class Dashee_ext {
 	 *
 	 * @return NULL 
 	 */
-	public function sessions_end( &$data )
+	public function sessions_end(&$data)
 	{	
-		if(REQ == 'CP' && $this->_EE->input->get('C') == 'homepage')
+		$c = $this->_EE->input->get('C');
+
+		if(REQ == 'CP' AND ($c == 'homepage' OR $c == ''))
 		{
 			$u = $data->userdata;
 
@@ -145,15 +142,21 @@ class Dashee_ext {
 
 				if(empty($dashee_id)) return;
 
-				if( @$u['assigned_modules'][$dashee_id] != TRUE && $u['group_id'] != 1) return;
+				if(@$u['assigned_modules'][$dashee_id] != TRUE && $u['group_id'] != 1) return;
 
 				// all ok, build the url
 				$s = 0;
-				if ($this->_EE->config->item('admin_session_type') != 'c')
+				switch($this->_EE->config->item('admin_session_type'))
 				{
-					$s = $u['session_id'];
+					case 's'	:
+						$s = $u['session_id'];
+						break;
+					case 'cs'	:
+						$s = $u['fingerprint'];
+						break;
 				}
-				header('Location: '.SELF. str_replace('&amp;', '&', '?S=' . $s . AMP . 'D=cp' . AMP . $this->_base_qs) );
+
+				header('Location: ' . SELF . str_replace('&amp;', '&', '?S=' . $s . AMP . 'D=cp' . AMP . $this->_base_qs));
 				exit;
 			}
 		}

@@ -1,7 +1,5 @@
 $(function() {
 
-	var url = window.location.href.split('?')[0];
-
 	var dash = {
 		
 		settings : {
@@ -80,7 +78,7 @@ $(function() {
 			
 			$.ajax({
 				type: 'GET',
-				url: url + '?D=cp&C=addons_modules&M=show_module_cp&module=dashee&method=add_widget&mod='+link.data('module')+'&wgt='+link.data('widget'),
+				url: EE.BASE + '&C=addons_modules&M=show_module_cp&module=dashee&method=add_widget&mod='+link.data('module')+'&wgt='+link.data('widget'),
 				dataType: 'html',
 				success: $.proxy(function(json) {
 					widget = $.parseJSON(json);
@@ -117,7 +115,7 @@ $(function() {
 							$('.dialog-remove-widget > .ui-dialog-buttonpane').hide();
 							$.ajax({
 								type: 'GET',
-								url: url + '/?D=cp&C=addons_modules&M=show_module_cp&module=dashee&method=remove_widget&wgt='+wgt.id,
+								url: EE.BASE + '&C=addons_modules&M=show_module_cp&module=dashee&method=remove_widget&wgt='+wgt.id,
 								dataType: 'html',
 								success: $.proxy(function(html) {
 									widget.animate({
@@ -165,7 +163,7 @@ $(function() {
 
 					$.ajax({
 						type: 'GET',
-						url: url + '?D=cp&C=addons_modules&M=show_module_cp&module=dashee&method=get_widget&wgt='+wgt.id,
+						url: EE.BASE + '&C=addons_modules&M=show_module_cp&module=dashee&method=get_widget&wgt='+wgt.id,
 						dataType: 'html',
 						success: $.proxy(function(html) {
 							var response = $.parseJSON(html);
@@ -180,7 +178,7 @@ $(function() {
 				else { 
 					$.ajax({
 						type: 'GET',
-						url: url + '?D=cp&C=addons_modules&M=show_module_cp&module=dashee&method=widget_settings&wgt='+wgt.id,
+						url: EE.BASE + '&C=addons_modules&M=show_module_cp&module=dashee&method=widget_settings&wgt='+wgt.id,
 						dataType: 'html',
 						success: $.proxy(function(html) {
 							wgt.content.html(html);
@@ -193,7 +191,7 @@ $(function() {
 			
 								$.ajax({
 									type: 'POST',
-									url: url + '?D=cp&C=addons_modules&M=show_module_cp&module=dashee&method=update_widget_settings',
+									url: EE.BASE + '&C=addons_modules&M=show_module_cp&module=dashee&method=update_widget_settings',
 									data: $(this).serialize()+'&wgt='+wgt.id,
 									success: function(html) {
 										var response = $.parseJSON(html);
@@ -271,7 +269,7 @@ $(function() {
 					// save new order to DB
 					$.ajax({
 						type: 'GET',
-						url: url + '?D=cp&C=addons_modules&M=show_module_cp&module=dashee&method=update_widget_order',
+						url: EE.BASE + '&C=addons_modules&M=show_module_cp&module=dashee&method=update_widget_order',
 						data: 'order='+order.join('|'),
 						dataType: 'html',
 						success: function(html) {
@@ -376,7 +374,7 @@ $(function() {
 			$('#dashListing').slideDown();
 			$.ajax({
 				type: 'GET',
-				url: url + '?D=cp&C=addons_modules&M=show_module_cp&module=dashee&method=get_widget_listing',
+				url: EE.BASE + '&C=addons_modules&M=show_module_cp&module=dashee&method=get_widget_listing',
 				dataType: 'html',
 				success: function(html) {
 					$('#dashListing .content').html(html);
@@ -407,7 +405,7 @@ $(function() {
 					$('.dialog-save-layout > .ui-dialog-buttonpane').hide();
 					$.ajax({
 						type: 'POST',
-						url: url + '/?D=cp&C=addons_modules&M=show_module_cp&module=dashee&method=save_layout',
+						url: EE.BASE + '&C=addons_modules&M=show_module_cp&module=dashee&method=save_layout',
 						data: $('#dasheeLayoutForm').serialize(),
 						dataType: 'html',
 						success: $.proxy(function(html) {

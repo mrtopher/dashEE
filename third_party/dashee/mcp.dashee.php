@@ -1,20 +1,6 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2011, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
- * @since		Version 2.0
- * @filesource
- */
- 
-// ------------------------------------------------------------------------
-
-/**
  * dashEE Module Control Panel File
  *
  * @package		ExpressionEngine
@@ -55,7 +41,7 @@ class Dashee_mcp
         $this->_base_url    = BASE .AMP .$this->_base_qs;
         $this->_theme_url   = $this->_model->get_package_theme_url();
         $this->_css_url   	= $this->_theme_url .'css/cp.css';
-        //$this->_js_url   	= $this->_theme_url .'js/dashee.js';
+        // $this->_js_url   	= $this->_theme_url .'js/dashee.js';
         $this->_js_url   	= $this->_theme_url .'js/dashee.min.js';
         
         $this->_member_id = $this->_EE->session->userdata('member_id');
@@ -85,9 +71,7 @@ class Dashee_mcp
         {
         	$this->_EE->cp->add_to_head('<script type="text/javascript" src="'.$this->_js_url.'"></script>');
         }
-	
-		$this->_EE->cp->set_variable('cp_page_title', lang('dashee_term'));
-		
+			
 		// set button data appropriately based on type of user
 		$button_data['btn_collapse'] = '#collapse';
 		$button_data['btn_expand'] 	 = '#expand';
@@ -128,9 +112,10 @@ class Dashee_mcp
 		$widgets = $this->_widget_loader($this->_settings['widgets']);
 		
 		$page_data = array(
-			'settings' 	=> $this->_settings, 
-			'content' 	=> $widgets, 
-			'theme_url' => $this->_theme_url
+			'cp_page_title' => lang('dashee_term'),
+			'settings' 		=> $this->_settings, 
+			'content' 		=> $widgets, 
+			'theme_url' 	=> $this->_theme_url
 			);
 		
 		return $this->_EE->load->view('index', $page_data, TRUE);
@@ -148,9 +133,7 @@ class Dashee_mcp
 	
         $this->_EE->cp->add_to_head('<link rel="stylesheet" type="text/css" href="'.$this->_theme_url.'css/settings.css" />');
         $this->_EE->cp->add_to_head('<script type="text/javascript" src="'.$this->_js_url.'"></script>');
-	
-		$this->_EE->cp->set_variable('cp_page_title', lang('dashee_settings'));
-		
+			
 		$this->_EE->cp->set_breadcrumb($this->_base_url, lang('btn_settings'));
 		
 		// override default breadcrumb display
@@ -185,6 +168,7 @@ class Dashee_mcp
 		}
 		
 		$page_data = array(
+			'cp_page_title' => lang('dashee_settings'),
 			'base_qs' 		=> $this->_base_qs,
 			'base_url'		=> $this->_base_url,
 			'settings' 		=> $this->_settings,

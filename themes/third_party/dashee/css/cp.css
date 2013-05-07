@@ -9,15 +9,18 @@
 
 
 /* Module CSS */
-#dashListing { height:320px; overflow:auto; margin: 0 3.3% 25px; }
+#dashListing { height:320px; overflow:auto; margin: 0 3.1% 25px 1.9%; }
 
 #dashContainer .column { 
     float: left;
-    margin-left:3.3%;
+    margin-left:3.9%;
 	/* Min-height: */
 	min-height: 400px;
 	height: auto !important; 
 	height: 400px;
+}
+#dashContainer .column:first-child {
+	margin-left:1.9%;
 }
 #dashContainer .columns3 .column { width:29%; }
 #dashContainer .columns2 .column { width:45%; }
