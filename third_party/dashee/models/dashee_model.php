@@ -1,20 +1,6 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2011, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
- * @since		Version 2.0
- * @filesource
- */
- 
-// ------------------------------------------------------------------------
-
-/**
  * dashEE Model
  *
  * @package		ExpressionEngine
@@ -82,6 +68,28 @@ class Dashee_model extends CI_Model
     public function get_package_version()
     {
         return $this->_package_version;
+    }
+
+    /**
+     * Returns the module URL with session ID if required.
+     *
+     * @access  public
+     * @return  string
+     */
+    public function get_module_url()
+    {
+    	$s = 0;
+		switch(ee()->config->item('admin_session_type'))
+		{
+			case 's'	:
+				$s = ee()->session->userdata('session_id', 0);
+				break;
+			case 'cs'	:
+				$s = ee()->session->userdata('fingerprint', 0);
+				break;
+		}
+
+		return (defined('BASE') ? BASE : SELF) . str_replace('&amp;', '&', '?S=' . $s) . AMP . 'D=cp' . AMP . 'C=addons_modules' . AMP . 'M=show_module_cp' . AMP . 'module=dashee';
     }
     
     /**
