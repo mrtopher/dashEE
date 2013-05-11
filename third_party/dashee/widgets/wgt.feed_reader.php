@@ -24,7 +24,7 @@ class Wgt_feed_reader
 	public function __construct()
 	{
 		$this->settings = array(
-			'url' => 'http://expressionengine.com/feeds/rss/eeblog/',
+			'url' => 'http://ellislab.com/blog/rss-feed',
 			'num' => 5
 			);
 		$this->wclass = 'contentMenu';
@@ -43,14 +43,25 @@ class Wgt_feed_reader
 		$EE = get_instance();
 		$EE->load->helper('text');
 	
-		$rss = simplexml_load_file($settings->url);
+		libxml_use_internal_errors(true);
+		
+		if(!$rss = simplexml_load_file($settings->url))
+		{
+			$this->title = "Error";
+			$vars['error'] = TRUE;
+			return $EE->load->view('widgets/feed_reader', $vars, TRUE);
+			
+		}else{
+		
+			$this->title = (string) $rss->channel->title;
+			
+			$vars['error'] = FALSE;
+			$vars['rss'] = $rss;
+			$vars['num'] = $settings->num;
 
-		$this->title = (string) $rss->channel->title;
+			return $EE->load->view('widgets/feed_reader', $vars, TRUE);
+		}
 
-		$vars['rss'] = $rss;
-		$vars['num'] = $settings->num;
-
-		return $EE->load->view('widgets/feed_reader', $vars, TRUE);
 	}
 	
 	/**
