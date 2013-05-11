@@ -1,5 +1,6 @@
 <ul>
 <?php
+if ($error == FALSE){
 	$i = 0;
 
 	foreach ($rss->channel->item as $key => $item):
@@ -11,6 +12,13 @@
 		<a href="<?=$link?>" target="_blank"><?=$title?></a>
 	</li>
 <?php
-	endforeach
+	endforeach;
+	}else{
+	?>
+	<li>
+		<p align="center"><br>Feed doesn't exist. Please check URL</p>
+	</li>
+<?php		
+	}
 ?>
 </ul>
