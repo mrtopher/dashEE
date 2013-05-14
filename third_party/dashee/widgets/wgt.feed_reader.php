@@ -47,21 +47,19 @@ class Wgt_feed_reader
 		
 		if(!$rss = simplexml_load_file($settings->url))
 		{
-			$this->title = "Error";
-			$vars['error'] = TRUE;
-			return $EE->load->view('widgets/feed_reader', $vars, TRUE);
-			
-		}else{
-		
+			$this->title 	= "Error";
+			$vars['error'] 	= TRUE;	
+		}
+		else
+		{
 			$this->title = (string) $rss->channel->title;
 			
-			$vars['error'] = FALSE;
-			$vars['rss'] = $rss;
-			$vars['num'] = $settings->num;
-
-			return $EE->load->view('widgets/feed_reader', $vars, TRUE);
+			$vars['error'] 	= FALSE;
+			$vars['rss'] 	= $rss;
+			$vars['num'] 	= $settings->num;
 		}
 
+		return $EE->load->view('widgets/feed_reader', $vars, TRUE);
 	}
 	
 	/**
