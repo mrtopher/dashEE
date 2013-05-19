@@ -86,19 +86,29 @@ class Dashee_ext
 	 *
 	 * @return string
 	 */
-	public function crumb_remap()
-	{
-		$this->_EE->load->model('dashee_model');
-		$url = $this->_EE->dashee_model->get_module_url();
+    public function crumb_remap()
+    {
+        $this->_EE->load->model('dashee_model');
+        $url = $this->_EE->dashee_model->get_module_url();
 
-		return "
-			$().ready(function() {			
-				$('ul#navigationTabs li.home a').attr('href', '" . htmlspecialchars_decode($url) . "');
-				$('#breadCrumb ol li:nth-child(2) a').attr('href', '" . htmlspecialchars_decode($url) . "').html('Dashboard');
-				$('#breadCrumb ol').show();
-			});
-		";
-	}
+        $js = '';
+
+        // If another extension shares the same hook
+        if ($this->_EE->extensions->last_call !== FALSE)
+        {
+            $js = $this->_EE->extensions->last_call;
+        }
+
+        $js .= "
+            $().ready(function() {          
+                $('ul#navigationTabs li.home a').attr('href', '" . htmlspecialchars_decode($url) . "');
+                $('#breadCrumb ol li:nth-child(2) a').attr('href', '" . htmlspecialchars_decode($url) . "').html('Dashboard');
+                $('#breadCrumb ol').show();
+            });
+        ";
+
+        return $js;
+    }
 
 	// ----------------------------------------------------------------------
 	
@@ -132,7 +142,7 @@ class Dashee_ext
 			$u = $data->userdata;
 
 			// redirect super admins?
-			if($u['group_id'] == 1 && $this->settings['redirect_admins'][0] != 'yes') return;
+			if($u['group_id'] == 1 && empty($this->settings['redirect_admins'][0])) return;
 
 			// can user access modules at all?
 			if($u['can_access_cp']=='y' && $u['can_access_addons']=='y' && $u['can_access_modules']=='y')
