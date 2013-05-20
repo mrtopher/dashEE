@@ -187,12 +187,12 @@ $(function() {
 							$('form.dashForm').submit(function(event) {
 								event.preventDefault();
 								wgt.content.removeClass('settings');
-								wgt.content.html('<p><center><img src="'+$('#dashLoader').attr('src')+'" /></center></p>');
+								wgt.content.html('<p><center><img src="' + $('#dashLoader').attr('src') + '" /></center></p>');
 			
 								$.ajax({
 									type: 'POST',
 									url: EE.BASE + '&C=addons_modules&M=show_module_cp&module=dashee&method=update_widget_settings',
-									data: $(this).serialize()+'&wgt='+wgt.id,
+									data: $(this).serialize() + '&wgt=' + wgt.id,
 									success: function(html) {
 										var response = $.parseJSON(html);
 										$('h2', wgt.heading).html(response.title);
@@ -202,7 +202,6 @@ $(function() {
 										wgt.content.html('<p>There was a problem.</p>');
 									}
 								});
-			
 							});
 						}, this),
 						error: $.proxy(function(html) {
@@ -217,7 +216,24 @@ $(function() {
 			var $button = $('<a href="#" title="Collapse" class="collapse"></a>').appendTo(wgt.buttons);
 
 			$button.mousedown($.proxy(function (e) {
-				widget.toggleClass('collapsed')
+				widget.toggleClass('collapsed');
+
+				var $state = 1;
+				if(widget.hasClass('collapsed'))
+				{
+					$state = 0;
+				}
+
+				$.ajax({
+					type: 'GET',
+					url: EE.BASE + '&C=addons_modules&M=show_module_cp&module=dashee&method=ajax_update_widget_state&state=' + $state + '&wgt=' + wgt.id
+					// success: function(html) {
+					// 	$.ee_notice('Widget state has been saved.', {type: 'success', open: true});
+					// },
+					// error: function(html) {
+					// 	$.ee_notice('There was a prpoblem.', {type: 'error', open: true});
+					// }
+				});
 			}, this));
 		},
 		

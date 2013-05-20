@@ -379,8 +379,9 @@ class Dashee_mcp
 			$col = array_keys($totals, min($totals));
 		
 			$new_widget = array(
-				'mod' => $mod,
-				'wgt' => $wgt,				
+				'mod' 	=> $mod,
+				'wgt' 	=> $wgt,
+				'state' => 1				
 				);
 		
 			// add widget settings to config if present
@@ -480,6 +481,24 @@ class Dashee_mcp
 			echo '<p>Widget could not be found.</p>';
 		}
 	}
+
+	/**
+	 * AJAX METHOD
+	 * Attempt to update a widgets state in the DB.
+	 *
+	 * @return 	NULL
+	 */
+	public function ajax_update_widget_state()
+	{
+		$widget = $this->_widgets[$this->_EE->input->get('wgt')];
+
+		$state = 1;
+		$state = $this->_EE->input->get('state');
+
+		$this->_settings['widgets'][$widget['col']][$widget['id']]['state'] = $state;
+		$this->_update_member(FALSE);
+		exit();
+	}
 	
 	/**
 	 * AJAX METHOD
@@ -509,6 +528,7 @@ class Dashee_mcp
 			'title'		=> $obj->title,
 			'content' 	=> $content
 			);
+
 		echo json_encode($result);
 		exit();
 	}

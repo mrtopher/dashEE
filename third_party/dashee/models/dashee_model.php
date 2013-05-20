@@ -30,7 +30,7 @@ class Dashee_model extends CI_Model
         $this->_site_id = $this->_EE->session->userdata('site_id');
         
         $this->_package_name    	= 'dashEE';
-        $this->_package_version 	= '1.7';
+        $this->_package_version 	= '1.8';
         $this->_extension_version 	= '1.2';
     }
     
@@ -687,24 +687,28 @@ class Dashee_model extends CI_Model
 			'widgets' => array(
 				1 => array(
 					'wgt' . random_string('numeric', 8) => array(
-						'mod' => 'dashee', 
-						'wgt' => 'wgt.welcome.php'
+						'mod' 	=> 'dashee', 
+						'wgt' 	=> 'wgt.welcome.php',
+						'state' => 1
 						),
 					'wgt' . random_string('numeric', 8) => array(
-						'mod' => 'dashee',
-						'wgt' => 'wgt.create_links.php'
+						'mod' 	=> 'dashee',
+						'wgt' 	=> 'wgt.create_links.php',
+						'state' => 1
 						)
 					),
 				2 => array(
 					'wgt' . random_string('numeric', 8) => array(
-						'mod' => 'dashee',
-						'wgt' => 'wgt.modify_links.php'
+						'mod' 	=> 'dashee',
+						'wgt' 	=> 'wgt.modify_links.php',
+						'state' => 1
 						)
 					),
 				3 => array(
 					'wgt' . random_string('numeric', 8) => array(
-						'mod' => 'dashee',
-						'wgt' => 'wgt.view_links.php'
+						'mod' 	=> 'dashee',
+						'wgt' 	=> 'wgt.view_links.php',
+						'state' => 1
 						)
 					)
 				),
