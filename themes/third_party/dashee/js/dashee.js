@@ -39,7 +39,7 @@ $(function() {
 				content : $(dash.settings.contentSelector, widget),
 				id : widget.attr('id'),
 				settings : dash.getWidgetSettings(widget.attr('dashee'))
-			};
+				};
 			
 			//  Remove button	
 			if(wgt.settings.removable) {
@@ -363,6 +363,7 @@ $(function() {
 		dash.dialog('help', '#dashLayoutHelp', '', 'dashEE Layouts', 450, 340);
 	});
 	
+	// Click event to display layout locking help.
 	$('a.dashLockHelp').click(function() {
 		dash.dialog('help', '#dashLockHelp', '', 'Lock Layouts', 310, 190);
 	});

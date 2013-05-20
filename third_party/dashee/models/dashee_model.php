@@ -682,26 +682,27 @@ class Dashee_model extends CI_Model
 	private function _get_standard_default_template()
 	{
 		$this->_EE->load->helper('string');
+		
 		return array(
 			'widgets' => array(
 				1 => array(
-					'wgt'.random_string('numeric', 8) => array(
+					'wgt' . random_string('numeric', 8) => array(
 						'mod' => 'dashee', 
 						'wgt' => 'wgt.welcome.php'
 						),
-					'wgt'.random_string('numeric', 8) => array(
+					'wgt' . random_string('numeric', 8) => array(
 						'mod' => 'dashee',
 						'wgt' => 'wgt.create_links.php'
 						)
 					),
 				2 => array(
-					'wgt'.random_string('numeric', 8) => array(
+					'wgt' . random_string('numeric', 8) => array(
 						'mod' => 'dashee',
 						'wgt' => 'wgt.modify_links.php'
 						)
 					),
 				3 => array(
-					'wgt'.random_string('numeric', 8) => array(
+					'wgt' . random_string('numeric', 8) => array(
 						'mod' => 'dashee',
 						'wgt' => 'wgt.view_links.php'
 						)

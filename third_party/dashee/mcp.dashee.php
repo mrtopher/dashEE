@@ -302,10 +302,25 @@ class Dashee_mcp
 					{
 						continue;
 					}
+
+					// provide for developers to include widget name and description in widget file and not need to put in dashEE language file
+					$widget_name 			= '';
+					$widget_description 	= '';
+
+					if(property_exists($obj, 'widget_name'))
+					{
+						$widget_name 		= $obj->widget_name;
+						$widget_description = $obj->widget_description ? $obj->widget_description : '--';
+					}
+					else
+					{
+						$widget_name 		= lang($this->_format_filename($widget).'_name');
+						$widget_description = lang($this->_format_filename($widget).'_description');
+					}
 					
 					$table_data[] = array(
-						lang($this->_format_filename($widget).'_name'),
-						lang($this->_format_filename($widget).'_description'),
+						$widget_name,
+						$widget_description,
 						lang(strtolower($mod).'_module_name'),
 						anchor($this->_base_url, 'Add', 'class="addWidget" data-module="' . $mod . '" data-widget="' . $widget . '"')
 						);			
@@ -769,7 +784,7 @@ class Dashee_mcp
 			{
 				foreach($widget as $id => $params)
 				{
-					$cols[$col] .= $this->_render_widget($id, $params['mod'], $params['wgt'], @$params['stng']);
+					$cols[$col] .= $this->_render_widget($id, $params['mod'], $params['wgt'], @$params['state'], @$params['stng']);
 				}
 			}
 		}
@@ -782,7 +797,7 @@ class Dashee_mcp
 	 *
 	 * @return	string
 	 */
-	private function _render_widget($id, $module, $widget, $settings = '')
+	private function _render_widget($id, $module, $widget, $state = 1, $settings = '')
 	{
 		$obj = $this->_get_widget_object($module, $widget);
 						
@@ -799,14 +814,20 @@ class Dashee_mcp
 			$this->_add_widget_package_path($module);
 			$content = $obj->index(@json_decode($settings));
 		}
+
+		// check widget state (expanded vs. collapsed)
+		if(isset($state) AND !$state)
+		{
+			$class .= ' collapsed';
+		}
 		
 		return '
-			<li id="'.$id.'" class="widget '.$class.'" '.$dash_code.'>
+			<li id="' . $id . '" class="widget ' . $class . '" ' . $dash_code . '>
 				<div class="heading">
-					<h2>'.$obj->title.'</h2>
+					<h2>' . $obj->title . '</h2>
 					<div class="buttons"></div>
 				</div>
-				<div class="widget-content">'.$content.'</div>
+				<div class="widget-content">' . $content . '</div>
 			</li>
 		';
 	}
