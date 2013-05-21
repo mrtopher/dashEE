@@ -64,38 +64,43 @@ class Dashee_mcp
 	 */
 	public function index()
 	{
-        $this->_EE->cp->add_to_head('<link rel="stylesheet" type="text/css" href="'.$this->_css_url.'" />');
+        $this->_EE->cp->add_to_head('<link rel="stylesheet" type="text/css" href="' . $this->_css_url . '" />');
 
         // is the member_group layout locked?
         if($this->_settings['locked'] == FALSE)
         {
-        	$this->_EE->cp->add_to_head('<script type="text/javascript" src="'.$this->_js_url.'"></script>');
+        	$this->_EE->cp->add_to_head('<script type="text/javascript" src="' . $this->_js_url . '"></script>');
         }
 			
 		// set button data appropriately based on type of user
-		$button_data['btn_collapse'] = '#collapse';
-		$button_data['btn_expand'] 	 = '#expand';
-			
+		if($this->_settings['state_buttons'])
+		{
+			$button_data['btn_collapse'] = '#collapse';
+			$button_data['btn_expand'] 	 = '#expand';			
+		}
+		
+		$button_data['btn_settings2'] = '#member-settings';
+		$button_data['btn_widgets']  = '#widgets';
+
 		if($this->_super_admin)
 		{
 			$button_data['btn_save'] = '#save-layout'; 
+			$button_data['btn_settings'] = $this->_base_url . AMP . 'method=settings';
 		}
-		
-		$button_data['btn_widgets']  = '#widgets'; 
-		$button_data['btn_settings'] = $this->_base_url.AMP.'method=settings';
 
-        // is the member_group layout locked?
-        if($this->_settings['locked'] == FALSE)
+		// is the member_group layout locked?
+		if($this->_settings['locked'] == FALSE)
         {
         	$this->_EE->cp->set_right_nav($button_data);
         }
 		
 		// override default breadcrumb display to make module look like default CP homepage
+		$settings = $this->_model->get_module_settings();
 		$this->_EE->javascript->output("
 			$('a[href=\"#collapse\"]').parent('.button').css('float', 'left');
 			$('a[href=\"#expand\"]').parent('.button').css('float', 'left');
 			$('#breadCrumb ol li').slice(2).remove();
-			$('#breadCrumb ol li:last-child').attr('class', 'last').html('Dashboard');
+			$('#breadCrumb ol li:last-child').attr('class', 'last').html('" . $settings['crumb_term'] . "');
 			");
 		
 		$msg = $this->_EE->session->flashdata('dashee_msg');
@@ -113,6 +118,7 @@ class Dashee_mcp
 		
 		$page_data = array(
 			'cp_page_title' => lang('dashee_term'),
+			'base_qs' 		=> $this->_base_qs,
 			'settings' 		=> $this->_settings, 
 			'content' 		=> $widgets, 
 			'theme_url' 	=> $this->_theme_url
@@ -131,8 +137,8 @@ class Dashee_mcp
 	{
 		$this->_EE->load->library('table');
 	
-        $this->_EE->cp->add_to_head('<link rel="stylesheet" type="text/css" href="'.$this->_theme_url.'css/settings.css" />');
-        $this->_EE->cp->add_to_head('<script type="text/javascript" src="'.$this->_js_url.'"></script>');
+        $this->_EE->cp->add_to_head('<link rel="stylesheet" type="text/css" href="' . $this->_theme_url . 'css/settings.css" />');
+        $this->_EE->cp->add_to_head('<script type="text/javascript" src="' . $this->_js_url . '"></script>');
 			
 		$this->_EE->cp->set_breadcrumb($this->_base_url, lang('btn_settings'));
 		
@@ -171,7 +177,7 @@ class Dashee_mcp
 			'cp_page_title' => lang('dashee_settings'),
 			'base_qs' 		=> $this->_base_qs,
 			'base_url'		=> $this->_base_url,
-			'settings' 		=> $this->_settings,
+			'settings' 		=> $this->_model->get_module_settings(),
 			'is_admin'		=> $this->_super_admin,
 			'layouts' 		=> $layouts,
 			'opts_layouts' 	=> $layout_options,
@@ -182,17 +188,44 @@ class Dashee_mcp
 			
 		return $this->_EE->load->view('settings', $page_data, TRUE);
 	}
-	
+
 	/**
 	 * Update Settings Function
-	 * Attempt to save users module settings to DB.
+	 * Display module settings form.
 	 *
 	 * @return 	void
 	 */
 	public function update_settings()
 	{
+		$settings = array();
+
+		if(isset($_POST['crumb_term']))
+		{
+			$settings['crumb_term'] = $_POST['crumb_term'];
+		}
+
+		if(isset($_POST['redirect_admins']) AND is_numeric($_POST['redirect_admins']))
+		{
+			$settings['redirect_admins'] = $_POST['redirect_admins'];
+		}
+
+		$this->_model->update_module_settings($settings);
+
+		$this->_EE->session->set_flashdata('dashee_msg', lang('flash_settings_updated'));
+
+		$this->_EE->functions->redirect($this->_base_url . AMP . 'method=settings');
+	}
+	
+	/**
+	 * Update Member Settings Function
+	 * Attempt to save users module settings to DB.
+	 *
+	 * @return 	void
+	 */
+	public function update_member_settings()
+	{
 		$post_columns = $this->_EE->input->post('columns');
-		if($post_columns != '' AND is_numeric($post_columns) AND $post_columns <= 3)
+		if(($post_columns != '' AND is_numeric($post_columns) AND $post_columns <= 3) AND $post_columns != $this->_settings['columns'])
 		{
 			$current = $this->_settings['columns'];
 			$new = $this->_EE->input->post('columns');
@@ -244,11 +277,14 @@ class Dashee_mcp
 			// save new config to DB
 			$this->_settings['widgets'] = $widgets;
 			$this->_settings['columns'] = $new;
-			$this->_update_member(FALSE);
-			
-			$this->_EE->session->set_flashdata('dashee_msg', 'Your settings have been updated.');
 		}
 		
+		$this->_settings['state_buttons'] = isset($_POST['state_buttons']) ? $this->_EE->input->post('state_buttons') : 1;
+
+		$this->_update_member(FALSE);
+		
+		$this->_EE->session->set_flashdata('dashee_msg', lang('flash_settings_updated'));
+
 		$this->_EE->functions->redirect($this->_base_url);
 	}
 		

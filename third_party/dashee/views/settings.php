@@ -13,19 +13,15 @@ $this->table->set_heading(
    lang('th_setting')
    );
 
-$col_options = '';
-for($i=3; $i>=1; --$i)
-{
-	$checked = '';
-	if($settings['columns'] == $i)
-	{
-		$checked = 'checked';
-	}
-	$col_options .= '<input type="radio" name="columns" '.$checked.' value="'.$i.'" /> '.$i.NBS.NBS.NBS.NBS;
-}
 $this->table->add_row(
-   lang('pref_num_columns'),
-   $col_options
+   lang('pref_crumb_term'),
+   '<input type="text" name="crumb_term" value="' . $settings['crumb_term'] . '" />'
+   );
+
+$this->table->add_row(
+   lang('redirect_admins'),
+   '<input type="radio" name="redirect_admins" value="1" ' . ($settings['redirect_admins'] ? 'checked' : '') . '/> Yes 
+   <input type="radio" name="redirect_admins" value="0" ' . ($settings['redirect_admins'] ? '' : 'checked') . ' /> No'
    );
 
 echo $this->table->generate();

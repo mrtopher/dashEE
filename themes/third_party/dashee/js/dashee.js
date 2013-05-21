@@ -471,7 +471,26 @@ $(function() {
 		});
 		return false;
 	}, this));
+
+	// Click event to display member settings dialog.
+	$('a[href="#member-settings"]').on('click', $.proxy(function (e) {
+		$('#dashMemberSettings').dialog({
+			resizable: false,
+			height:210,
+			width:350,
+			modal: true,
+			buttons: {
+				'Save': $.proxy(function() {
+					$('form#dasheeMemberSettingsForm').submit();
+				}, this),
+				'Cancel': function() {
+					$(this).dialog("close");
+				}
+			},
+			title: 'Display Settings'
+		});
+		return false;
+	}, this));
 		
 	dash.init();
-
 });

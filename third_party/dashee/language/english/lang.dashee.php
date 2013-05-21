@@ -14,6 +14,7 @@ $lang = array(
 	'btn_expand'	=> '+ Expand All',
 	'btn_widgets'	=> 'Widgets',
 	'btn_settings'	=> 'Settings',
+	'btn_settings2'	=> 'Settings 2',
 	'btn_save'		=> 'Save Layout',
 	
 	// table captions
@@ -60,11 +61,12 @@ $lang = array(
 	'flash_group_default_not_updated'	=> 'Member group defaults could not be updated.',
 	'flash_group_layout_reset'			=> 'Layout has been reset for ',
 	'flash_group_layout_not_reset'		=> 'Layout could not be reset for ',
+	'flash_settings_updated'			=> 'Your settings have been updated.',
 	
 	// terms
 	'trm_default_layout' 	=> 'Default layout',
 	'trm_whats_this'		=> 'What\'s this?',
-	
+
 	// help
 	'help_layouts' => '	<p>Saved layouts give EE Super Admins the ability to save dashboard configurations for later use or assign those configurations as the 
 						default for users of a specific member group. Use the options below to <strong>load</strong> a saved layout to your own dashboard, mark a 

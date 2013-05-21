@@ -16,8 +16,8 @@ class Dashee_ext
 	public $description		= 'Handle redirection and link remapping to alternate dashEE dashboard instead of defaule CP Home.';
 	public $docs_url		= 'http://dash-ee.com';
 	public $name			= 'dashEE';
-	public $settings_exist	= 'y';
-	public $version			= '1.1';
+	public $settings_exist	= 'n';
+	public $version			= '1.2';
 	public $required_by 	= array('module');
 	
 	private $_EE;
@@ -41,24 +41,6 @@ class Dashee_ext
         $this->_base_url    = (defined('BASE') ? BASE : SELF).AMP.$this->_base_qs;
 	}
 	
-	// ----------------------------------------------------------------------
-
-	/**
-	 * Extension Settings
-	 *
-	 * Display extension settings form
-	 *
-	 * @return void
-	 */
-	function settings()
-	{
-	    $settings = array();
-	
-	    $settings['redirect_admins'] = array('c', array('yes' => "Yes"), 'yes');
-	
-	    return $settings;
-	}
-
 	// ----------------------------------------------------------------------
 	
 	/**
@@ -89,6 +71,8 @@ class Dashee_ext
     public function crumb_remap()
     {
         $this->_EE->load->model('dashee_model');
+        $settings = $this->_EE->dashee_model->get_module_settings();
+
         $url = $this->_EE->dashee_model->get_module_url();
 
         $js = '';
@@ -102,7 +86,7 @@ class Dashee_ext
         $js .= "
             $().ready(function() {          
                 $('ul#navigationTabs li.home a').attr('href', '" . htmlspecialchars_decode($url) . "');
-                $('#breadCrumb ol li:nth-child(2) a').attr('href', '" . htmlspecialchars_decode($url) . "').html('Dashboard');
+                $('#breadCrumb ol li:nth-child(2) a').attr('href', '" . htmlspecialchars_decode($url) . "').html('" . $settings['crumb_term'] . "');
                 $('#breadCrumb ol').show();
             });
         ";
@@ -139,10 +123,12 @@ class Dashee_ext
 
 		if(REQ == 'CP' AND ($c == 'homepage' OR $c == ''))
 		{
+			$setting = $this->_EE->db->get_where('dashee_settings', array('site_id' => $this->_EE->session->userdata('site_id'), 'key' => 'redirect_admins'))->row();
+
 			$u = $data->userdata;
 
 			// redirect super admins?
-			if($u['group_id'] == 1 && empty($this->settings['redirect_admins'][0])) return;
+			if($u['group_id'] == 1 && !$setting['value']) return;
 
 			// can user access modules at all?
 			if($u['can_access_cp']=='y' && $u['can_access_addons']=='y' && $u['can_access_modules']=='y')

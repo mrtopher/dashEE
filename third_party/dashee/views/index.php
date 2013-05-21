@@ -26,5 +26,20 @@
 	<?php echo form_close(); ?>
 </div>
 
+<div id="dashMemberSettings" style="display:none;">
+	<?php echo form_open($base_qs . AMP . 'method=update_member_settings', array('id' => 'dasheeMemberSettingsForm')); ?>	
+		<p><label for="state_buttons">Hide expand/collapse all buttons?</label></p><br />
+		<p><input type="radio" name="state_buttons" id="state_buttons" value="0" <?php echo $settings['state_buttons'] ? '' : 'checked'; ?> /> Yes&nbsp;&nbsp;&nbsp;&nbsp; 
+		<input type="radio" name="state_buttons" value="1" <?php echo $settings['state_buttons'] ? 'checked' : ''; ?> /> No</p>
+		
+		<p>&nbsp;</p>
+
+		<p><label for="columns">Number of columns?</label></p><br />
+		<p><input type="radio" name="columns" id="columns" value="3" <?php echo $settings['columns'] == 3 ? 'checked' : ''; ?> /> 3&nbsp;&nbsp;&nbsp;&nbsp;
+		<input type="radio" name="columns" value="2" <?php echo $settings['columns'] == 2 ? 'checked' : ''; ?> /> 2&nbsp;&nbsp;&nbsp;&nbsp;
+		<input type="radio" name="columns" value="1" <?php echo $settings['columns'] == 1 ? 'checked' : ''; ?> /> 1</p>
+	<?php echo form_close(); ?>
+</div>
+
 <img src="<?php echo $theme_url; ?>images/ajax-loader.gif" id="dashLoader" />
 <img src="<?php echo $theme_url; ?>images/widget-loader.gif" id="widgetLoader" />

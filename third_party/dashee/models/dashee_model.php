@@ -12,12 +12,13 @@
 
 class Dashee_model extends CI_Model 
 {
-
     private $_EE;
     private $_site_id;
     private $_package_name;
     private $_package_version;
     private $_extension_version;
+
+    private $_module_settings = array();
 
     /**
      * Constructor.
@@ -27,11 +28,23 @@ class Dashee_model extends CI_Model
         parent::__construct();
 
         $this->_EE =& get_instance();
+
         $this->_site_id = $this->_EE->session->userdata('site_id');
         
         $this->_package_name    	= 'dashEE';
         $this->_package_version 	= '1.8';
         $this->_extension_version 	= '1.2';
+
+        $this->_module_settings = array(
+    		array(
+    			'key' 	=> 'crumb_term',
+    			'value' => 'Dashboard'
+    			),
+    		array(
+    			'key' 	=> 'redirect_admins',
+    			'value' => TRUE
+    			)
+    		);
     }
     
     /**
@@ -269,6 +282,46 @@ class Dashee_model extends CI_Model
 		$this->_EE->dbforge->add_key('id', TRUE);
 		$this->_EE->dbforge->create_table('dashee_member_groups_layouts', TRUE);
     }
+
+    /**
+     * Creates the dashEE settings table.
+     * Stores module settings data.
+     *
+     * @access  public
+     * @return  void
+     */
+    public function install_module_settings_table()
+    {
+    	$this->_EE->load->dbforge();
+    
+		$fields = array(
+			'id' => array(
+				'type' 			 => 'INT',
+				'constraint'  	 => 10,
+				'unsigned'		 => TRUE,
+				'auto_increment' => TRUE
+				),
+			'site_id' => array(
+				'type' 			 => 'INT',
+				'constraint'  	 => 10,
+				'unsigned'		 => TRUE,
+				),
+			'key' => array(
+				'type' 			=> 'VARCHAR',
+				'constraint' 	=> 50,
+				'null'			=> FALSE
+				),
+			'value' => array(
+				'type' 			=> 'VARCHAR',
+				'constraint'  	=> 255,
+				'null'			=> FALSE
+				)
+			);
+			
+		$this->_EE->dbforge->add_field($fields);
+		$this->_EE->dbforge->add_key('id', TRUE);
+		$this->_EE->dbforge->create_table('dashee_settings', TRUE);
+    }
     
     /**
      * Activate module extension.
@@ -374,6 +427,11 @@ class Dashee_model extends CI_Model
         if(version_compare($installed_version, '1.6', '<'))
         {
             $this->_update_package_to_version_16();
+        }
+
+        if(version_compare($installed_version, '1.8', '<'))
+        {
+            $this->_update_package_to_version_18();
         }
 
         // Forcibly update the module version number?
@@ -484,6 +542,47 @@ class Dashee_model extends CI_Model
 			$dash['widgets'] = $config;
 			$this->_EE->db->update('dashee_members', array('config' => json_encode($dash)), array('id' => $member->id));
 		}
+    }
+
+	/**
+	 * Add module settings DB table and populate with default settings and remove extension settings.
+	 *
+	 * @access  private
+	 * @return  void
+	 */
+   private function _update_package_to_version_18()
+    {
+    	// add DB table for storing module settings
+    	$this->install_module_settings_table();
+
+    	$settings = array(
+    		array(
+    			'site_id' 	=> $this->_site_id,
+    			'key' 		=> 'crumb_term',
+    			'value' 	=> 'Dashboard'
+    			),
+    		array(
+    			'site_id' 	=> $this->_site_id,
+    			'key' 		=> 'redirect_admins',
+    			'value' 	=> TRUE
+    			)
+    		);
+
+  		$this->_EE->db->insert_batch('dashee_settings', $this->_module_settings);
+
+  		// remove obsolete extension settings
+  		$this->_EE->db->update('extensions', array('settings' => ''), array('class' => 'Dashee_ext'));
+
+      	// update stored configs with new 'state_buttons' variable
+    	$qry = $this->_EE->db->get('dashee_members');
+    	
+    	foreach($qry->result() as $row)
+    	{
+    		$settings = json_decode($row->config, TRUE);
+    		$settings['state_buttons'] = TRUE;
+    		
+    		$this->db->update('dashee_members', array('config' => json_encode($settings)), array('id' => $row->id)); 
+    	}
     }
     
    	/**
@@ -926,7 +1025,39 @@ class Dashee_model extends CI_Model
 			->get()
 			->row();
 	}
-	
+
+	/**
+	 * Get all module settings from DB.
+	 *
+     * @access  public
+	 * @return 	array
+	 */
+	public function get_module_settings()
+	{
+		$qry = $this->_EE->db->get_where('dashee_settings', array('site_id' => $this->_site_id));
+
+		$settings = array();
+		foreach($qry->result() as $row)
+		{
+			$settings[$row->key] = $row->value;
+		}
+
+		return $settings;
+	}
+
+	/**
+	 * Attempt to update module settings in DB.
+	 *
+     * @access  public
+	 * @return 	void
+	 */
+	public function update_module_settings($params = array())
+	{
+		foreach($params as $key => $value)
+		{
+			$this->_EE->db->update('dashee_settings', array('value' => $value), array('site_id' => $this->_site_id, 'key' => $key));
+		}
+	}
 }
 /* End of file dashee_model.php */
 /* Location: /system/expressionengine/third_party/dashee/models/dashee_model.php */
