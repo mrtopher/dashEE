@@ -40,8 +40,7 @@ class Wgt_feed_reader
 	 */
 	public function index($settings = NULL)
 	{
-		$EE = get_instance();
-		$EE->load->helper('text');
+		EE()->load->helper('text');
 	
 		libxml_use_internal_errors(true);
 		
@@ -59,7 +58,7 @@ class Wgt_feed_reader
 			$vars['num'] 	= $settings->num;
 		}
 
-		return $EE->load->view('widgets/feed_reader', $vars, TRUE);
+		return EE()->load->view('widgets/feed_reader', $vars, TRUE);
 	}
 	
 	/**

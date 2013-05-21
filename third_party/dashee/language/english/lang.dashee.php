@@ -18,8 +18,8 @@ $lang = array(
 	'btn_settings'	=> 'Settings',
 	'btn_save'		=> 'Save Layout',
 	
-	'capGeneral'	=> 'General',
-	'capLayouts'	=> 'Saved Layouts',
+	'capGeneral'		=> 'General',
+	'capLayouts'		=> 'Saved Layouts',
 	'capGroupLayouts'	=> 'Default Member Group Layouts',
 	
 	'thPreference' 	=> 'Preference',
@@ -31,6 +31,7 @@ $lang = array(
 	'thLayout'		=> 'Layout',
 	'thLocked'		=> 'Lock layout',
 	
+	'prefCrumbTerm'	=> 'Term to use in breadcrumb nav link?',
 	'prefNumColumns'=> 'Number of columns?',
 	'prefReset'		=> 'Reset all user dashboards to the new defaults set above.',
 

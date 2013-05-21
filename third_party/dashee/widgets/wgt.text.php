@@ -34,10 +34,11 @@ class Wgt_text
 	public function index($settings = NULL)
 	{
 		$this->title = 'Instructions';
+		
 		return '
 
-		<p>This is a basic, static text widget</p>
-		<p>Only contains static text</p>
+			<p>This is a basic, static text widget</p>
+			<p>Only contains static text</p>
 
 		';
 	}

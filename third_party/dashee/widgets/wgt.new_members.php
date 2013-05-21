@@ -26,8 +26,6 @@ class Wgt_new_members
 	{
 		$this->title = 'New Members';
 		$this->wclass = 'contentMenu';	
-		
-		$this->_EE =& get_instance();
 	}
 	
 	/**
@@ -38,11 +36,11 @@ class Wgt_new_members
 	public function index()
 	{
 		// get most recent 10 members from DB
-		$this->_EE->db->select('member_id, username, join_date');
-		$this->_EE->db->from('members');
-		$this->_EE->db->order_by('join_date DESC');
-		$this->_EE->db->limit(10);
-		$results = $this->_EE->db->get();
+		$results = EE()->db->select('member_id, username, join_date')
+			->from('members')
+			->order_by('join_date DESC')
+			->limit(10)
+			->get();
 	
 		// generate table HTML
 		$display = '';

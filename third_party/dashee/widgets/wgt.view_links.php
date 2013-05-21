@@ -26,8 +26,6 @@ class Wgt_view_links
 	{
 		$this->title 	= 'View';
 		$this->wclass 	= 'contentMenu view';
-		
-		$this->_EE		=& get_instance();
 	}
 	
 	// ----------------------------------------------------------------
@@ -40,7 +38,7 @@ class Wgt_view_links
 	 */
 	public function permissions()
 	{
-		if(!$this->_EE->cp->allowed_group('can_access_publish'))
+		if(!EE()->cp->allowed_group('can_access_publish'))
 		{
 			return FALSE;
 		}
@@ -57,7 +55,7 @@ class Wgt_view_links
 	{
 		return '
 			<ul>
-				<li class="site">'.anchor($this->_EE->config->item('site_url').$this->_EE->config->item('index_page').'?URL='.$this->_EE->config->item('site_url').$this->_EE->config->item('index_page'), lang('site')).'</li>
+				<li class="site">'.anchor(EE()->config->item('site_url').EE()->config->item('index_page').'?URL='.EE()->config->item('site_url').EE()->config->item('index_page'), lang('site')).'</li>
 				<li class="item"><a href="'.BASE.AMP.'D=cp'.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=comment">'.lang('recent_comments').'</a></li>
 				<li class="item"><a href="'.BASE.AMP.'D=cp'.AMP.'C=content_edit'.AMP.'M=show_recent_entries'.AMP.'count=10">'.lang('recent_entries').'</a></li>
 				<li class="resource"><a rel="external" href="'.config_item('doc_url').'">'.lang('user_guide').'</a></li>

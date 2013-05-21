@@ -258,7 +258,7 @@ class Dashee_mcp
 	 *
 	 * @return 	NULL
 	 */
-	public function get_widget_listing()
+	public function ajax_get_widget_listing()
 	{
 		$this->_EE->load->library('table');
 	
@@ -406,7 +406,7 @@ class Dashee_mcp
 	 *
 	 * @return 	NULL
 	 */
-	public function remove_widget()
+	public function ajax_remove_widget()
 	{
 		$wgt = $this->_EE->input->get('wgt');
 
@@ -424,7 +424,7 @@ class Dashee_mcp
 	 *
 	 * @return 	NULL
 	 */
-	public function update_widget_order()
+	public function ajax_update_widget_order()
 	{
 		$order = $this->_EE->input->get('order');
 		
@@ -464,7 +464,7 @@ class Dashee_mcp
 	 *
 	 * @return 	NULL
 	 */
-	public function widget_settings()
+	public function ajax_widget_settings()
 	{
 		$wgt = $this->_EE->input->get('wgt');
 		
@@ -506,7 +506,7 @@ class Dashee_mcp
 	 *
 	 * @return 	NULL
 	 */
-	public function update_widget_settings()
+	public function ajax_update_widget_settings()
 	{
 		$data 		= $_POST;
 		$settings 	= array();
@@ -539,7 +539,7 @@ class Dashee_mcp
 	 *
 	 * @return 	NULL
 	 */
-	public function save_layout()
+	public function ajax_save_layout()
 	{
 		$name 			= $this->_EE->input->post('layout_name');
 		$description 	= $this->_EE->input->post('layout_desc');
@@ -859,7 +859,7 @@ class Dashee_mcp
 	 *
 	 * @return	string
 	 */
-	public function get_widget()
+	public function ajax_get_widget()
 	{
 		$widget = $this->_widgets[$this->_EE->input->get('wgt')];
 		$obj = $this->_get_widget_object($widget['mod'], $widget['wgt']);
