@@ -352,11 +352,12 @@ class Dashee_mcp
 	}
 	
 	/**
+	 * AJAX METHOD
 	 * Add selected widget to users dashboard and update config.
 	 *
 	 * @return 	void
 	 */
-	public function add_widget()
+	public function ajax_add_widget()
 	{
 		$mod = $this->_EE->input->get('mod');
 		$wgt = $this->_EE->input->get('wgt');
@@ -396,7 +397,7 @@ class Dashee_mcp
 			$this->_update_member(FALSE);
 		}
 		
-		echo json_encode(array('id' => $wid, 'col' => $col, 'html' => $this->_render_widget($wid, $mod, $wgt, @$new_widget['stng'])));
+		echo json_encode(array('id' => $wid, 'col' => $col, 'html' => $this->_render_widget($wid, $mod, $wgt, 1, @$new_widget['stng'])));
 		exit();
 	}
 	

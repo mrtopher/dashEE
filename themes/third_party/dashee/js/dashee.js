@@ -78,7 +78,7 @@ $(function() {
 			
 			$.ajax({
 				type: 'GET',
-				url: EE.BASE + '&C=addons_modules&M=show_module_cp&module=dashee&method=add_widget&mod='+link.data('module')+'&wgt='+link.data('widget'),
+				url: EE.BASE + '&C=addons_modules&M=show_module_cp&module=dashee&method=ajax_add_widget&mod='+link.data('module')+'&wgt='+link.data('widget'),
 				dataType: 'html',
 				success: $.proxy(function(json) {
 					widget = $.parseJSON(json);
