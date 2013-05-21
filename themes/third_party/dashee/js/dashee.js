@@ -481,12 +481,17 @@ $(function() {
 			modal: true,
 			buttons: {
 				'Save': $.proxy(function() {
+					$('<span class="loading"><center>Please wait...<br /><img src="'+$('#dashLoader').attr('src')+'" /></center></span>').appendTo('.dialog-member-settings > .ui-dialog-content');
+					$('#dasheeMemberSettingsForm').hide();
+					$('.dialog-member-settings > .ui-dialog-buttonpane').hide();
+
 					$('form#dasheeMemberSettingsForm').submit();
 				}, this),
 				'Cancel': function() {
 					$(this).dialog("close");
 				}
 			},
+			dialogClass: 'dialog-member-settings',
 			title: 'Display Settings'
 		});
 		return false;

@@ -16,6 +16,7 @@ $lang = array(
 	'btn_settings'	=> 'Settings',
 	'btn_settings2'	=> 'Settings 2',
 	'btn_save'		=> 'Save Layout',
+	'btn_back_to_dashboard' => 'Back to Dashboard',
 	
 	// table captions
 	'cap_general'		=> 'General',

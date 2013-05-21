@@ -79,7 +79,7 @@ class Dashee_mcp
 			$button_data['btn_expand'] 	 = '#expand';			
 		}
 		
-		$button_data['btn_settings2'] = '#member-settings';
+		$button_data["<img src='" . $this->_theme_url . "images/icon-cog.png' />"] = '#member-settings';
 		$button_data['btn_widgets']  = '#widgets';
 
 		if($this->_super_admin)
@@ -99,6 +99,7 @@ class Dashee_mcp
 		$this->_EE->javascript->output("
 			$('a[href=\"#collapse\"]').parent('.button').css('float', 'left');
 			$('a[href=\"#expand\"]').parent('.button').css('float', 'left');
+			$('a[href=\"#member-settings\"]').attr('title', 'Display Settings').css('padding', '3px 4px 2px 4px');
 			$('#breadCrumb ol li').slice(2).remove();
 			$('#breadCrumb ol li:last-child').attr('class', 'last').html('" . $settings['crumb_term'] . "');
 			");
@@ -139,6 +140,10 @@ class Dashee_mcp
 	
         $this->_EE->cp->add_to_head('<link rel="stylesheet" type="text/css" href="' . $this->_theme_url . 'css/settings.css" />');
         $this->_EE->cp->add_to_head('<script type="text/javascript" src="' . $this->_js_url . '"></script>');
+
+        $this->_EE->cp->set_right_nav(array(
+        	'btn_back_to_dashboard'	=> $this->_base_url
+        	));
 			
 		$this->_EE->cp->set_breadcrumb($this->_base_url, lang('btn_settings'));
 		
