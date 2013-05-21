@@ -13,15 +13,15 @@
 </div>
 
 <div id="dashConfirm" style="display:none;">
-	<p><?php echo lang('confRemoveWidget'); ?></p>
+	<p><?php echo lang('conf_remove_widget'); ?></p>
 </div>
 
 <div id="dashSaveLayout" style="display:none;">
 	<?php echo form_open('', array('id' => 'dasheeLayoutForm')); ?>	
-		<p><label for="layout_name"><?php echo lang('lblLayoutName'); ?>:</label>
+		<p><label for="layout_name"><?php echo lang('lbl_layout_name'); ?>:</label>
 		<input type="text" name="layout_name" id="layout_name" class="text ui-widget-content ui-corner-all" /></p>
 		
-		<p><label for="layout_desc"><?php echo lang('lblLayoutDesc'); ?>:</label>
+		<p><label for="layout_desc"><?php echo lang('lbl_layout_desc'); ?>:</label>
 		<input type="text" name="layout_desc" id="layout_desc" class="text ui-widget-content ui-corner-all" /></p>
 	<?php echo form_close(); ?>
 </div>

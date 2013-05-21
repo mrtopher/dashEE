@@ -6,11 +6,11 @@ echo form_open($base_qs.AMP.'method=update_settings');
 $this->table->set_template($cp_pad_table_template);
 $this->table->template['thead_open'] = '<thead class="visualEscapism">';
 
-$this->table->set_caption(lang('capGeneral'));
+$this->table->set_caption(lang('cap_general'));
 
 $this->table->set_heading(
-   lang('thPreference'),
-   lang('thSetting')
+   lang('th_preference'),
+   lang('th_setting')
    );
 
 $col_options = '';
@@ -24,7 +24,7 @@ for($i=3; $i>=1; --$i)
 	$col_options .= '<input type="radio" name="columns" '.$checked.' value="'.$i.'" /> '.$i.NBS.NBS.NBS.NBS;
 }
 $this->table->add_row(
-   lang('prefNumColumns'),
+   lang('pref_num_columns'),
    $col_options
    );
 
@@ -42,12 +42,12 @@ echo form_close();
 
 if($is_admin):
 
-	$this->table->set_caption(lang('capLayouts').' <a class="dashLayoutHelp" href="#">What\'s this?</a>');
+	$this->table->set_caption(lang('cap_layouts').' <a class="dashLayoutHelp" href="#">' . lang('trm_whats_this') . '</a>');
 	
 	$this->table->set_heading(
-	   lang('thName'),
-	   lang('thDescription'),
-	   lang('thOptions')
+	   lang('th_name'),
+	   lang('th_description'),
+	   lang('th_options')
 	   );
 	
 	foreach($layouts as $layout)
@@ -74,18 +74,18 @@ if($is_admin):
 	
 	$this->table->template['thead_open'] = '<thead class="visualEscapism">';
 
-	echo '<div align="right">* ' . lang('default_layout') . '.</div>';
+	echo '<div align="right">* ' . lang('trm_default_layout') . '.</div>';
 	echo '<p>&nbsp;</p>';
 		
 	echo form_open($base_qs.AMP.'method=update_group_defaults');
 	
-	$this->table->set_caption(lang('capGroupLayouts'));
+	$this->table->set_caption(lang('cap_group_layouts'));
 	
 	$this->table->set_heading(
-	   lang('thMemberGroup'),
-	   lang('thDescription'),
-	   lang('thLocked'),
-	   lang('thLayout')
+	   lang('th_member_group'),
+	   lang('th_description'),
+	   lang('th_locked'),
+	   lang('th_layout')
 	   );
 	
 	foreach($member_groups as $group)
@@ -104,7 +104,7 @@ if($is_admin):
 		$this->table->add_row(
 			$group->title.' '.anchor($base_url.AMP.'method=reset_group_defaults'.AMP.'group_id='.$group->id, 'Reset', 'class="dashReset"'),
 			$group->description ? $group->description : '--',
-			form_checkbox('group_locked['.$group->id.']','locked', $locked, ($group->id == 1 ? 'disabled="disabled"' : '')) . ' ' . lang('lblLock') . ' (<a href="#" class="dashLockHelp">?</a>)',
+			form_checkbox('group_locked['.$group->id.']','locked', $locked, ($group->id == 1 ? 'disabled="disabled"' : '')) . ' ' . lang('lbl_lock') . ' (<a href="#" class="dashLockHelp">?</a>)',
 			form_dropdown('group_layouts['.$group->id.']', $opts_layouts, $layout_id)
 			);
 	}
@@ -119,9 +119,9 @@ if($is_admin):
 
 <?php echo form_close(); ?>
 
-<div id="dashConfirmLoad" style="display:none;"><p><?php echo lang('confLoadLayout'); ?></p></div>
-<div id="dashConfirmDelete" style="display:none;"><p><?php echo lang('confDeleteLayout'); ?></p></div>
-<div id="dashConfirmReset" style="display:none;"><p><?php echo lang('confResetLayout'); ?></p></div>
+<div id="dashConfirmLoad" style="display:none;"><p><?php echo lang('conf_load_layout'); ?></p></div>
+<div id="dashConfirmDelete" style="display:none;"><p><?php echo lang('conf_delete_layout'); ?></p></div>
+<div id="dashConfirmReset" style="display:none;"><p><?php echo lang('conf_reset_layout'); ?></p></div>
 
 <div id="dashLayoutHelp" style="display:none;"><?php echo lang('help_layouts'); ?></div>
 <div id="dashLockHelp" style="display:none;"><?php echo lang('help_lock'); ?></div>

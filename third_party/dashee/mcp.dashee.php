@@ -563,11 +563,11 @@ class Dashee_mcp
 		{
 			$this->_model->set_default_layout($layout_id);
 			
-			$this->_EE->session->set_flashdata('dashee_msg', lang('flashLayoutUpdated'));
+			$this->_EE->session->set_flashdata('dashee_msg', lang('flash_layout_updated'));
 		}
 		else
 		{
-			$this->_EE->session->set_flashdata('dashee_msg', lang('flashLayoutNotUpdated'));
+			$this->_EE->session->set_flashdata('dashee_msg', lang('flash_layout_not_updated'));
 		}
 		
 		$this->_EE->functions->redirect($this->_base_url.AMP.'method=settings');
@@ -589,11 +589,11 @@ class Dashee_mcp
 			
 			$this->_update_member(FALSE);
 			
-			$this->_EE->session->set_flashdata('dashee_msg', $layout->name . lang('flashLayoutLoaded'));
+			$this->_EE->session->set_flashdata('dashee_msg', $layout->name . lang('flash_layout_loaded'));
 		}
 		else
 		{
-			$this->_EE->session->set_flashdata('dashee_msg', lang('flashLayoutNotLoaded'));
+			$this->_EE->session->set_flashdata('dashee_msg', lang('flash_layout_not_loaded'));
 		}
 		
 		$this->_EE->functions->redirect($this->_base_url);
@@ -616,12 +616,12 @@ class Dashee_mcp
 			{
 				$this->_model->delete_layout($layout->id);
 
-				$this->_EE->session->set_flashdata('dashee_msg', $layout->name . lang('flashLayoutDeleted'));
+				$this->_EE->session->set_flashdata('dashee_msg', $layout->name . lang('flash_layout_deleted'));
 			}
 		}
 		else
 		{
-			$this->_EE->session->set_flashdata('dashee_msg', lang('flashLayoutNotDeleted'));
+			$this->_EE->session->set_flashdata('dashee_msg', lang('flash_layout_not_deleted'));
 		}
 		
 		$this->_EE->functions->redirect($this->_base_url.AMP.'method=settings');
@@ -647,11 +647,11 @@ class Dashee_mcp
 		{
 			$this->_model->update_group_layouts($group_layouts, $group_locked);
 		
-			$this->_EE->session->set_flashdata('dashee_msg', lang('flashGroupDefaultUpdated'));
+			$this->_EE->session->set_flashdata('dashee_msg', lang('flash_group_default_updated'));
 		}
 		else
 		{
-			$this->_EE->session->set_flashdata('dashee_msg', lang('flashGroupDefaultNotUpdated'));
+			$this->_EE->session->set_flashdata('dashee_msg', lang('flash_group_default_not_updated'));
 		}
 		
 		$this->_EE->functions->redirect($this->_base_url.AMP.'method=settings');
@@ -676,11 +676,11 @@ class Dashee_mcp
 		{
 			$this->_model->reset_member_layouts($group_id);
 			
-			$this->_EE->session->set_flashdata('dashee_msg', lang('flashGroupLayoutReset') . $group->group_title . '.');
+			$this->_EE->session->set_flashdata('dashee_msg', lang('flash_group_layout_reset') . $group->group_title . '.');
 		}
 		else
 		{
-			$this->_EE->session->set_flashdata('dashee_msg', lang('flashGroupLayoutNotReset') . $group->group_title . '.');
+			$this->_EE->session->set_flashdata('dashee_msg', lang('flash_group_layout_not_reset') . $group->group_title . '.');
 		}
 		
 		$this->_EE->functions->redirect($this->_base_url.AMP.'method=settings');
