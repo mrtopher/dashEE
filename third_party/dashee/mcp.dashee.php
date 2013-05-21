@@ -490,12 +490,25 @@ class Dashee_mcp
 	 */
 	public function ajax_update_widget_state()
 	{
-		$widget = $this->_widgets[$this->_EE->input->get('wgt')];
-
 		$state = 1;
 		$state = $this->_EE->input->get('state');
 
-		$this->_settings['widgets'][$widget['col']][$widget['id']]['state'] = $state;
+		if(isset($_GET['wgt']))
+		{
+			$widget = $this->_widgets[$this->_EE->input->get('wgt')];
+			$this->_settings['widgets'][$widget['col']][$widget['id']]['state'] = $state;
+		}
+		else
+		{
+			foreach($this->_settings['widgets'] as $col => $widgets)
+			{
+				foreach($widgets as $id => $params)
+				{
+					$this->_settings['widgets'][$col][$id]['state'] = $state;
+				}
+			}
+		}
+
 		$this->_update_member(FALSE);
 		exit();
 	}

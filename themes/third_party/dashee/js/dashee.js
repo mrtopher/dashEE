@@ -343,11 +343,33 @@ $(function() {
 	// Click event to collapse all widgets.
 	$('a[href="#collapse"]').on('click', function() {
 		dash.getWidgets().addClass('collapsed');
+
+		$.ajax({
+			type: 'GET',
+			url: EE.BASE + '&C=addons_modules&M=show_module_cp&module=dashee&method=ajax_update_widget_state&state=0'
+/*			success: function(html) {
+				$.ee_notice('Widget state has been saved.', {type: 'success', open: true});
+			},
+			error: function(html) {
+				$.ee_notice('There was a prpoblem.', {type: 'error', open: true});
+			}
+*/		});
 	});
 
 	// Click event to expand all widgets.
 	$('a[href="#expand"]').on('click', function() {
 		dash.getWidgets().removeClass('collapsed');
+
+		$.ajax({
+			type: 'GET',
+			url: EE.BASE + '&C=addons_modules&M=show_module_cp&module=dashee&method=ajax_update_widget_state&state=1'
+/*			success: function(html) {
+				$.ee_notice('Widget state has been saved.', {type: 'success', open: true});
+			},
+			error: function(html) {
+				$.ee_notice('There was a prpoblem.', {type: 'error', open: true});
+			}
+*/		});
 	});
 	
 	// Click event for adding new widgets.
