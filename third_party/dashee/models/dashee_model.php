@@ -37,12 +37,14 @@ class Dashee_model extends CI_Model
 
         $this->_module_settings = array(
     		array(
-    			'key' 	=> 'crumb_term',
-    			'value' => 'Dashboard'
+                'site_id' => $this->_site_id,
+    			'key' 	  => 'crumb_term',
+    			'value'   => 'Dashboard'
     			),
     		array(
-    			'key' 	=> 'redirect_admins',
-    			'value' => TRUE
+                'site_id' => $this->_site_id,
+    			'key' 	  => 'redirect_admins',
+    			'value'   => TRUE
     			)
     		);
     }
@@ -117,6 +119,7 @@ class Dashee_model extends CI_Model
         $this->install_module_members_table();
         $this->install_module_layouts_table();
         $this->install_module_layouts_groups_table();
+        $this->install_module_settings_table();
 
         return TRUE;
     }
@@ -321,6 +324,8 @@ class Dashee_model extends CI_Model
 		$this->_EE->dbforge->add_field($fields);
 		$this->_EE->dbforge->add_key('id', TRUE);
 		$this->_EE->dbforge->create_table('dashee_settings', TRUE);
+
+        $this->_EE->db->insert_batch('dashee_settings', $this->_module_settings);
     }
     
     /**
@@ -331,9 +336,6 @@ class Dashee_model extends CI_Model
      */
     public function activate_extension()
     {
-		// Setup custom settings in this array.
-		$this->settings = array('redirect_admins' => array('yes'));
-		
 		$hooks = array(
 			'cp_css_end'		=> 'crumb_hide',
 			'cp_js_end'			=> 'crumb_remap',
@@ -347,7 +349,7 @@ class Dashee_model extends CI_Model
 				'class'		=> 'Dashee_ext',
 				'method'	=> $method,
 				'hook'		=> $hook,
-				'settings'	=> serialize($this->settings),
+				'settings'	=> '',
 				'version'	=> $this->_extension_version,
 				'enabled'	=> 'y'
 				);
@@ -395,6 +397,7 @@ class Dashee_model extends CI_Model
         $this->_EE->dbforge->drop_table('dashee_members');
         $this->_EE->dbforge->drop_table('dashee_layouts');
         $this->_EE->dbforge->drop_table('dashee_member_groups_layouts');
+        $this->_EE->dbforge->drop_table('dashee_settings');
 
         return TRUE;
     }
@@ -554,21 +557,6 @@ class Dashee_model extends CI_Model
     {
     	// add DB table for storing module settings
     	$this->install_module_settings_table();
-
-    	$settings = array(
-    		array(
-    			'site_id' 	=> $this->_site_id,
-    			'key' 		=> 'crumb_term',
-    			'value' 	=> 'Dashboard'
-    			),
-    		array(
-    			'site_id' 	=> $this->_site_id,
-    			'key' 		=> 'redirect_admins',
-    			'value' 	=> TRUE
-    			)
-    		);
-
-  		$this->_EE->db->insert_batch('dashee_settings', $this->_module_settings);
 
   		// remove obsolete extension settings
   		$this->_EE->db->update('extensions', array('settings' => ''), array('class' => 'Dashee_ext'));
@@ -811,7 +799,8 @@ class Dashee_model extends CI_Model
 						)
 					)
 				),
-			'columns' => 3
+			'columns'        => 3,
+            'state_buttons'  => TRUE
 			);
 	}
 	
@@ -1035,6 +1024,13 @@ class Dashee_model extends CI_Model
 	public function get_module_settings()
 	{
 		$qry = $this->_EE->db->get_where('dashee_settings', array('site_id' => $this->_site_id));
+
+        // populate module settings if they don't already exist for the site in question (for MSM compatibility)
+        if($qry->num_rows() <= 0)
+        {
+            $this->_EE->db->insert_batch('dashee_settings', $this->_module_settings);
+            $qry = $this->_EE->db->get_where('dashee_settings', array('site_id' => $this->_site_id));
+        }
 
 		$settings = array();
 		foreach($qry->result() as $row)
