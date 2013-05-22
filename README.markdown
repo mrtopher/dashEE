@@ -1,6 +1,6 @@
-# dashEE - ExpressionEngine CP Dashboard
+# Dashboard Framework for ExpressionEngine Control Panel
 
-A completely customizable control panel alternative for the ExpressionEngine CMS.
+dashEE is the open source dashboard framework for the ExpressionEngine CMS control panel.
 
 ## Links
 
