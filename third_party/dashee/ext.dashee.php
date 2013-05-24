@@ -123,9 +123,9 @@ class Dashee_ext
 
 		if(REQ == 'CP' AND ($c == 'homepage' OR $c == ''))
 		{
-			$setting = $this->_EE->db->get_where('dashee_settings', array('site_id' => $this->_EE->session->userdata('site_id'), 'key' => 'redirect_admins'))->row();
-
 			$u = $data->userdata;
+
+			$setting = $this->_EE->db->get_where('dashee_settings', array('site_id' => $u['site_id'], 'key' => 'redirect_admins'))->row();
 
 			// redirect super admins?
 			if($u['group_id'] == 1 && !$setting['value']) return;
