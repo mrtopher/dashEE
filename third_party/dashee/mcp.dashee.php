@@ -117,6 +117,13 @@ class Dashee_mcp
 		// load widgets
 		$widgets = $this->_widget_loader($this->_settings['widgets']);
 		
+		/**
+		 * Because add_package_path is called for each module with widgets in widget_loader, EE will incorrectly default the views 
+		 * drectory to the last module whose widget was called thus causing the index view for that module to be displayed 
+		 * instead of the dashboard... this line adds dashee path onto the end after widget_loader to ensure this doesn't happen
+		 */
+		$this->_EE->load->add_package_path(PATH_THIRD . 'dashee/'); 
+
 		$page_data = array(
 			'cp_page_title' => lang('dashee_term'),
 			'base_qs' 		=> $this->_base_qs,
@@ -326,13 +333,14 @@ class Dashee_mcp
 		asort($mods_with_widgets);
 		foreach($mods_with_widgets as $mod)
 		{
-			$path = PATH_THIRD.$mod.'/widgets/';
-			$map = directory_map(PATH_THIRD.$mod.'/widgets', 1);
+			$path = PATH_THIRD . $mod . '/widgets/';
+			$map = directory_map(PATH_THIRD . $mod . '/widgets', 1);
 		
 			if(is_array($map))
 			{
 				$col = 1;
 				asort($map);
+
 				foreach($map as $widget)
 				{
 					$this->_EE->lang->loadfile($mod);
@@ -379,14 +387,29 @@ class Dashee_mcp
 	 * Makes it possible for widgets to use $EE->load->view(), etc
 	 *
 	 * Should be called right before calling a widget's index() funciton
+	 *
+	 * @param string $module module widget belongs to
+	 * @param string $widget widget name
+	 * @return void
 	 */
-	private function _add_widget_package_path($name)
+	private function _add_widget_package_path($module, $widget)
 	{
-		$path = PATH_THIRD . $name . '/';
+		if(substr($widget, 0, 4) === 'wgt.')
+		{
+			$path = PATH_THIRD . $module;
+		}
+		else
+		{
+			// when dealing with widget folder you need to add package path for module as well as widget folder to account
+			// for widget using some module assets like models or helpers
+			$this->_EE->load->add_package_path(PATH_THIRD . $module);
+			$path = PATH_THIRD . $module . '/widgets/' . $widget;
+		}
+
 		$this->_EE->load->add_package_path($path);
 
 		// manually add the view path if this is less than EE 2.1.5
-		if (version_compare(APP_VER, '2.1.5', '<'))
+		if(version_compare(APP_VER, '2.1.5', '<'))
 		{
 			$this->_EE->load->_ci_view_path = $path . 'views/';
 		}
@@ -577,7 +600,7 @@ class Dashee_mcp
 		$this->_update_member(FALSE);
 	
 		$obj = $this->_get_widget_object($widget['mod'], $widget['wgt']);
-		$this->_add_widget_package_path($widget['mod']);
+		// $this->_add_widget_package_path($widget['mod']);
 		$content = $obj->index(json_decode($settings_json));
 		$result = array(
 			'title'		=> $obj->title,
@@ -886,7 +909,7 @@ class Dashee_mcp
 		}
 		else
 		{
-			$this->_add_widget_package_path($module);
+			// $this->_add_widget_package_path($module, $widget);
 			$content = $obj->index(@json_decode($settings));
 		}
 
@@ -918,7 +941,7 @@ class Dashee_mcp
 	{
 		$widget = $this->_widgets[$this->_EE->input->get('wgt')];
 		$obj = $this->_get_widget_object($widget['mod'], $widget['wgt']);
-		$this->_add_widget_package_path($widget['mod']);
+		// $this->_add_widget_package_path($widget['mod']);
 		$content = $obj->index(json_decode($widget['stng']));
 		$result = array(
 			'title'		=> $obj->title,
@@ -937,8 +960,19 @@ class Dashee_mcp
 	 */
 	private function _get_widget_object($module, $widget)
 	{
-		include_once(PATH_THIRD.$module.'/widgets/'.$widget);
-		$obj = $this->_format_filename($widget, TRUE);
+		if(substr($widget, 0, 4) === 'wgt.')
+		{
+			include_once(PATH_THIRD . $module . '/widgets/' . $widget);
+			$obj = $this->_format_filename($widget, TRUE);
+		}
+		else
+		{
+			include_once(PATH_THIRD . $module . '/widgets/' . $widget . '/wgt.' . $widget . '.php');
+			$obj = $this->_format_filename('wgt.' . $widget . '.php', TRUE);
+		}
+
+		$this->_add_widget_package_path($module, $widget);
+
 		return new $obj();
 	}
 	
@@ -951,7 +985,15 @@ class Dashee_mcp
 	 */
 	private function _format_filename($name, $cap = FALSE)
 	{
-		$str = str_replace('.', '_', substr($name, 0, -4));
+		if(substr($name, -4) === '.php')
+		{
+			$str = str_replace('.', '_', substr($name, 0, -4));
+		}
+		else
+		{
+			$str = 'wgt_' . $name;
+		}
+
 		return $cap ? ucfirst($str) : $str;
 	}
 		

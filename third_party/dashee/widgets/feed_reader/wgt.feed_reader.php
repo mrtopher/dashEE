@@ -58,7 +58,7 @@ class Wgt_feed_reader
 			$vars['num'] 	= $settings->num;
 		}
 
-		return EE()->load->view('widgets/feed_reader', $vars, TRUE);
+		return EE()->load->view('index', $vars, TRUE);
 	}
 	
 	/**
@@ -84,4 +84,4 @@ class Wgt_feed_reader
 	}
 }
 /* End of file wgt.feed_reader.php */
-/* Location: /system/expressionengine/third_party/dashee/widgets/wgt.feed_reader.php */
+/* Location: /system/expressionengine/third_party/dashee/widgets/feed_reader/wgt.feed_reader.php */
