@@ -41,8 +41,8 @@ class Dashee_mcp
         $this->_base_url    = BASE .AMP .$this->_base_qs;
         $this->_theme_url   = $this->_model->get_package_theme_url();
         $this->_css_url   	= $this->_theme_url .'css/cp.css';
-        // $this->_js_url   	= $this->_theme_url .'js/dashee.js';
-        $this->_js_url   	= $this->_theme_url .'js/dashee.min.js';
+        $this->_js_url   	= $this->_theme_url .'js/dashee.js';
+        // $this->_js_url   	= $this->_theme_url .'js/dashee.min.js';
         
         $this->_member_id = $this->_EE->session->userdata('member_id');
         if($this->_EE->session->userdata('group_id') == 1)
@@ -432,6 +432,12 @@ class Dashee_mcp
 		
 			$obj = $this->_get_widget_object($mod, $wgt);
 			$wid = 'wgt'.random_string('numeric', 8);
+
+			// run installer method if exists
+			if(method_exists($obj, 'widget_install'))
+			{
+				$obj->widget_install();
+			}
 			
 			// determine which column has the least number of widgets in it so you can add the 
 			// new one to the one with the least
@@ -478,6 +484,14 @@ class Dashee_mcp
 		if(array_key_exists($wgt, $this->_widgets))
 		{
 			$widget = $this->_widgets[$wgt];
+			$obj = $this->_get_widget_object($widget['mod'], $widget['wgt']);
+
+			// run installer method if exists
+			if(method_exists($obj, 'widget_uninstall'))
+			{
+				$obj->widget_uninstall();
+			}
+
 			unset($this->_settings['widgets'][$widget['col']][$wgt]);
 			$this->_update_member(FALSE);
 		}
@@ -600,7 +614,6 @@ class Dashee_mcp
 		$this->_update_member(FALSE);
 	
 		$obj = $this->_get_widget_object($widget['mod'], $widget['wgt']);
-		// $this->_add_widget_package_path($widget['mod']);
 		$content = $obj->index(json_decode($settings_json));
 		$result = array(
 			'title'		=> $obj->title,
@@ -736,7 +749,7 @@ class Dashee_mcp
 	}
 	
 	/**
-	 * Reset layout for a member group
+	 * Reset layout for a member group.
 	 *
 	 * @return 	void
 	 */
@@ -764,10 +777,43 @@ class Dashee_mcp
 		$this->_EE->functions->redirect($this->_base_url.AMP.'method=settings');
 
 	}
+
+	/**
+	 * Pass through (proxy) method for hanlding widget form submissions.
+	 *
+	 * @return 	string
+	 */
+	public function ajax_widget_proxy()
+	{
+		$wgtid = $this->_EE->input->post('wgtid');
+		$method = $this->_EE->input->post('method');
+
+		if(isset($wgtid) AND isset($method))
+		{
+			$widget = $this->_widgets[$wgtid];
+			$obj = $this->_get_widget_object($widget['mod'], $widget['wgt']);
+			$message = $obj->$method();
+
+			$content = $obj->index(@json_decode(''));
+			$result = array(
+				'title'		=> $obj->title,
+				'content' 	=> $content,
+				'message'	=> $message
+				);
+
+			echo json_encode($result);
+			exit();
+		}
+		else
+		{
+			echo 'aw crap';
+		}
+	}
 	
 	/**
 	 * Get/update users dashEE settings.
 	 *
+	 * @param   $member_id 	EE member ID.
 	 * @return 	array
 	 */
 	private function _get_member_settings($member_id)
@@ -909,7 +955,6 @@ class Dashee_mcp
 		}
 		else
 		{
-			// $this->_add_widget_package_path($module, $widget);
 			$content = $obj->index(@json_decode($settings));
 		}
 
@@ -941,7 +986,6 @@ class Dashee_mcp
 	{
 		$widget = $this->_widgets[$this->_EE->input->get('wgt')];
 		$obj = $this->_get_widget_object($widget['mod'], $widget['wgt']);
-		// $this->_add_widget_package_path($widget['mod']);
 		$content = $obj->index(json_decode($widget['stng']));
 		$result = array(
 			'title'		=> $obj->title,
