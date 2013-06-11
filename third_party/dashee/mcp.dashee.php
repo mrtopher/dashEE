@@ -117,6 +117,13 @@ class Dashee_mcp
 		// load widgets
 		$widgets = $this->_widget_loader($this->_settings['widgets']);
 		
+		/**
+		 * Because add_package_path is called for each module with widgets in widget_loader, EE will incorrectly default the views 
+		 * drectory to the last module whose widget was called thus causing the index view for that module to be displayed 
+		 * instead of the dashboard... this line adds dashee path onto the end after widget_loader to ensure this doesn't happen
+		 */
+		$this->_EE->load->add_package_path(PATH_THIRD . 'dashee/'); 
+
 		$page_data = array(
 			'cp_page_title' => lang('dashee_term'),
 			'base_qs' 		=> $this->_base_qs,
