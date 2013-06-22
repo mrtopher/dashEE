@@ -14,15 +14,16 @@
 
 class Wgt_recent_comments
 {
-	public 	$title;
-	
-	private $_EE;
-	
+	public $EE;
+	public $title;
+		
 	/**
 	 * Constructor
 	 */
 	public function __construct()
 	{
+		$this->EE =& get_instance();
+
 		$this->title = 'Recent Comments';
 		$this->wclass = 'contentMenu';
 	}
@@ -37,7 +38,7 @@ class Wgt_recent_comments
 	public function index()
 	{
 		// get most recent 10 entries from DB
-		$comments = EE()->db->select('entry_id, channel_id, name, comment_date')
+		$comments = $this->EE->db->select('entry_id, channel_id, name, comment_date')
 			->from('comments')
 			->order_by('comment_date DESC')
 			->limit(10)
