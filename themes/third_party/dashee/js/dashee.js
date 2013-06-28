@@ -508,16 +508,15 @@ $(function() {
 			type: 'POST',
 			url: EE.BASE + '&C=addons_modules&M=show_module_cp&module=dashee&method=ajax_widget_proxy',
 			data: $(this).serialize() + '&wgtid=' + $widget_id,
-			dataType: 'json',
-			success: function(json) {
-				var $result = $.parseJSON(json);
-				$('h2', $widget).html(response.title);
-				$widget.find('.widget-content').html(response.content);
+			success: function(html) {
+				var $result = $.parseJSON(html);
+				$('h2', $widget).html($result.title);
+				$widget.find('.widget-content').html($result.content);
 
 				$.ee_notice($result.message, {type: 'success', open: true});
 			},
 			error: function(html) {
-				$.ee_notice("ERROR: The widget you selected could not be removed.", {type: 'error', open: true});
+				$.ee_notice("Nope, there was a problem.", {type: 'error', open: true});
 			}
 		});
 	});

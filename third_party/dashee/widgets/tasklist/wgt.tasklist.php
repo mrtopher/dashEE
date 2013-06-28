@@ -76,8 +76,7 @@ class Wgt_tasklist
 
 		$this->_model->add_task($params);
 
-		echo 'Task added.';
-		exit();
+		return 'Task added.';
 	}
 	
 	/**
@@ -126,7 +125,7 @@ class Wgt_tasklist
 		$this->EE->dbforge->add_field($fields);
 		$this->EE->dbforge->add_key('id', TRUE);
 
-		$this->EE->dbforge->create_table('widget_tasklist');
+		$this->EE->dbforge->create_table('widget_tasklist', TRUE);
 	}
 
 	/**

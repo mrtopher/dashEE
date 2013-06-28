@@ -116,6 +116,9 @@ class Dashee_mcp
 		
 		// load widgets
 		$widgets = $this->_widget_loader($this->_settings['widgets']);
+
+		// get module settings for appropriate page title
+		$module_settings = $this->_model->get_module_settings();
 		
 		/**
 		 * Because add_package_path is called for each module with widgets in widget_loader, EE will incorrectly default the views 
@@ -125,7 +128,7 @@ class Dashee_mcp
 		$this->_EE->load->add_package_path(PATH_THIRD . 'dashee/'); 
 
 		$page_data = array(
-			'cp_page_title' => lang('dashee_term'),
+			'cp_page_title' => $module_settings['crumb_term'],
 			'base_qs' 		=> $this->_base_qs,
 			'settings' 		=> $this->_settings, 
 			'content' 		=> $widgets, 
@@ -794,7 +797,7 @@ class Dashee_mcp
 			$obj = $this->_get_widget_object($widget['mod'], $widget['wgt']);
 			$message = $obj->$method();
 
-			$content = $obj->index(@json_decode(''));
+			$content = $obj->index(@json_decode($this->_widgets[$wgtid]['stng']));
 			$result = array(
 				'title'		=> $obj->title,
 				'content' 	=> $content,
