@@ -799,18 +799,22 @@ class Dashee_mcp
 
 			$content = $obj->index(@json_decode($this->_widgets[$wgtid]['stng']));
 			$result = array(
+				'type'		=> 'success',
 				'title'		=> $obj->title,
 				'content' 	=> $content,
 				'message'	=> $message
 				);
-
-			echo json_encode($result);
-			exit();
 		}
 		else
 		{
-			echo 'aw crap';
+			$result = array(
+				'type'		=> 'failure',
+				'message'	=> 'Something went wrong.'
+				);
 		}
+
+		echo json_encode($result);
+		exit();
 	}
 	
 	/**

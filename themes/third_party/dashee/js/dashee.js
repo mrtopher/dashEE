@@ -498,7 +498,7 @@ $(function() {
 	}, this));
 
 	// Event to handle widget form submissions.
-	$('.wgt_form').on('submit', function (e) {
+	$(document).on('submit', '.wgt_form', function (e) {
 		e.preventDefault();
 
 		var $widget = $(this).parents('li');
@@ -510,10 +510,15 @@ $(function() {
 			data: $(this).serialize() + '&wgtid=' + $widget_id,
 			success: function(html) {
 				var $result = $.parseJSON(html);
-				$('h2', $widget).html($result.title);
-				$widget.find('.widget-content').html($result.content);
 
-				$.ee_notice($result.message, {type: 'success', open: true});
+				if($result.type == 'success') {
+					$('h2', $widget).html($result.title);
+					$widget.find('.widget-content').html($result.content);
+					$.ee_notice($result.message, {type: 'success', open: true});
+				}
+				else {
+					$.ee_notice($result.message, {type: 'error', open: true});
+				}
 			},
 			error: function(html) {
 				$.ee_notice("Nope, there was a problem.", {type: 'error', open: true});
