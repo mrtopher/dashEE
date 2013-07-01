@@ -68,7 +68,7 @@ function wgt_form_open($method, $attributes = array(), $hidden = array())
 		$hidden['XID'] = XID_SECURE_HASH;
 	}
 
-	$hidden['method'] = $method;
+	$hidden['mthd'] = $method;
 
 	if(is_array($hidden) AND count($hidden > 0))
 	{

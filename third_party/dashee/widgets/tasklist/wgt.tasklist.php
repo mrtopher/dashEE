@@ -21,6 +21,7 @@ class Wgt_tasklist
 	public $title;
 	public $wclass;
 	// public $settings;
+	public $js;
 	
 	private $_model;
 	
@@ -40,6 +41,7 @@ class Wgt_tasklist
 			'title' => 'Task List',
 			);
 		$this->wclass = 'contentMenu';
+		$this->js = $this->EE->load->view('js/main', 0, TRUE);
 	}
 	
 	// ----------------------------------------------------------------
@@ -62,13 +64,14 @@ class Wgt_tasklist
 	}
 
 	/**
+	 * AJAX METHOD
+	 * 
 	 * Add Task Function
 	 * Attempt to add a new task to the DB.
 	 *
-	 * @param	object
 	 * @return 	string
 	 */
-	public function add_task()
+	public function ajax_add_task()
 	{
 		$params = array(
 			'task' => $this->EE->input->post('task')
@@ -77,6 +80,58 @@ class Wgt_tasklist
 		$this->_model->add_task($params);
 
 		return 'Task added.';
+	}
+
+	/**
+	 * AJAX METHOD
+	 * 
+	 * Update Task Status Function
+	 * Attempt to mark the provided task as complete or incomplete in the DB.
+	 *
+	 * @return 	string
+	 */
+	public function ajax_update_task($params)
+	{
+		$task_id = $params['task_id'];
+
+		if($task_id != '' AND is_numeric($task_id))
+		{
+			$params = array(
+				'is_done' => $params['status']
+				);
+
+			$this->_model->edit_task($task_id, $params);
+
+			return 'Task updated.';			
+		}
+		else
+		{
+			return 'No task specified.';
+		}
+	}
+
+	/**
+	 * AJAX METHOD
+	 * 
+	 * Delete Task Function
+	 * Attempt to delete selected task from the DB.
+	 *
+	 * @return 	string
+	 */
+	public function ajax_delete_task($params)
+	{
+		$task_id = $params['task_id'];
+
+		if($task_id != '' AND is_numeric($task_id))
+		{
+			$this->_model->delete_task($task_id);
+
+			return 'Task deleted.';			
+		}
+		else
+		{
+			return 'No task specified.';
+		}
 	}
 	
 	/**
@@ -115,6 +170,11 @@ class Wgt_tasklist
 				'type' 				=> 'INT',
 				'unsigned' 			=> TRUE,
 				'auto_increment' 	=> TRUE
+				),
+			'is_done' => array(
+				'type'				=> 'TINYINT',
+				'default'			=> '0',
+				'null'				=> FALSE
 				),
 			'task' => array(
 				'type'				=> 'VARCHAR',

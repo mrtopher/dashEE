@@ -69,7 +69,7 @@ class Dashee_mcp
         // is the member_group layout locked?
         if($this->_settings['locked'] == FALSE)
         {
-        	$this->_EE->cp->add_to_head('<script type="text/javascript" src="' . $this->_js_url . '"></script>');
+        	$this->_EE->cp->add_to_foot('<script type="text/javascript" src="' . $this->_js_url . '"></script>');
         }
 			
 		// set button data appropriately based on type of user
@@ -782,20 +782,56 @@ class Dashee_mcp
 	}
 
 	/**
-	 * Pass through (proxy) method for hanlding widget form submissions.
+	 * Pass through (proxy) method for hanlding widget POST requests.
 	 *
 	 * @return 	string
 	 */
-	public function ajax_widget_proxy()
+	public function ajax_widget_post_proxy()
 	{
 		$wgtid = $this->_EE->input->post('wgtid');
-		$method = $this->_EE->input->post('method');
+		$method = $this->_EE->input->post('mthd');
 
 		if(isset($wgtid) AND isset($method))
 		{
 			$widget = $this->_widgets[$wgtid];
 			$obj = $this->_get_widget_object($widget['mod'], $widget['wgt']);
-			$message = $obj->$method();
+			$message = $obj->$method($_POST);
+
+			$content = $obj->index(@json_decode($this->_widgets[$wgtid]['stng']));
+			$result = array(
+				'type'		=> 'success',
+				'title'		=> $obj->title,
+				'content' 	=> $content,
+				'message'	=> $message
+				);
+		}
+		else
+		{
+			$result = array(
+				'type'		=> 'failure',
+				'message'	=> 'Something went wrong.'
+				);
+		}
+
+		echo json_encode($result);
+		exit();
+	}
+	
+	/**
+	 * Pass through (proxy) method for hanlding widget GET requests.
+	 *
+	 * @return 	string
+	 */
+	public function ajax_widget_get_proxy()
+	{
+		$wgtid = $this->_EE->input->get('wgtid');
+		$method = $this->_EE->input->get('mthd');
+
+		if(isset($wgtid) AND isset($method))
+		{
+			$widget = $this->_widgets[$wgtid];
+			$obj = $this->_get_widget_object($widget['mod'], $widget['wgt']);
+			$message = $obj->$method($_GET);
 
 			$content = $obj->index(@json_decode($this->_widgets[$wgtid]['stng']));
 			$result = array(
@@ -970,6 +1006,13 @@ class Dashee_mcp
 		{
 			$class .= ' collapsed';
 		}
+
+		// check if widget has associated JS
+		$js = '';
+		if(isset($obj->js))
+		{
+			$js = $obj->js;
+		}
 		
 		return '
 			<li id="' . $id . '" class="widget ' . $class . '" ' . $dash_code . '>
@@ -978,6 +1021,7 @@ class Dashee_mcp
 					<div class="buttons"></div>
 				</div>
 				<div class="widget-content">' . $content . '</div>
+				' . $js . '
 			</li>
 		';
 	}

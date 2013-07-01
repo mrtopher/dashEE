@@ -1,3 +1,4 @@
+/* Main dashEE Module JS File */
 $(function() {
 
 	var dash = {
@@ -506,7 +507,7 @@ $(function() {
 
 		$.ajax({
 			type: 'POST',
-			url: EE.BASE + '&C=addons_modules&M=show_module_cp&module=dashee&method=ajax_widget_proxy',
+			url: EE.BASE + '&C=addons_modules&M=show_module_cp&module=dashee&method=ajax_widget_post_proxy',
 			data: $(this).serialize() + '&wgtid=' + $widget_id,
 			success: function(html) {
 				var $result = $.parseJSON(html);
@@ -514,7 +515,7 @@ $(function() {
 				if($result.type == 'success') {
 					$('h2', $widget).html($result.title);
 					$widget.find('.widget-content').html($result.content);
-					$.ee_notice($result.message, {type: 'success', open: true});
+					$.ee_notice($result.message, {type: 'success', open: false});
 				}
 				else {
 					$.ee_notice($result.message, {type: 'error', open: true});
