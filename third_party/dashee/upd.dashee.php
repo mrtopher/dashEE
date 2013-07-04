@@ -10,7 +10,8 @@
  * @link		http://chrismonnat.com
  */
 
-class Dashee_upd {
+class Dashee_upd 
+{
 	
 	public $version;
 	

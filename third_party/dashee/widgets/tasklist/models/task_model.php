@@ -29,11 +29,14 @@ class Task_model extends CI_Model
 	/**
 	 * Get all tasks from DB.
 	 *
+	 * @param 	int 		$member_id
 	 * @return 	object
 	 */
-	public function get_tasks()
+	public function get_tasks($member_id)
 	{
-		return $this->EE->db->get('widget_tasklist')->result();
+		return $this->EE->db->order_by('is_done ASC, task ASC')
+			->get_where('widget_tasklist', array('member_id' => $member_id))
+			->result();
 	}
 
 	/**

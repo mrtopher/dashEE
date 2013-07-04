@@ -553,7 +553,7 @@ class Dashee_model extends CI_Model
 	 * @access  private
 	 * @return  void
 	 */
-   private function _update_package_to_version_18()
+    private function _update_package_to_version_18()
     {
     	// add DB table for storing module settings
     	$this->install_module_settings_table();
@@ -571,6 +571,17 @@ class Dashee_model extends CI_Model
     		
     		$this->db->update('dashee_members', array('config' => json_encode($settings)), array('id' => $row->id)); 
     	}
+    }
+
+    /**
+     * Update any references to Feed Reader widget to new name.
+     *
+     * @access  private
+     * @return  void
+     */
+    private function _update_package_to_version_20()
+    {
+
     }
     
    	/**

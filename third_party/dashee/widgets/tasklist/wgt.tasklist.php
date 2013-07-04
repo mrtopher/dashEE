@@ -24,7 +24,8 @@ class Wgt_tasklist
 	public $js;
 	
 	private $_model;
-	
+	private $_member_id;
+
 	/**
 	 * Constructor
 	 */
@@ -42,6 +43,8 @@ class Wgt_tasklist
 			);
 		$this->wclass = 'contentMenu';
 		$this->js = $this->EE->load->view('js/main', 0, TRUE);
+
+		$this->_member_id = $this->EE->session->userdata('member_id');
 	}
 	
 	// ----------------------------------------------------------------
@@ -57,7 +60,7 @@ class Wgt_tasklist
 		$this->title = $settings->title;
 	
 		$widget_data = array(
-			'tasks' => $this->_model->get_tasks()
+			'tasks' => $this->_model->get_tasks($this->_member_id)
 			);
 
 		return $this->EE->load->view('index', $widget_data, TRUE);
@@ -74,7 +77,8 @@ class Wgt_tasklist
 	public function ajax_add_task()
 	{
 		$params = array(
-			'task' => $this->EE->input->post('task')
+			'member_id'	=> $this->_member_id,
+			'task' 		=> $this->EE->input->post('task')
 			);
 
 		$this->_model->add_task($params);
@@ -171,6 +175,11 @@ class Wgt_tasklist
 				'unsigned' 			=> TRUE,
 				'auto_increment' 	=> TRUE
 				),
+			'member_id' => array(
+				'type'				=> 'INT',
+				'unsigned' 			=> TRUE,
+				'null'				=> FALSE
+				),
 			'is_done' => array(
 				'type'				=> 'TINYINT',
 				'default'			=> '0',
@@ -196,6 +205,8 @@ class Wgt_tasklist
 	 */
 	public function widget_uninstall()
 	{
+		$this->EE->db->delete('widget_tasklist', array('member_id' => $this->_member_id));
+
 		$this->EE->load->dbforge();
 
 		$this->EE->dbforge->drop_table('widget_tasklist');

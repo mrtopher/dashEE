@@ -782,6 +782,7 @@ class Dashee_mcp
 	}
 
 	/**
+	 * AJAX METHOD
 	 * Pass through (proxy) method for hanlding widget POST requests.
 	 *
 	 * @return 	string
@@ -818,6 +819,7 @@ class Dashee_mcp
 	}
 	
 	/**
+	 * AJAX METHOD
 	 * Pass through (proxy) method for hanlding widget GET requests.
 	 *
 	 * @return 	string
@@ -852,6 +854,26 @@ class Dashee_mcp
 		echo json_encode($result);
 		exit();
 	}
+
+	/**
+	 * AJAX METHOD
+	 * Return JSON for selected widget for processing by javascript.
+	 * Used to return widgets back to load state after NOT submitting settings form.
+	 *
+	 * @return	string
+	 */
+	public function ajax_get_widget()
+	{
+		$widget = $this->_widgets[$this->_EE->input->get('wgt')];
+		$obj = $this->_get_widget_object($widget['mod'], $widget['wgt']);
+		$content = $obj->index(json_decode($widget['stng']));
+		$result = array(
+			'title'		=> $obj->title,
+			'content' 	=> $content
+			);
+		echo json_encode($result);
+		exit();
+	}
 	
 	/**
 	 * Get/update users dashEE settings.
@@ -873,18 +895,21 @@ class Dashee_mcp
 			{
 				foreach($widget as $id => $params)
 				{
-					if(!isset($this->_EE->cp->installed_modules[$params['mod']]) || 
-						!file_exists(PATH_THIRD.$params['mod'].'/widgets/'.$params['wgt']))
+					if($params['mod'] != 'dashee' AND $params['wgt'] != 'dummy')
 					{
-						unset($settings['widgets'][$col][$id]);
-						
-						$update_member = TRUE;
-					}
-					else
-					{
-						$this->_widgets[$id] = $params;
-						$this->_widgets[$id]['col'] = $col;
-						$this->_widgets[$id]['id'] = $id;
+						if(!isset($this->_EE->cp->installed_modules[$params['mod']]) || 
+							!file_exists(PATH_THIRD.$params['mod'].'/widgets/'.$params['wgt']))
+						{
+							unset($settings['widgets'][$col][$id]);
+							
+							$update_member = TRUE;
+						}
+						else
+						{
+							$this->_widgets[$id] = $params;
+							$this->_widgets[$id]['col'] = $col;
+							$this->_widgets[$id]['id'] = $id;
+						}						
 					}
 				}
 			}
@@ -986,38 +1011,55 @@ class Dashee_mcp
 	 */
 	private function _render_widget($id, $module, $widget, $state = 1, $settings = '')
 	{
-		$obj = $this->_get_widget_object($module, $widget);
-						
-		$class 		= isset($obj->wclass) ? $obj->wclass : '';
-		$dash_code 	= method_exists($obj, 'settings_form') ? 'dashee="dynamic"' : '';
-
-		// check widget permissions
-		if(method_exists($obj, 'permissions') && !$obj->permissions())
+		// determine if this is a dummy widget or one with a corresponding object
+		// dummy widget
+		if($module == 'dashee' AND $widget == 'dummy')
 		{
-			$content = '<p>'.lang('permission_denied').'</p>';
+			$data = $this->_widgets[$id]['data'];
+
+			$title 		= $data['title'];
+			$class 		= $data['wclass'];
+			$dash_code	= '';
+			$content 	= $data['content'];
+			$js 		= '';
 		}
+		// the real thing
 		else
 		{
-			$content = $obj->index(@json_decode($settings));
-		}
+			$obj = $this->_get_widget_object($module, $widget);
+			
+			$class 		= isset($obj->wclass) ? $obj->wclass : '';
+			$dash_code 	= method_exists($obj, 'settings_form') ? 'dashee="dynamic"' : '';
 
-		// check widget state (expanded vs. collapsed)
-		if(isset($state) AND !$state)
-		{
-			$class .= ' collapsed';
-		}
+			// check widget permissions
+			if(method_exists($obj, 'permissions') && !$obj->permissions())
+			{
+				$content = '<p>'.lang('permission_denied').'</p>';
+			}
+			else
+			{
+				$content = $obj->index(@json_decode($settings));
+				$title 	 = $obj->title;
+			}
 
-		// check if widget has associated JS
-		$js = '';
-		if(isset($obj->js))
-		{
-			$js = $obj->js;
+			// check widget state (expanded vs. collapsed)
+			if(isset($state) AND !$state)
+			{
+				$class .= ' collapsed';
+			}
+
+			// check if widget has associated JS
+			$js = '';
+			if(isset($obj->js))
+			{
+				$js = $obj->js;
+			}
 		}
 		
 		return '
 			<li id="' . $id . '" class="widget ' . $class . '" ' . $dash_code . '>
 				<div class="heading">
-					<h2>' . $obj->title . '</h2>
+					<h2>' . $title . '</h2>
 					<div class="buttons"></div>
 				</div>
 				<div class="widget-content">' . $content . '</div>
@@ -1025,27 +1067,7 @@ class Dashee_mcp
 			</li>
 		';
 	}
-	
-	/**
-	 * AJAX METHOD
-	 * Return JSON for selected widget for processing by javascript.
-	 * Used to return widgets back to load state after NOT submitting settings form.
-	 *
-	 * @return	string
-	 */
-	public function ajax_get_widget()
-	{
-		$widget = $this->_widgets[$this->_EE->input->get('wgt')];
-		$obj = $this->_get_widget_object($widget['mod'], $widget['wgt']);
-		$content = $obj->index(json_decode($widget['stng']));
-		$result = array(
-			'title'		=> $obj->title,
-			'content' 	=> $content
-			);
-		echo json_encode($result);
-		exit();
-	}
-	
+		
 	/**
 	 * Require necessary widget class and return instance.
 	 *
