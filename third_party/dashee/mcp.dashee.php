@@ -12,7 +12,6 @@
 
 class Dashee_mcp 
 {
-	
 	public $return_data;
 	
 	private $_EE;
@@ -27,9 +26,6 @@ class Dashee_mcp
 	private $_settings;
 	private $_widgets;
 	
-	/**
-	 * Constructor
-	 */
 	public function __construct()
 	{
 		$this->_EE =& get_instance();
@@ -54,8 +50,6 @@ class Dashee_mcp
         $this->_get_member_settings($this->_member_id);
         $this->_get_widgets();
 	}
-
-	// ----------------------------------------------------------------
 
 	/**
 	 * Index Function

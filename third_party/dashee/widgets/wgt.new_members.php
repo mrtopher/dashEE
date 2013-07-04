@@ -19,9 +19,6 @@ class Wgt_new_members
 	
 	private $_EE;
 	
-	/**
-	 * Constructor
-	 */
 	public function __construct()
 	{
 		$this->title = 'New Members';

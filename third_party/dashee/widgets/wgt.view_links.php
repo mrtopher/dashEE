@@ -19,17 +19,12 @@ class Wgt_view_links
 	
 	private $_EE;
 	
-	/**
-	 * Constructor
-	 */
 	public function __construct()
 	{
 		$this->title 	= 'View';
 		$this->wclass 	= 'contentMenu view';
 	}
 	
-	// ----------------------------------------------------------------
-
 	/**
 	 * Permissions Function
 	 * Defines permissions needed for user to be able to add widget.

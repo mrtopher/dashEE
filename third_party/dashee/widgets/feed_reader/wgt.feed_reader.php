@@ -18,9 +18,6 @@ class Wgt_feed_reader
 	public $wclass;
 	public $settings;
 	
-	/**
-	 * Constructor
-	 */
 	public function __construct()
 	{
 		$this->settings = array(
@@ -30,8 +27,6 @@ class Wgt_feed_reader
 		$this->wclass = 'contentMenu';
 	}
 	
-	// ----------------------------------------------------------------
-
 	/**
 	 * Index Function
 	 *

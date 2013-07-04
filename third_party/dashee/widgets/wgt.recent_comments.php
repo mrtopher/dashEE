@@ -18,17 +18,12 @@ class Wgt_recent_comments
 	
 	private $_EE;
 	
-	/**
-	 * Constructor
-	 */
 	public function __construct()
 	{
 		$this->title = 'Recent Comments';
 		$this->wclass = 'contentMenu';
 	}
 	
-	// ----------------------------------------------------------------
-
 	/**
 	 * Index Function
 	 *

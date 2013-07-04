@@ -19,17 +19,12 @@ class Wgt_recent_entries
 	
 	private $_EE;
 	
-	/**
-	 * Constructor
-	 */
 	public function __construct()
 	{
 		$this->title = 'Recent Entries';
 		$this->wclass = 'contentMenu';	
 	}
 	
-	// ----------------------------------------------------------------
-
 	/**
 	 * Index Function
 	 *

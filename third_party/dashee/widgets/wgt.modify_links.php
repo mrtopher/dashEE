@@ -19,17 +19,12 @@ class Wgt_modify_links
 	
 	private $_EE;
 	
-	/**
-	 * Constructor
-	 */
 	public function __construct()
 	{
 		$this->title 	= lang('modify').' <span class="subtext">'.lang('or_delete').'</span>';
 		$this->wclass 	= 'contentMenu modify';
 	}
 	
-	// ----------------------------------------------------------------
-
 	/**
 	 * Permissions Function
 	 * Defines permissions needed for user to be able to add widget.

@@ -10,11 +10,6 @@
  * @link		http://chrismonnat.com
  */
 
-function wgt_action_url()
-{
-
-}
-
 /**
  * Widget Form Declaration
  *

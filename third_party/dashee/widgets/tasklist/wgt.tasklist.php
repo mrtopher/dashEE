@@ -26,9 +26,6 @@ class Wgt_tasklist
 	private $_model;
 	private $_member_id;
 
-	/**
-	 * Constructor
-	 */
 	public function __construct()
 	{
 		$this->EE =& get_instance();
@@ -47,8 +44,6 @@ class Wgt_tasklist
 		$this->_member_id = $this->EE->session->userdata('member_id');
 	}
 	
-	// ----------------------------------------------------------------
-
 	/**
 	 * Index Function
 	 *
@@ -156,8 +151,6 @@ class Wgt_tasklist
 			
 			'.form_close();
 	}
-
-	// ----------------------------------------------------------------
 
 	/**
 	 * Widget Installer Function

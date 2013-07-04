@@ -10,8 +10,8 @@
  * @link		http://chrismonnat.com
  */
 
-class Dashee {
-	
+class Dashee 
+{	
 	public $return_data;
 	
 	/**
