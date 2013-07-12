@@ -14,17 +14,17 @@ class Dashee_upd
 {
 	public $version;
 	
-	private $_EE;
+	private $EE;
 	private $_model;
 	
 	public function __construct()
 	{
-		$this->_EE =& get_instance();
+		$this->EE =& get_instance();
 		
-        $this->_EE->load->add_package_path(PATH_THIRD .'dashee/');
+        $this->EE->load->add_package_path(PATH_THIRD .'dashee/');
 
-        $this->_EE->load->model('dashee_update_model');
-        $this->_model = $this->_EE->dashee_update_model;
+        $this->EE->load->model('dashee_update_model');
+        $this->_model = $this->EE->dashee_update_model;
         
         $this->version = $this->_model->get_package_version();
 	}

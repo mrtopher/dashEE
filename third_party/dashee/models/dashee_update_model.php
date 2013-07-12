@@ -14,7 +14,7 @@
 
 class Dashee_update_model extends CI_Model 
 {
-    private $_EE;
+    private $EE;
     private $_site_id;
     private $_package_name;
     private $_package_version;
@@ -26,9 +26,9 @@ class Dashee_update_model extends CI_Model
     {
         parent::__construct();
 
-        $this->_EE =& get_instance();
+        $this->EE =& get_instance();
 
-        $this->_site_id = $this->_EE->session->userdata('site_id');
+        $this->_site_id = $this->EE->session->userdata('site_id');
         
         $this->_package_name    	= 'dashEE';
         $this->_package_version 	= '1.8';
@@ -56,7 +56,7 @@ class Dashee_update_model extends CI_Model
      */
     public function get_installed_version()
     {
-        $result = $this->_EE->db->select('module_version')
+        $result = $this->EE->db->select('module_version')
         	->get_where('modules', array('module_name' => $this->get_package_name()), 1);
 
         return $result->num_rows() === 1 ? $result->row()->module_version : '';
@@ -109,7 +109,7 @@ class Dashee_update_model extends CI_Model
      */
     public function install_module_register()
     {
-        $this->_EE->db->insert('modules', array(
+        $this->EE->db->insert('modules', array(
             'module_name'           => ucfirst($this->get_package_name()),
             'module_version'        => $this->get_package_version(),
             'has_cp_backend'        => 'y',
@@ -126,7 +126,7 @@ class Dashee_update_model extends CI_Model
      */
     public function install_module_members_table()
     {
-		$this->_EE->load->dbforge();
+		$this->EE->load->dbforge();
 				
 		$fields = array(
 			'id' => array(
@@ -151,9 +151,9 @@ class Dashee_update_model extends CI_Model
 				)
 			);
 			
-		$this->_EE->dbforge->add_field($fields);
-		$this->_EE->dbforge->add_key('id', TRUE);
-		$this->_EE->dbforge->create_table('dashee_members', TRUE);
+		$this->EE->dbforge->add_field($fields);
+		$this->EE->dbforge->add_key('id', TRUE);
+		$this->EE->dbforge->create_table('dashee_members', TRUE);
     }
     
     /**
@@ -165,7 +165,7 @@ class Dashee_update_model extends CI_Model
      */
     public function install_module_layouts_table()
     {
-		$this->_EE->load->dbforge();
+		$this->EE->load->dbforge();
 				
 		$fields = array(
 			'id' => array(
@@ -198,12 +198,13 @@ class Dashee_update_model extends CI_Model
 				)
 			);
 			
-		$this->_EE->dbforge->add_field($fields);
-		$this->_EE->dbforge->add_key('id', TRUE);
-		$this->_EE->dbforge->create_table('dashee_layouts', TRUE);
+		$this->EE->dbforge->add_field($fields);
+		$this->EE->dbforge->add_key('id', TRUE);
+		$this->EE->dbforge->create_table('dashee_layouts', TRUE);
 		
 		// add standard default layout to new layouts DB table
-		$default_config = $this->_get_standard_default_template();
+        $this->EE->load->model('dashee_model'); 
+		$default_config = $this->EE->dashee_model->get_standard_default_template();
 	
 		$params = array(
 			'site_id'		=> $this->_site_id,
@@ -213,7 +214,7 @@ class Dashee_update_model extends CI_Model
 			'is_default' 	=> TRUE
 			);
 			
-		$this->_EE->db->insert('dashee_layouts', $params);
+		$this->EE->db->insert('dashee_layouts', $params);
 
     }
     
@@ -226,7 +227,7 @@ class Dashee_update_model extends CI_Model
      */
     public function install_module_layouts_groups_table()
     {
-    	$this->_EE->load->dbforge();
+    	$this->EE->load->dbforge();
     
 		$fields = array(
 			'id' => array(
@@ -258,9 +259,9 @@ class Dashee_update_model extends CI_Model
 				),
 			);
 			
-		$this->_EE->dbforge->add_field($fields);
-		$this->_EE->dbforge->add_key('id', TRUE);
-		$this->_EE->dbforge->create_table('dashee_member_groups_layouts', TRUE);
+		$this->EE->dbforge->add_field($fields);
+		$this->EE->dbforge->add_key('id', TRUE);
+		$this->EE->dbforge->create_table('dashee_member_groups_layouts', TRUE);
     }
 
     /**
@@ -272,7 +273,7 @@ class Dashee_update_model extends CI_Model
      */
     public function install_module_settings_table()
     {
-    	$this->_EE->load->dbforge();
+    	$this->EE->load->dbforge();
     
 		$fields = array(
 			'id' => array(
@@ -298,11 +299,11 @@ class Dashee_update_model extends CI_Model
 				)
 			);
 			
-		$this->_EE->dbforge->add_field($fields);
-		$this->_EE->dbforge->add_key('id', TRUE);
-		$this->_EE->dbforge->create_table('dashee_settings', TRUE);
+		$this->EE->dbforge->add_field($fields);
+		$this->EE->dbforge->add_key('id', TRUE);
+		$this->EE->dbforge->create_table('dashee_settings', TRUE);
 
-        $this->_EE->db->insert_batch('dashee_settings', $this->_module_settings);
+        $this->EE->db->insert_batch('dashee_settings', $this->_module_settings);
     }
     
     /**
@@ -331,7 +332,7 @@ class Dashee_update_model extends CI_Model
 				'enabled'	=> 'y'
 				);
 
-			$this->_EE->db->insert('extensions', $data);			
+			$this->EE->db->insert('extensions', $data);			
 		}
     }
     
@@ -343,8 +344,8 @@ class Dashee_update_model extends CI_Model
      */
     public function disable_extension()
     {
-		$this->_EE->db->where('class', 'Dashee_ext');
-		$this->_EE->db->delete('extensions');
+		$this->EE->db->where('class', 'Dashee_ext');
+		$this->EE->db->delete('extensions');
     }
     
     /**
@@ -358,7 +359,7 @@ class Dashee_update_model extends CI_Model
         $module_name = ucfirst($this->get_package_name());
 
         // Retrieve the module information.
-        $result = $this->_EE->db->select('module_id')
+        $result = $this->EE->db->select('module_id')
             ->get_where('modules', array('module_name' => $module_name), 1);
 
         if($result->num_rows() !== 1)
@@ -366,15 +367,15 @@ class Dashee_update_model extends CI_Model
             return FALSE;
         }
 
-        $this->_EE->db->delete('module_member_groups', array('module_id' => $result->row()->module_id));
-        $this->_EE->db->delete('modules', array('module_name' => $module_name));
+        $this->EE->db->delete('module_member_groups', array('module_id' => $result->row()->module_id));
+        $this->EE->db->delete('modules', array('module_name' => $module_name));
 
         // Drop the module entries table.
-        $this->_EE->load->dbforge();
-        $this->_EE->dbforge->drop_table('dashee_members');
-        $this->_EE->dbforge->drop_table('dashee_layouts');
-        $this->_EE->dbforge->drop_table('dashee_member_groups_layouts');
-        $this->_EE->dbforge->drop_table('dashee_settings');
+        $this->EE->load->dbforge();
+        $this->EE->dbforge->drop_table('dashee_members');
+        $this->EE->dbforge->drop_table('dashee_layouts');
+        $this->EE->dbforge->drop_table('dashee_member_groups_layouts');
+        $this->EE->dbforge->drop_table('dashee_settings');
 
         return TRUE;
     }
@@ -417,7 +418,7 @@ class Dashee_update_model extends CI_Model
         // Forcibly update the module version number?
         if($force === TRUE)
         {
-            $this->_ee->db->update(
+            $this->EE->db->update(
                 'modules',
                 array('module_version' => $this->get_package_version()),
                 array('module_name' => $this->get_package_name())
@@ -437,7 +438,7 @@ class Dashee_update_model extends CI_Model
     private function _update_package_to_version_14()
     {
     	// update stored configs with new 'columns' variable
-    	$qry = $this->_EE->db->get('dashee_members');
+    	$qry = $this->EE->db->get('dashee_members');
     	
     	foreach($qry->result() as $row)
     	{
@@ -460,7 +461,7 @@ class Dashee_update_model extends CI_Model
      */
     private function _update_package_to_version_15()
     {
-		$this->_EE->load->dbforge();
+		$this->EE->load->dbforge();
 
 		$fields = array(
 			'locked' => array(
@@ -471,7 +472,7 @@ class Dashee_update_model extends CI_Model
 				)
 			);
 		
-		$this->_EE->dbforge->add_column('dashee_member_groups_layouts', $fields);
+		$this->EE->dbforge->add_column('dashee_member_groups_layouts', $fields);
     }
         
     /**
@@ -482,7 +483,7 @@ class Dashee_update_model extends CI_Model
      */
     private function _update_package_to_version_16()
     {
-		$this->_EE->load->dbforge();
+		$this->EE->load->dbforge();
 
 		$fields = array(
 			'site_id' => array(
@@ -494,19 +495,19 @@ class Dashee_update_model extends CI_Model
 		
 		// add site_id column to both members and layouts table
 		// using query() instead of DB forge to take advantage of mysql AFTER operator
-		$this->_EE->db->query('ALTER TABLE exp_dashee_members ADD `site_id` INT(10) UNSIGNED NOT NULL AFTER `id`');
-		$this->_EE->db->query('ALTER TABLE exp_dashee_layouts ADD `site_id` INT(10) UNSIGNED NOT NULL AFTER `id`');
-		$this->_EE->db->query('ALTER TABLE exp_dashee_member_groups_layouts ADD `site_id` INT(10) UNSIGNED NOT NULL AFTER `member_group_id`');
+		$this->EE->db->query('ALTER TABLE exp_dashee_members ADD `site_id` INT(10) UNSIGNED NOT NULL AFTER `id`');
+		$this->EE->db->query('ALTER TABLE exp_dashee_layouts ADD `site_id` INT(10) UNSIGNED NOT NULL AFTER `id`');
+		$this->EE->db->query('ALTER TABLE exp_dashee_member_groups_layouts ADD `site_id` INT(10) UNSIGNED NOT NULL AFTER `member_group_id`');
 		
 		// set new site_id column for all existing members/layouts
-		$this->_EE->db->update('dashee_members', array('site_id' => $this->_site_id));
-		$this->_EE->db->update('dashee_layouts', array('site_id' => $this->_site_id));
-		$this->_EE->db->update('dashee_member_groups_layouts', array('site_id' => $this->_site_id));
+		$this->EE->db->update('dashee_members', array('site_id' => $this->_site_id));
+		$this->EE->db->update('dashee_layouts', array('site_id' => $this->_site_id));
+		$this->EE->db->update('dashee_member_groups_layouts', array('site_id' => $this->_site_id));
 		
 		// reindex existing member layouts with random IDs
-		$this->_EE->load->helper('string');
+		$this->EE->load->helper('string');
 		
-		$members = $this->_EE->db->get('dashee_members');
+		$members = $this->EE->db->get('dashee_members');
 		foreach($members->result() as $member)
 		{
 			$config = array();
@@ -520,7 +521,7 @@ class Dashee_update_model extends CI_Model
 			}
 			
 			$dash['widgets'] = $config;
-			$this->_EE->db->update('dashee_members', array('config' => json_encode($dash)), array('id' => $member->id));
+			$this->EE->db->update('dashee_members', array('config' => json_encode($dash)), array('id' => $member->id));
 		}
     }
 
@@ -536,10 +537,10 @@ class Dashee_update_model extends CI_Model
     	$this->install_module_settings_table();
 
   		// remove obsolete extension settings
-  		$this->_EE->db->update('extensions', array('settings' => ''), array('class' => 'Dashee_ext'));
+  		$this->EE->db->update('extensions', array('settings' => ''), array('class' => 'Dashee_ext'));
 
       	// update stored configs with new 'state_buttons' variable
-    	$qry = $this->_EE->db->get('dashee_members');
+    	$qry = $this->EE->db->get('dashee_members');
     	
     	foreach($qry->result() as $row)
     	{
@@ -558,7 +559,37 @@ class Dashee_update_model extends CI_Model
      */
     private function _update_package_to_version_20()
     {
+        // update all occurances of feed reader widget to new widget name (because it lives in a subfolder now)
+        $members = $this->EE->db->get('dashee_members');
+        foreach($members->result() as $member)
+        {
+            $config = array();
+            $dash = json_decode($member->config, TRUE);
+            foreach($dash['widgets'] as $col => $widgets)
+            {
+                foreach($widgets as $id => $widget)
+                {
+                    if($widget['wgt'] == 'wgt.feedreader.php')
+                    {
+                        $dash[$col][$id]['wgt'] = 'feedreader';
+                    }
+                }
+            }
+            
+            $this->EE->db->update('dashee_members', array('config' => json_encode($dash)), array('id' => $member->id));
+        }
 
+        // add dummy widget welcoming current user only (no other members) to dashEE 2.0
+        $widget = array(
+            'title'     => 'dashEE 2.0 Is Here!',
+            'wclass'    => 'padded',
+            'content'   => "<p>Video goes here<\/p>"
+            );
+
+        $member_id = $this->EE->session->userdata('member_id');
+        $member = $this->EE->db->get_where('dashee_members', array('member_id' => $member_id))->row();
+        $config = $this->_add_dummy_widget($widget, $member->config);
+        $this->EE->db->update('dashee_members', array('config' => $config), array('member_id' => $member_id));
     }
     
    	/**
@@ -602,8 +633,42 @@ class Dashee_update_model extends CI_Model
 			'enabled'	=> 'y'
 			);
 
-		$this->_EE->db->insert('extensions', $data);
+		$this->EE->db->insert('extensions', $data);
 	}
+
+    /**
+     * Add provided dummy widget to provided dash config.
+     *
+     * @return  string
+     */
+    private function _add_dummy_widget($widget, $config)
+    {
+        $this->EE->load->helper('string');
+    
+        $config = json_decode($config, TRUE);
+
+        $wid = 'wgt'.random_string('numeric', 8);
+
+        $new_widget = array(
+            'mod'   => 'dashee',
+            'wgt'   => 'dummy',
+            'state' => 1,
+            'data'  => $widget      
+            );
+        
+        // determine which column has the least number of widgets in it so you can add the 
+        // new one to the one with the least
+        $totals = array();
+        for($i=1; $i <= $config['columns']; ++$i)
+        {
+            $totals[$i] = @count($config['widgets'][$i]);
+        }
+        
+        $col = array_keys($totals, min($totals));
+        $config['widgets'][$col][$wid] = $new_widget;
+
+        return json_encode($config);
+    }
 }
 /* End of file dashee_update_model.php */
 /* Location: /system/expressionengine/third_party/dashee/models/dashee_update_model.php */
