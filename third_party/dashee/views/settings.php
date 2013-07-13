@@ -29,7 +29,7 @@ $this->table->clear();
 ?>
 
 <div class="tableFooter">
-	<?php echo form_submit(array('name' => 'submit', 'value' => lang('submit'), 'class' => 'submit')); ?>
+	<?php echo form_submit(array('name' => 'submit', 'value' => lang('btn_save_settings'), 'class' => 'submit')); ?>
 </div>
 
 <?php 
@@ -110,7 +110,7 @@ if($is_admin):
 ?>
 
 <div class="tableFooter">
-	<?php echo form_submit(array('name' => 'submit', 'value' => lang('submit'), 'class' => 'submit')); ?> 
+	<?php echo form_submit(array('name' => 'submit', 'value' => lang('btn_update_layouts'), 'class' => 'submit')); ?> 
 </div>
 
 <?php echo form_close(); ?>

@@ -20,7 +20,7 @@ class Dashee_ext
 	public $version			= '1.2';
 	public $required_by 	= array('module');
 	
-	private $_EE;
+	private $EE;
 	
 	/**
 	 * Constructor
@@ -29,12 +29,12 @@ class Dashee_ext
 	 */
 	public function __construct($settings = '')
 	{
-		$this->_EE 		=& get_instance();
+		$this->EE 		=& get_instance();
 		$this->settings = $settings;
 
 		if(version_compare(APP_VER, 2.6, '>=')) 
 		{
-			$this->_EE->load->library(array('localize', 'remember', 'session'));
+			$this->EE->load->library(array('localize', 'remember', 'session'));
 		}
 		
         $this->_base_qs     = 'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=dashee';
@@ -66,17 +66,17 @@ class Dashee_ext
 	 */
     public function crumb_remap()
     {
-        $this->_EE->load->model('dashee_model');
-        $settings = $this->_EE->dashee_model->get_module_settings();
+        $this->EE->load->model('dashee_model');
+        $settings = $this->EE->dashee_model->get_module_settings();
 
-        $url = $this->_EE->dashee_model->get_module_url();
+        $url = $this->EE->dashee_model->get_module_url();
 
         $js = '';
 
         // If another extension shares the same hook
-        if ($this->_EE->extensions->last_call !== FALSE)
+        if ($this->EE->extensions->last_call !== FALSE)
         {
-            $js = $this->_EE->extensions->last_call;
+            $js = $this->EE->extensions->last_call;
         }
 
         $js .= "
@@ -100,8 +100,8 @@ class Dashee_ext
 	 */
 	public function member_redirect()
 	{
-		$this->_EE->load->model('dashee_model');
-		$this->_EE->functions->redirect($this->_EE->dashee_model->get_module_url());
+		$this->EE->load->model('dashee_model');
+		$this->EE->functions->redirect($this->EE->dashee_model->get_module_url());
 	}
 	
 	/**
@@ -111,13 +111,13 @@ class Dashee_ext
 	 */
 	public function sessions_end(&$data)
 	{	
-		$c = $this->_EE->input->get('C');
+		$c = $this->EE->input->get('C');
 
 		if(REQ == 'CP' AND ($c == 'homepage' OR $c == ''))
 		{
 			$u = $data->userdata;
 
-			$setting = $this->_EE->db->get_where('dashee_settings', array('site_id' => $u['site_id'], 'key' => 'redirect_admins'))->row();
+			$setting = $this->EE->db->get_where('dashee_settings', array('site_id' => $u['site_id'], 'key' => 'redirect_admins'))->row();
 
 			// redirect super admins?
 			if($u['group_id'] == 1 && !$setting->value) return;
@@ -126,7 +126,7 @@ class Dashee_ext
 			if($u['can_access_cp']=='y' && $u['can_access_addons']=='y' && $u['can_access_modules']=='y')
 			{
 				// is dashEE installed? fetch module_id and check user can access it
-				$dashee_id = $this->_EE->db->where('module_name','DashEE')->get('modules')->row('module_id');
+				$dashee_id = $this->EE->db->where('module_name','DashEE')->get('modules')->row('module_id');
 
 				if(empty($dashee_id)) return;
 
@@ -134,7 +134,7 @@ class Dashee_ext
 
 				// all ok, build the url
 				$s = 0;
-				switch($this->_EE->config->item('admin_session_type'))
+				switch($this->EE->config->item('admin_session_type'))
 				{
 					case 's'	:
 						$s = $u['session_id'];
