@@ -14,13 +14,17 @@
 
 class Wgt_new_members
 {
-	public 	$title;
+	public $EE;
+	public $title;
 	public $wclass;
-	
-	private $_EE;
-	
+		
+	/**
+	 * Constructor
+	 */
 	public function __construct()
 	{
+		$this->EE =& get_instance();
+
 		$this->title = 'New Members';
 		$this->wclass = 'contentMenu';	
 	}
@@ -33,7 +37,7 @@ class Wgt_new_members
 	public function index()
 	{
 		// get most recent 10 members from DB
-		$results = EE()->db->select('member_id, username, join_date')
+		$results = $this->EE->db->select('member_id, username, join_date')
 			->from('members')
 			->order_by('join_date DESC')
 			->limit(10)

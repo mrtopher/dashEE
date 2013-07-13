@@ -14,12 +14,15 @@
 
 class Wgt_feed_reader
 {
+	public $EE;
 	public $title;
 	public $wclass;
 	public $settings;
 	
 	public function __construct()
 	{
+		$this->EE =& get_instance();
+
 		$this->settings = array(
 			'url' => 'http://ellislab.com/blog/rss-feed',
 			'num' => 5
@@ -35,7 +38,7 @@ class Wgt_feed_reader
 	 */
 	public function index($settings = NULL)
 	{
-		EE()->load->helper('text');
+		$this->EE->load->helper('text');
 	
 		libxml_use_internal_errors(true);
 		
@@ -53,7 +56,7 @@ class Wgt_feed_reader
 			$vars['num'] 	= $settings->num;
 		}
 
-		return EE()->load->view('index', $vars, TRUE);
+		return $this->EE->load->view('widgets/feed_reader', $vars, TRUE);
 	}
 	
 	/**

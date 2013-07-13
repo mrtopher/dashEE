@@ -14,13 +14,16 @@
 
 class Wgt_recent_entries
 {
-	public 	$title;
+	public $EE;
+	public $title;
 	public $wclass;
-	
-	private $_EE;
-	
+		
+	/**
+	 * Constructor
+	 */
 	public function __construct()
 	{
+		$this->EE =& get_instance();
 		$this->title = 'Recent Entries';
 		$this->wclass = 'contentMenu';	
 	}
@@ -33,7 +36,7 @@ class Wgt_recent_entries
 	public function index()
 	{
 		// get most recent 10 entries from DB
-		$entries = EE()->db->select('entry_id, channel_id, title, entry_date')
+		$entries = $this->EE->db->select('entry_id, channel_id, title, entry_date')
 			->from('channel_titles')
 			->order_by('entry_date DESC')
 			->limit(10)

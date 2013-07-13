@@ -14,11 +14,14 @@
 
 class Wgt_create_links
 {
+	public $EE;
 	public $title;
 	public $wclass;
 		
 	public function __construct()
-	{	
+	{
+		$this->EE =& get_instance();
+
 		$this->title  	= lang('create');
 		$this->wclass 	= 'contentMenu create';	
 	}
@@ -31,9 +34,9 @@ class Wgt_create_links
 	 */
 	public function permissions()
 	{
-		if(!EE()->cp->allowed_group('can_access_publish') && 
-			(!EE()->cp->allowed_group('can_access_edit') && !EE()->cp->allowed_group('can_admin_templates')) && 
-			 (!EE()->cp->allowed_group('can_admin_channels')  && ! EE()->cp->allowed_group('can_admin_sites')))
+		if(!$this->EE->cp->allowed_group('can_access_publish') && 
+			(!$this->EE->cp->allowed_group('can_access_edit') && !$this->EE->cp->allowed_group('can_admin_templates')) && 
+			 (!$this->EE->cp->allowed_group('can_admin_channels')  && ! $this->EE->cp->allowed_group('can_admin_sites')))
 		{
 			return FALSE;
 		}
@@ -50,25 +53,25 @@ class Wgt_create_links
 	{
 		$content = '<ul>';
 		
-		if(EE()->session->userdata['can_access_content'] == 'y')
+		if($this->EE->session->userdata['can_access_content'] == 'y')
 		{
 			$content .= '<li class="item"><a href="'.BASE.AMP.'D=cp'.AMP.'C=content_publish'.'">'.lang('entry').'</a></li>';
 		}
-		if(EE()->session->userdata['can_admin_templates'] == 'y')
+		if($this->EE->session->userdata['can_admin_templates'] == 'y')
 		{
 			$content .= '<li class="item"><a href="'.BASE.AMP.'D=cp'.AMP.'C=design'.AMP.'M=new_template">'.lang('template').'</a></li>
 						<li class="group"><a href="'.BASE.AMP.'D=cp'.AMP.'C=design'.AMP.'M=new_template_group">'.lang('template_group').'</a></li>';
 		}
-		EE()->cp->get_installed_modules();
-		EE()->load->model('member_model');
-		if(isset(EE()->cp->installed_modules['pages']))
+		$this->EE->cp->get_installed_modules();
+		$this->EE->load->model('member_model');
+		if(isset($this->EE->cp->installed_modules['pages']))
 		{
-			if(EE()->session->userdata('group_id') == 1 || EE()->member_model->can_access_module('pages'))
+			if($this->EE->session->userdata('group_id') == 1 || $this->EE->member_model->can_access_module('pages'))
 			{
 				$content .= '<li class="item"><a href="'.BASE.AMP.'C=content_publish">'.lang('page').'</a></li>';
 			}
 		}
-		if(EE()->session->userdata['can_admin_channels'] == 'y')
+		if($this->EE->session->userdata['can_admin_channels'] == 'y')
 		{
 			$content .= '<li class="group"><a href="'.BASE.AMP.'D=cp'.AMP.'C=admin_content'.AMP.'M=channel_add">'.lang('channel').'</a></li>';
 		}
