@@ -14,8 +14,9 @@ $lang = array(
 	'btn_expand'	=> '+ Expand All',
 	'btn_widgets'	=> 'Widgets',
 	'btn_settings'	=> 'Settings',
-	'btn_settings2'	=> 'Settings 2',
 	'btn_save'		=> 'Save Layout',
+	'btn_save_settings'		=> 'Save Settings',
+	'btn_update_layouts'	=> 'Update Layouts',
 	'btn_back_to_dashboard' => 'Back to Dashboard',
 	
 	// table captions

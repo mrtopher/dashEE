@@ -48,13 +48,13 @@ class Dashee_model extends CI_Model
     public function get_module_url()
     {
     	$s = 0;
-		switch($this->_EE->config->item('admin_session_type'))
+		switch($this->EE->config->item('admin_session_type'))
 		{
 			case 's':
-				$s = $this->_EE->session->userdata('session_id', 0);
+				$s = $this->EE->session->userdata('session_id', 0);
 				break;
 			case 'cs':
-				$s = $this->_EE->session->userdata('fingerprint', 0);
+				$s = $this->EE->session->userdata('fingerprint', 0);
 				break;
 		}
 
