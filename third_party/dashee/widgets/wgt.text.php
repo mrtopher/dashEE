@@ -15,16 +15,11 @@ class Wgt_text
 	public $title;
 	public $wclass;
 	
-	/**
-	 * Constructor
-	 */
 	public function __construct()
 	{
 		$this->wclass = 'padded';
 	}
 	
-	// ----------------------------------------------------------------
-
 	/**
 	 * Index Function
 	 *

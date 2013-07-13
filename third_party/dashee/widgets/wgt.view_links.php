@@ -28,8 +28,6 @@ class Wgt_view_links
 		$this->wclass 	= 'contentMenu view';
 	}
 	
-	// ----------------------------------------------------------------
-
 	/**
 	 * Permissions Function
 	 * Defines permissions needed for user to be able to add widget.

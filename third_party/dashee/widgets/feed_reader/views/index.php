@@ -21,5 +21,4 @@ else
 }
 
 ?>
-<li>This one right here</li>
 </ul>

@@ -1,3 +1,4 @@
+/* Main dashEE Module JS File */
 $(function() {
 
 	var dash = {
@@ -496,6 +497,35 @@ $(function() {
 		});
 		return false;
 	}, this));
+
+	// Event to handle widget form submissions.
+	$(document).on('submit', '.wgt_form', function (e) {
+		e.preventDefault();
+
+		var $widget = $(this).parents('li');
+		var $widget_id = $widget.attr('id');
+
+		$.ajax({
+			type: 'POST',
+			url: EE.BASE + '&C=addons_modules&M=show_module_cp&module=dashee&method=ajax_widget_post_proxy',
+			data: $(this).serialize() + '&wgtid=' + $widget_id,
+			success: function(html) {
+				var $result = $.parseJSON(html);
+
+				if($result.type == 'success') {
+					$('h2', $widget).html($result.title);
+					$widget.find('.widget-content').html($result.content);
+					$.ee_notice($result.message, {type: 'success', open: false});
+				}
+				else {
+					$.ee_notice($result.message, {type: 'error', open: true});
+				}
+			},
+			error: function(html) {
+				$.ee_notice("Nope, there was a problem.", {type: 'error', open: true});
+			}
+		});
+	});
 		
 	dash.init();
 });

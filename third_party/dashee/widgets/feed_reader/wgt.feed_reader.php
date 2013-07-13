@@ -19,9 +19,6 @@ class Wgt_feed_reader
 	public $wclass;
 	public $settings;
 	
-	/**
-	 * Constructor
-	 */
 	public function __construct()
 	{
 		$this->EE =& get_instance();
@@ -33,8 +30,6 @@ class Wgt_feed_reader
 		$this->wclass = 'contentMenu';
 	}
 	
-	// ----------------------------------------------------------------
-
 	/**
 	 * Index Function
 	 *
@@ -87,4 +82,4 @@ class Wgt_feed_reader
 	}
 }
 /* End of file wgt.feed_reader.php */
-/* Location: /system/expressionengine/third_party/dashee/widgets/wgt.feed_reader.php */
+/* Location: /system/expressionengine/third_party/dashee/widgets/feed_reader/wgt.feed_reader.php */

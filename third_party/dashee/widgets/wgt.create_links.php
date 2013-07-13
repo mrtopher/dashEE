@@ -18,9 +18,6 @@ class Wgt_create_links
 	public $title;
 	public $wclass;
 		
-	/**
-	 * Constructor
-	 */
 	public function __construct()
 	{
 		$this->EE =& get_instance();
@@ -28,9 +25,7 @@ class Wgt_create_links
 		$this->title  	= lang('create');
 		$this->wclass 	= 'contentMenu create';	
 	}
-	
-	// ----------------------------------------------------------------
-	
+		
 	/**
 	 * Permissions Function
 	 * Defines permissions needed for user to be able to add widget.

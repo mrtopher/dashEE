@@ -20,9 +20,6 @@ class Wgt_modify_links
 	
 	private $_EE;
 	
-	/**
-	 * Constructor
-	 */
 	public function __construct()
 	{
 		$this->EE =& get_instance();
@@ -31,8 +28,6 @@ class Wgt_modify_links
 		$this->wclass 	= 'contentMenu modify';
 	}
 	
-	// ----------------------------------------------------------------
-
 	/**
 	 * Permissions Function
 	 * Defines permissions needed for user to be able to add widget.

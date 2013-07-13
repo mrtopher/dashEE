@@ -40,9 +40,7 @@ class Dashee_ext
         $this->_base_qs     = 'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=dashee';
         $this->_base_url    = (defined('BASE') ? BASE : SELF).AMP.$this->_base_qs;
 	}
-	
-	// ----------------------------------------------------------------------
-	
+		
 	/**
 	 * Hide Breadcrumb Nav
 	 *
@@ -57,8 +55,6 @@ class Dashee_ext
 		return '#breadCrumb ol { display:none; }';
 	}
 	
-	// ----------------------------------------------------------------------
-
 	/**
 	 * Remap Breadcrumb Nav
 	 *
@@ -93,8 +89,6 @@ class Dashee_ext
 
         return $js;
     }
-
-	// ----------------------------------------------------------------------
 	
 	/**
 	 * Redirect Members on Login
@@ -109,8 +103,6 @@ class Dashee_ext
 		$this->_EE->load->model('dashee_model');
 		$this->_EE->functions->redirect($this->_EE->dashee_model->get_module_url());
 	}
-
-	// ----------------------------------------------------------------------
 	
 	/**
 	 * Redirect CP home to DashEE
@@ -158,8 +150,6 @@ class Dashee_ext
 		}
 	}
 
-	// ----------------------------------------------------------------------
-
 	/**
 	 * Activate Extension
 	 *
@@ -172,8 +162,6 @@ class Dashee_ext
 		return TRUE;
 	}	
 
-	// ----------------------------------------------------------------------
-
 	/**
 	 * Disable Extension
 	 *
@@ -183,8 +171,6 @@ class Dashee_ext
 	{
 		return TRUE;
 	}
-
-	// ----------------------------------------------------------------------
 
 	/**
 	 * Update Extension

@@ -28,8 +28,6 @@ class Wgt_recent_entries
 		$this->wclass = 'contentMenu';	
 	}
 	
-	// ----------------------------------------------------------------
-
 	/**
 	 * Index Function
 	 *

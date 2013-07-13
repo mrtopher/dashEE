@@ -18,9 +18,6 @@ class Wgt_blank
 	public $wclass;
 	public $settings;
 	
-	/**
-	 * Constructor
-	 */
 	public function __construct()
 	{
 		$this->settings = array(
@@ -30,8 +27,6 @@ class Wgt_blank
 		$this->wclass = 'padded';
 	}
 	
-	// ----------------------------------------------------------------
-
 	/**
 	 * Index Function
 	 *
