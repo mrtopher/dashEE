@@ -56,7 +56,7 @@ class Wgt_feed_reader
 			$vars['num'] 	= $settings->num;
 		}
 
-		return $this->EE->load->view('widgets/feed_reader', $vars, TRUE);
+		return $this->EE->load->view('index', $vars, TRUE);
 	}
 	
 	/**

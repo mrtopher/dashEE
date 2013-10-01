@@ -1,20 +1,28 @@
+/* dashEE Module CSS */
+
 /* EE Override */
-.rightNav { padding-right: 3.3%; }
+.rightNav { padding-right: 3.3%; margin-bottom:5px; }
 .rightNav .button { margin-left: 6px; margin-right: 0; }
 .contents { padding-left: 0; padding-right: 0; }
 .heading { display: none; }
-#mainContent .pageContents { border-top: none; padding-left: 0; padding-right: 0; background: none; }
+#mainContent .pageContents { border-top: none; padding-left: 0; padding-right: 0; padding-top:0; background: none; }
 #mainContent .pageContents table { margin-bottom: 0; }
 .contentMenu { margin-left: 0; float: none; width: 100%; }
 
-
 /* Module CSS */
-#dashListing { height:320px; overflow:auto; margin: 0 3.1% 25px 1.9%; }
+#dashboards { padding:0 25px 15px 25px; font-size:1.1em; }
+#dashboards li { float:left; }
+#dashboards li a { display:block; padding-left:10px; }
+#dashboards li a.active { font-weight:bold; }
+
+#dashListing { height:220px; margin: 0 3.1% 25px 1.9%; }
+#dashListing .widgets { width:85%; float:left; height:220px; overflow:auto; }
+#dashListing .dashboard { width:13%; float:left; height:210px; padding:5px; margin-left:1em; background:#F0F0F0; }
+#dashListing .dashboard li { line-height:1.5em; }
 
 #dashContainer .column { 
     float: left;
     margin-left:3.9%;
-	/* Min-height: */
 	min-height: 400px;
 	height: auto !important; 
 	height: 400px;
@@ -197,7 +205,9 @@ img#dashLoader { display:none; }
 img#widgetLoader { display:none; }
 
 #dashSaveLayout p { margin:10px 0; }
-#dashSaveLayout input { background:#FFF; }
+#dashSaveLayout input,
+#dashNewDashboard input,
+#dashRenameDashboard input { background:#FFF; }
 
 /* Widget Specific Styling */
 .widget.welcome .heading {

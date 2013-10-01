@@ -18,6 +18,7 @@ class Wgt_tasklist
 	public $widget_name 		= 'Task List';
 	public $widget_description 	= 'Simple widget for managing a task list.';
 
+	public $list_id;
 	public $title;
 	public $wclass;
 	// public $settings;
@@ -31,12 +32,13 @@ class Wgt_tasklist
 		$this->EE =& get_instance();
 
 		$this->EE->load->model('task_model');
-		$this->EE->load->helper('widget');
+		$this->EE->load->helper(array('string', 'widget'));
 
 		$this->_model = $this->EE->task_model;
 
 		$this->settings = array(
-			'title' => 'Task List',
+			'list_id' 	=> random_string('alnum', 10),
+			'title' 	=> 'Task List',
 			);
 		$this->wclass = 'contentMenu';
 		$this->js = $this->EE->load->view('js/main', 0, TRUE);
@@ -52,10 +54,12 @@ class Wgt_tasklist
 	 */
 	public function index($settings = NULL)
 	{
+		$this->list_id = $settings->list_id;
 		$this->title = $settings->title;
 	
 		$widget_data = array(
-			'tasks' => $this->_model->get_tasks($this->_member_id)
+			'list_id' 	=> $this->list_id,
+			'tasks' 	=> $this->_model->get_tasks($this->_member_id, $this->list_id)
 			);
 
 		return $this->EE->load->view('index', $widget_data, TRUE);
@@ -73,6 +77,7 @@ class Wgt_tasklist
 	{
 		$params = array(
 			'member_id'	=> $this->_member_id,
+			'list_id'	=> $this->EE->input->post('list_id'),
 			'task' 		=> $this->EE->input->post('task')
 			);
 
@@ -171,6 +176,11 @@ class Wgt_tasklist
 			'member_id' => array(
 				'type'				=> 'INT',
 				'unsigned' 			=> TRUE,
+				'null'				=> FALSE
+				),
+			'list_id' => array(
+				'type'				=> 'VARCHAR',
+				'constraint'		=> '10',
 				'null'				=> FALSE
 				),
 			'is_done' => array(

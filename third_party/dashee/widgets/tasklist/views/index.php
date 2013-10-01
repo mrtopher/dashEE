@@ -1,6 +1,5 @@
 <div class="update-area">
 	<table>
-		<thead><tr><th colspan="3">Tasks</th></tr></thead>
 		<tbody>
 			<?php foreach($tasks as $task): ?>
 				<tr>
@@ -20,4 +19,5 @@
 			<td><button type="submit">Add</button></td>
 		</tr>
 	</table>
+	<input type="hidden" name="list_id" value="<?php echo $list_id; ?>">
 <?php echo form_close(); ?>

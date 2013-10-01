@@ -16,12 +16,11 @@ class Dashee_mcp
 	
 	private $EE;
 	private $_model;
-	private $_base_qs;
-	private $_base_url;
 	private $_theme_url;
 	private $_css_url;
 	private $_js_url;
 	private $_member_id;
+	private $_config_id;
 	private $_super_admin = FALSE;
 	private $_settings;
 	private $_widgets;
@@ -31,10 +30,10 @@ class Dashee_mcp
 		$this->EE =& get_instance();
 		
         $this->EE->load->model('dashee_model');
+        $this->EE->load->helper('module');
+
         $this->_model = $this->EE->dashee_model;
 		
-        $this->_base_qs     = 'C=addons_modules' .AMP .'M=show_module_cp' .AMP .'module=dashee';
-        $this->_base_url    = BASE .AMP .$this->_base_qs;
         $this->_theme_url   = $this->_model->get_package_theme_url();
         $this->_css_url   	= $this->_theme_url .'css/cp.css';
         $this->_js_url   	= $this->_theme_url .'js/dashee.js';
@@ -45,9 +44,10 @@ class Dashee_mcp
         {
         	$this->_super_admin = TRUE;
         }
-        
+        $this->_config_id = isset($_GET['config_id']) ? $this->EE->input->get('config_id') : $this->_model->get_member_default_config_id($this->_member_id);
+
         // get current members dash configuration for use throughout module
-        $this->_get_member_settings($this->_member_id);
+        $this->_get_member_settings();
         $this->_get_widgets();
 	}
 
@@ -65,29 +65,7 @@ class Dashee_mcp
         {
         	$this->EE->cp->add_to_foot('<script type="text/javascript" src="' . $this->_js_url . '"></script>');
         }
-			
-		// set button data appropriately based on type of user
-		if($this->_settings['state_buttons'])
-		{
-			$button_data['btn_collapse'] = '#collapse';
-			$button_data['btn_expand'] 	 = '#expand';			
-		}
-		
-		$button_data["<img src='" . $this->_theme_url . "images/icon-cog.png' />"] = '#member-settings';
-		$button_data['btn_widgets']  = '#widgets';
-
-		if($this->_super_admin)
-		{
-			$button_data['btn_save'] = '#save-layout'; 
-			$button_data['btn_settings'] = $this->_base_url . AMP . 'method=settings';
-		}
-
-		// is the member_group layout locked?
-		if($this->_settings['locked'] == FALSE)
-        {
-        	$this->EE->cp->set_right_nav($button_data);
-        }
-		
+					
 		// override default breadcrumb display to make module look like default CP homepage
 		$settings = $this->_model->get_module_settings();
 		$this->EE->javascript->output("
@@ -122,11 +100,15 @@ class Dashee_mcp
 		$this->EE->load->add_package_path(PATH_THIRD . 'dashee/'); 
 
 		$page_data = array(
-			'cp_page_title' => $module_settings['crumb_term'],
-			'base_qs' 		=> $this->_base_qs,
-			'settings' 		=> $this->_settings, 
-			'content' 		=> $widgets, 
-			'theme_url' 	=> $this->_theme_url
+			'cp_page_title' 	=> $module_settings['crumb_term'],
+			'settings' 			=> $this->_settings, 
+			'dashboards'		=> $this->_model->get_dashboards($this->_member_id),
+			'content' 			=> $widgets, 
+			'theme_url' 		=> $this->_theme_url,
+			'state_buttons'		=> $this->_settings['state_buttons'],
+			'super_admin'		=> $this->_super_admin,
+			'locked'			=> $this->_settings['locked'],
+			'config_id'			=> $this->_config_id
 			);
 		
 		return $this->EE->load->view('index', $page_data, TRUE);
@@ -146,10 +128,10 @@ class Dashee_mcp
         $this->EE->cp->add_to_head('<script type="text/javascript" src="' . $this->_js_url . '"></script>');
 
         $this->EE->cp->set_right_nav(array(
-        	'btn_back_to_dashboard'	=> $this->_base_url
+        	'btn_back_to_dashboard'	=> module_url('dashee')
         	));
 			
-		$this->EE->cp->set_breadcrumb($this->_base_url, lang('btn_settings'));
+		$this->EE->cp->set_breadcrumb(module_url('dashee'), lang('btn_settings'));
 		
 		// override default breadcrumb display
 		$this->EE->javascript->output("
@@ -184,8 +166,6 @@ class Dashee_mcp
 		
 		$page_data = array(
 			'cp_page_title' => lang('dashee_settings'),
-			'base_qs' 		=> $this->_base_qs,
-			'base_url'		=> $this->_base_url,
 			'settings' 		=> $this->_model->get_module_settings(),
 			'is_admin'		=> $this->_super_admin,
 			'layouts' 		=> $layouts,
@@ -222,7 +202,7 @@ class Dashee_mcp
 
 		$this->EE->session->set_flashdata('dashee_msg', lang('flash_settings_updated'));
 
-		$this->EE->functions->redirect($this->_base_url . AMP . 'method=settings');
+		$this->EE->functions->redirect(module_url('dashee', 'settings'));
 	}
 	
 	/**
@@ -294,7 +274,7 @@ class Dashee_mcp
 		
 		$this->EE->session->set_flashdata('dashee_msg', lang('flash_settings_updated'));
 
-		$this->EE->functions->redirect($this->_base_url);
+		$this->EE->functions->redirect(module_url('dashee', 'index', array('config_id' => $this->_config_id)));
 	}
 		
 	/**
@@ -368,7 +348,7 @@ class Dashee_mcp
 						$widget_name,
 						$widget_description,
 						lang(strtolower($mod).'_module_name'),
-						anchor($this->_base_url, 'Add', 'class="addWidget" data-module="' . $mod . '" data-widget="' . $widget . '"')
+						anchor(module_url('dashee'), 'Add', 'class="addWidget" data-module="' . $mod . '" data-widget="' . $widget . '"')
 						);			
 				}
 			}
@@ -447,12 +427,16 @@ class Dashee_mcp
 		if(array_key_exists($wgt, $this->_widgets))
 		{
 			$widget = $this->_widgets[$wgt];
-			$obj = $this->_get_widget_object($widget['mod'], $widget['wgt']);
 
-			// run installer method if exists
-			if(method_exists($obj, 'widget_uninstall'))
+			if($widget['mod'] != 'dashee' AND $widget['wgt'] != 'dummy')
 			{
-				$obj->widget_uninstall();
+				$obj = $this->_get_widget_object($widget['mod'], $widget['wgt']);
+
+				// run installer method if exists
+				if(method_exists($obj, 'widget_uninstall'))
+				{
+					$obj->widget_uninstall();
+				}
 			}
 
 			unset($this->_settings['widgets'][$widget['col']][$wgt]);
@@ -624,7 +608,7 @@ class Dashee_mcp
 			$this->EE->session->set_flashdata('dashee_msg', lang('flash_layout_not_updated'));
 		}
 		
-		$this->EE->functions->redirect($this->_base_url.AMP.'method=settings');
+		$this->EE->functions->redirect(module_url('dashee', 'settings'));
 	}
 	
 	/**
@@ -650,7 +634,7 @@ class Dashee_mcp
 			$this->EE->session->set_flashdata('dashee_msg', lang('flash_layout_not_loaded'));
 		}
 		
-		$this->EE->functions->redirect($this->_base_url);
+		$this->EE->functions->redirect(module_url('dashee'));
 	}
 	
 	/**
@@ -678,7 +662,7 @@ class Dashee_mcp
 			$this->EE->session->set_flashdata('dashee_msg', lang('flash_layout_not_deleted'));
 		}
 		
-		$this->EE->functions->redirect($this->_base_url.AMP.'method=settings');
+		$this->EE->functions->redirect(module_url('dashee', 'settings'));
 	}
 	
 	/**
@@ -708,7 +692,7 @@ class Dashee_mcp
 			$this->EE->session->set_flashdata('dashee_msg', lang('flash_group_default_not_updated'));
 		}
 		
-		$this->EE->functions->redirect($this->_base_url.AMP.'method=settings');
+		$this->EE->functions->redirect(module_url('dashee', 'settings'));
 	}
 	
 	/**
@@ -737,7 +721,7 @@ class Dashee_mcp
 			$this->EE->session->set_flashdata('dashee_msg', lang('flash_group_layout_not_reset') . $group->group_title . '.');
 		}
 		
-		$this->EE->functions->redirect($this->_base_url.AMP.'method=settings');
+		$this->EE->functions->redirect(module_url('dashee', 'settings'));
 
 	}
 
@@ -749,7 +733,8 @@ class Dashee_mcp
 	 */
 	public function ajax_widget_post_proxy()
 	{
-		$wgtid = $this->EE->input->post('wgtid');
+		// $this->_config_id = $this->EE->input->post('config_id');
+		$wgtid 	= $this->EE->input->post('wgtid');
 		$method = $this->EE->input->post('mthd');
 
 		if(isset($wgtid) AND isset($method))
@@ -786,7 +771,8 @@ class Dashee_mcp
 	 */
 	public function ajax_widget_get_proxy()
 	{
-		$wgtid = $this->EE->input->get('wgtid');
+		// $this->_config_id = $this->EE->input->post('config_id');
+		$wgtid 	= $this->EE->input->get('wgtid');
 		$method = $this->EE->input->get('mthd');
 
 		if(isset($wgtid) AND isset($method))
@@ -836,6 +822,129 @@ class Dashee_mcp
 	}
 
 	/**
+	 * Reset selected dashboard to default layout config.
+	 *
+	 * @access	public
+	 * @return	void
+	 */
+	public function reset_dashboard()
+	{
+		$default = $this->_model->get_default_layout();
+		$this->_settings = json_decode($default->config, TRUE);
+		
+		$this->_update_member(FALSE);
+		
+		$this->EE->session->set_flashdata('dashee_msg', lang('flash_dashboard_reset'));
+		$this->EE->functions->redirect(module_url('dashee', 'index', array('config_id' => $this->_config_id)));
+	}
+
+	/**
+	 * Update name of the selected dashboard in DB.
+	 *
+	 * @access	public
+	 * @return	void
+	 */
+	public function rename_dashboard()
+	{
+		 $name = $this->EE->input->post('dashboard_name');
+
+		 if($name != '')
+		 {
+		 	$dashboard_params = array(
+		 		'name' => $name
+		 		);
+
+		 	$this->_model->update_dashboard($this->_config_id, $dashboard_params);
+
+			$this->EE->session->set_flashdata('dashee_msg', lang('flash_dashboard_updated'));
+		 }
+
+		$this->EE->functions->redirect(module_url('dashee', 'index', array('config_id' => $this->_config_id)));
+	}
+
+	/**
+	 * Create new dashboard for current user.
+	 *
+	 * @access	public
+	 * @return	void
+	 */
+	public function new_dashboard()
+	{
+		$name 	= $this->EE->input->post('dashboard_name');
+		$config = $this->EE->input->post('dashboard_config');
+
+		if($name == '')
+		{
+			$name = 'New Dashboard';
+		}
+
+		if($config == 'default')
+		{
+			$result = $this->_model->get_default_layout();
+			$config = $result->config;
+		}
+		else
+		{
+			$config = json_encode(
+				array(
+					'widgets' 		 => array(),
+					'columns'        => 3,
+		            'state_buttons'  => TRUE,
+		            'locked'		 => FALSE
+					)
+				);
+		}
+
+		$dashboard_params = array(
+			'dashee_id' 	=> $this->_model->get_dashee_id($this->_member_id),
+			'name'			=> $name,
+			'config' 		=> $config,
+			'is_default' 	=> FALSE
+			);
+
+		$config_id = $this->_model->add_dashboard($dashboard_params);
+
+		$this->EE->session->set_flashdata('dashee_msg', lang('flash_dashboard_created'));
+		$this->EE->functions->redirect(module_url('dashee', 'index', array('config_id' => $config_id)));
+	}
+
+	/**
+	 * Delete current dashboard from DB.
+	 *
+	 * @access  public
+	 * @return	void
+	 */
+	public function delete_dashboard()
+	{
+		$result = $this->_model->get_dashboard($this->_config_id);
+
+		if($result->num_rows() === 1)
+		{
+			$dashboard = $result->row();
+
+			if(!$dashboard->is_default)
+			{
+				$this->_model->delete_dashboard($dashboard->id);
+				$this->EE->session->set_flashdata('dashee_msg', lang('flash_dashboard_deleted'));
+			}		
+			else
+			{
+				// can't delete a users default dashboard
+				$this->EE->session->set_flashdata('dashee_msg', lang('flash_dashboard_deleted_error'));
+			}			
+		}
+		else
+		{
+			// can't find selected dashboard
+			$this->EE->session->set_flashdata('dashee_msg', lang('flash_dashboard_not_found'));
+		}
+
+		// redirect user to their default dashboard
+		$config_id = $this->_model->get_member_default_config_id($this->_member_id);
+		$this->EE->functions->redirect(module_url('dashee', 'index', array('config_id' => $config_id)));
+	}
+
+	/**
 	 * Add Widget's Package Path
 	 *
 	 * Makes it possible for widgets to use $EE->load->view(), etc
@@ -875,9 +984,15 @@ class Dashee_mcp
 	 * @param   $member_id 	EE member ID.
 	 * @return 	array
 	 */
-	private function _get_member_settings($member_id)
+	private function _get_member_settings()
 	{
-		$settings = $this->_model->get_member_settings($member_id);
+		$settings = $this->_model->get_member_settings($this->_member_id, $this->_config_id);
+
+		// make sure to set config ID after getting member settings because it will have been set to NULL for new users from the construct
+		if(is_null($this->_config_id))
+		{
+			$this->_config_id = $this->_model->get_member_default_config_id($this->_member_id);
+		}
 
 		$this->EE->cp->get_installed_modules();
 
@@ -966,7 +1081,7 @@ class Dashee_mcp
 			$this->_settings['widgets'] = $widgets;
 		}
 
-		$this->_model->update_member($this->_member_id, $this->_settings);	
+		$this->_model->update_member($this->_config_id, $this->_settings);	
 		
 		// ensure widgets array is updated with most recent data
 		$this->_get_widgets();
@@ -1013,6 +1128,7 @@ class Dashee_mcp
 
 			$title 		= $data['title'];
 			$class 		= $data['wclass'];
+			$class 		.= (isset($state) AND !$state) ? ' collapsed' : '';
 			$dash_code	= '';
 			$content 	= $data['content'];
 			$js 		= '';

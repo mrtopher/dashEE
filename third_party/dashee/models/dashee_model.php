@@ -93,6 +93,73 @@ class Dashee_model extends CI_Model
 		
 		return $installed;
     }
+
+    /**
+     * Get all dashboards for provided member.
+     *
+     * @access    public
+     * @param  	  int 		$member_id
+     * @return    obj
+     */
+    public function get_dashboards($member_id)
+    {
+    	return $this->EE->db->select('dashee_member_configs.id, dashee_member_configs.name')
+    		->from('dashee_member_configs')
+    		->join('dashee_members', 'dashee_member_configs.dashee_id = dashee_members.id')
+    		->where('dashee_members.member_id', $member_id)
+    		->order_by('dashee_member_configs.id ASC')
+    		->get()
+    		->result();
+    }
+
+    /**
+     * Get selected dashboard config.
+     *
+     * @access    public
+     * @param  	  int 		$config_id
+     * @return    obj
+     */
+    public function get_dashboard($config_id)
+    {
+    	return $this->EE->db->get_where('dashee_member_configs', array('id' => $config_id));
+    }
+
+    /**
+     * Attempt to add new dashboard for current user.
+     *
+     * @access    public
+     * @param     array
+     * @return    int
+     */
+   	public function add_dashboard($params)
+	{
+		$this->EE->db->insert('dashee_member_configs', $params);
+		return $this->EE->db->insert_id();
+	}
+
+    /**
+     * Attempt to update a dashboard.
+     *
+     * @access    public
+     * @param     array
+     * @return    void
+     */
+	public function update_dashboard($config_id, $params)
+	{
+		$this->EE->db->update('dashee_member_configs', $params, array('id' => $config_id));
+	}
+
+    /**
+     * Attempt to delete a dashboard from the DB.
+     *
+     * @access    public
+     * @param     int
+     * @return    int
+     */
+	public function delete_dashboard($config_id)
+	{
+		$this->EE->db->delete('dashee_member_configs', array('id' => $config_id));
+	}
     
 	/**
 	 * Get members dashboard configuration from DB.
@@ -101,18 +168,28 @@ class Dashee_model extends CI_Model
      * @param	int			$member_id		ID of currently logged in user.
 	 * @return 	obj
 	 */
-	public function get_member_settings($member_id)
+	public function get_member_settings($member_id, $config_id = NULL)
 	{
-		$site_id = 
-		$result = $this->EE->db->select('*')
+		$result = $this->EE->db->select('dashee_members.*, dashee_member_configs.config')
 			->from('dashee_members')
+			->join('dashee_member_configs', 'dashee_members.id = dashee_member_configs.dashee_id')
 			->where('site_id', $this->_site_id)
-			->where('member_id', $member_id)
-			->get();
+			->where('member_id', $member_id);
+
+		if(!is_null($config_id))
+		{
+			$this->EE->db->where('dashee_member_configs.id', $config_id);
+		}
+		else
+		{
+			$this->EE->db->where('dashee_member_configs.is_default', TRUE);
+		}
+
+		$result = $this->EE->db->get();
 		
 		if($result->num_rows() < 1)
 		{
-			// This is a new user with no preferences, return default configuration for membership group.
+			// this is a new user with no preferences, return default configuration for membership group
 			$params = array(
 				'site_id' 			=> $this->_site_id,
 				'member_group_id' 	=> $this->EE->session->userdata('group_id')
@@ -121,27 +198,35 @@ class Dashee_model extends CI_Model
 			
 			if($qry->num_rows() > 0)
 			{
-				$layout_id = $qry->row()->layout_id;
-				$layout = $this->get_layout($layout_id);
-				$config = $layout->config;
-				$locked_group = ($qry->row()->locked == 1) ? TRUE : FALSE;
+				$layout_id 		= $qry->row()->layout_id;
+				$layout 		= $this->get_layout($layout_id);
+				$config 		= $layout->config;
+				$locked_group 	= ($qry->row()->locked == 1) ? TRUE : FALSE;
 			}
 			else
 			{			
-				$layout = $this->get_default_layout();
-				$config = $layout->config;
-				$locked_group = FALSE;
+				$layout 		= $this->get_default_layout();
+				$config 		= $layout->config;
+				$locked_group 	= FALSE;
 			}
 		
-			$params = array(
+			$member_params = array(
 				'site_id'	=> $this->_site_id,
-				'member_id' => $member_id,
-				'config' 	=> $config
+				'member_id' => $member_id
 				);
 			
-			$this->EE->db->insert('dashee_members', $params);
+			$this->EE->db->insert('dashee_members', $member_params);
+			$dashee_id = $this->EE->db->insert_id();
 
-			$config = json_decode($params['config'], TRUE);
+			$config_params = array(
+				'dashee_id' => $dashee_id,
+				'name'		=> 'Default',
+				'config'	=> $config
+				);
+
+			$this->EE->db->insert('dashee_member_configs', $config_params);
+
+			$config = json_decode($config, TRUE);
 			$config['locked'] = $locked_group;
 
 			return $config;
@@ -163,18 +248,61 @@ class Dashee_model extends CI_Model
 			return $config;
 		}
 	}
+
+	/**
+	 * Return dashEE ID associated to provided member_id.
+	 *
+     * @access  public
+     * @param	int			$member_id		ID of currently logged in user.
+	 * @return 	int
+	 */
+	public function get_dashee_id($member_id)
+	{
+		return $this->EE->db->select('id')
+			->from('dashee_members')
+			->where('member_id', $member_id)
+			->get()
+			->row()
+			->id;
+	}
+
+	/**
+	 * Return ID of default config for provided member.
+	 *
+     * @access  public
+     * @param	int			$member_id		ID of currently logged in user.
+	 * @return 	int
+	 */
+	public function get_member_default_config_id($member_id)
+	{
+		$qry = $this->EE->db->select('dashee_member_configs.id')
+			->from('dashee_member_configs')
+			->join('dashee_members', 'dashee_members.id = dashee_member_configs.dashee_id')
+			->where('dashee_members.member_id', $member_id)
+			->where('dashee_member_configs.is_default', TRUE)
+			->get();
+
+		if($qry->num_rows() === 1)
+		{
+			return $qry->row()->id;
+		}
+		else
+		{
+			return NULL;
+		}
+	}
 	
 	/**
 	 * Update members dashboard configuration in DB.
 	 *
      * @access  public
-     * @param	int			$member_id		ID of currently logged in user.
+     * @param	int			$config_id		ID of current dashboard config.
      * @param	array		$config			Member dashboard config.
 	 * @return 	obj
 	 */
-	public function update_member($member_id, $config)
+	public function update_member($config_id, $config)
 	{
-		return $this->EE->db->update('exp_dashee_members', array('config' => json_encode($config)), array('site_id' => $this->_site_id, 'member_id' => $member_id));
+		return $this->EE->db->update('exp_dashee_member_configs', array('config' => json_encode($config)), array('id' => $config_id));
 	}  
 	
 	/**
@@ -248,7 +376,8 @@ class Dashee_model extends CI_Model
 					)
 				),
 			'columns'        => 3,
-            'state_buttons'  => TRUE
+            'state_buttons'  => TRUE,
+            'locked'		 => FALSE
 			);
 	}
 	
