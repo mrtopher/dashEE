@@ -32,8 +32,8 @@ class Dashee_model extends CI_Model
         $this->_site_id = $this->_EE->session->userdata('site_id');
         
         $this->_package_name    	= 'dashEE';
-        $this->_package_version 	= '1.8';
-        $this->_extension_version 	= '1.2';
+        $this->_package_version 	= '1.8.1';
+        $this->_extension_version 	= '1.3';
 
         $this->_module_settings = array(
     		array(
@@ -93,18 +93,26 @@ class Dashee_model extends CI_Model
      */
     public function get_module_url()
     {
-    	$s = 0;
-		switch($this->_EE->config->item('admin_session_type'))
-		{
-			case 's':
-				$s = $this->_EE->session->userdata('session_id', 0);
-				break;
-			case 'cs':
-				$s = $this->_EE->session->userdata('fingerprint', 0);
-				break;
-		}
+        if(version_compare(APP_VER, 2.8, '>=')) 
+        {
+            $this->_EE->load->helper('url');
+            return cp_url('cp/addons_modules/show_module_cp', array('module' => 'dashee'));
+        }
+        else
+        {
+        	$s = 0;
+    		switch($this->_EE->config->item('admin_session_type'))
+    		{
+    			case 's':
+    				$s = $this->_EE->session->userdata('session_id', 0);
+    				break;
+    			case 'cs':
+    				$s = $this->_EE->session->userdata('fingerprint', 0);
+    				break;
+    		}
 
-		return SELF . str_replace('&amp;', '&', '?S=' . $s) . AMP . 'D=cp' . AMP . 'C=addons_modules' . AMP . 'M=show_module_cp' . AMP . 'module=dashee';
+    		return SELF . str_replace('&amp;', '&', '?S=' . $s) . AMP . 'D=cp' . AMP . 'C=addons_modules' . AMP . 'M=show_module_cp' . AMP . 'module=dashee';
+        }
     }
     
     /**
