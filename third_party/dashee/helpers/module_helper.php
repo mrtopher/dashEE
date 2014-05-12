@@ -65,24 +65,32 @@ if ( ! function_exists('module_url'))
 	{
 		$EE =& get_instance();
 
-		$s = 0;
-		switch($EE->config->item('admin_session_type'))
-		{
-			case 's'	:
-				$s = $EE->session->userdata('session_id', 0);
-				break;
-			case 'cs'	:
-				$s = $EE->session->userdata('fingerprint', 0);
-				break;
+        if(version_compare(APP_VER, 2.8, '>=')) 
+        {
+        	$EE->load->helper('url');
+        	$url = cp_url('cp/addons_modules/show_module_cp', array('module' => 'dashee', 'method' => $action) + $variables);
+        }
+        else
+        {
+			$s = 0;
+			switch($EE->config->item('admin_session_type'))
+			{
+				case 's'	:
+					$s = $EE->session->userdata('session_id', 0);
+					break;
+				case 'cs'	:
+					$s = $EE->session->userdata('fingerprint', 0);
+					break;
+			}
+
+			$url = $EE->config->item('cp_url') . '?S=' . $s . AMP . 'D=cp'. AMP . 'C=addons_modules' . AMP .'M=show_module_cp' . AMP .'module=' . $module . AMP . 'method=' . $action;
+			
+			foreach ($variables as $variable => $value) 
+			{
+				$url .= AMP . $variable . '=' . $value;
+			}
 		}
 
-		$url = $EE->config->item('cp_url') . '?S=' . $s . AMP . 'D=cp'. AMP . 'C=addons_modules' . AMP .'M=show_module_cp' . AMP .'module=' . $module . AMP . 'method=' . $action;
-		
-		foreach ($variables as $variable => $value) 
-		{
-			$url .= AMP . $variable . '=' . $value;
-		}
-		
 		return $url;
 	}
 }

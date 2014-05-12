@@ -17,7 +17,7 @@ class Dashee_ext
 	public $docs_url		= 'http://dash-ee.com';
 	public $name			= 'dashEE';
 	public $settings_exist	= 'n';
-	public $version			= '1.2';
+	public $version			= '1.3';
 	public $required_by 	= array('module');
 	
 	private $EE;
@@ -32,7 +32,7 @@ class Dashee_ext
 		$this->EE 		=& get_instance();
 		$this->settings = $settings;
 
-		$this->_EE->load->helper('url');
+		$this->EE->load->helper('url');
 
 		if(version_compare(APP_VER, 2.6, '>=')) 
 		{
@@ -113,8 +113,8 @@ class Dashee_ext
 	 */
 	public function sessions_end(&$data)
 	{	
-		$c = $this->_EE->uri->segment(1);
-		$e = $this->_EE->uri->segment(2);
+		$c = $this->EE->uri->segment(1);
+		$e = $this->EE->uri->segment(2);
 
 		if(REQ == 'CP' AND ($c == 'cp' AND $e == ''))
 		{
@@ -139,7 +139,7 @@ class Dashee_ext
 		        if(version_compare(APP_VER, 2.8, '>=')) 
 		        {
 					$s = 0;
-					switch($this->_EE->config->item('cp_session_type'))
+					switch($this->EE->config->item('cp_session_type'))
 					{
 						case 's'	:
 							$s = $u['session_id'];
@@ -149,13 +149,13 @@ class Dashee_ext
 							break;
 					}
 
-		            $this->_EE->load->helper('url');
+		            $this->EE->load->helper('url');
 		    		header('Location: ' . SELF . '?/cp/addons_modules/show_module_cp?module=dashee&S=' . $s);
 		        }
 		        else
 		        {
 					$s = 0;
-					switch($this->_EE->config->item('admin_session_type'))
+					switch($this->EE->config->item('admin_session_type'))
 					{
 						case 's'	:
 							$s = $u['session_id'];

@@ -53,19 +53,19 @@ class Dashee_model extends CI_Model
     {
         if(version_compare(APP_VER, 2.8, '>=')) 
         {
-            $this->_EE->load->helper('url');
+            $this->EE->load->helper('url');
             return cp_url('cp/addons_modules/show_module_cp', array('module' => 'dashee'));
         }
         else
         {
         	$s = 0;
-    		switch($this->_EE->config->item('admin_session_type'))
+    		switch($this->EE->config->item('admin_session_type'))
     		{
     			case 's':
-    				$s = $this->_EE->session->userdata('session_id', 0);
+    				$s = $this->EE->session->userdata('session_id', 0);
     				break;
     			case 'cs':
-    				$s = $this->_EE->session->userdata('fingerprint', 0);
+    				$s = $this->EE->session->userdata('fingerprint', 0);
     				break;
     		}
 
@@ -363,7 +363,7 @@ class Dashee_model extends CI_Model
 						'data'	=> array(
 							'title' 	=> 'Welcome to dashEE',
 							'wclass' 	=> 'padded welcome',
-							'content' 	=> "<p>dashEE is the ultimate in ExpressionEngine control panel customization. The module comes with several default widgets for making your life easier (located in the 'widgets' directory). Don't see the functionality you're looking for? You can develop your own widgets and even integrate dashEE with your custom modules. Learn more by following the links below:<\/p><p><a href=\"http:\/\/chrismonnat.com\/code\/dashee\" target=\"_blank\">Documentation<\/a> | <a href=\"https:\/\/github.com\/mrtopher\/dashEE\">GitHub Repo<\/a><\/p>"
+                            'content'   => '<p>dashEE is the ultimate in ExpressionEngine control panel customization. The module comes with several default widgets for making your life easier (located in the \'widgets\' directory). Don\'t see the functionality you\'re looking for? You can develop your own widgets and even integrate dashEE with your custom modules. Learn more by following the links below:</p><p><a href="http://chrismonnat.com/code/dashee" target="_blank">Documentation</a> | <a href="https://github.com/mrtopher/dashEE">GitHub Repo</a></p>'
 							)
 						),
 					'wgt' . random_string('numeric', 8) => array(

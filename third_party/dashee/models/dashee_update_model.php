@@ -31,8 +31,8 @@ class Dashee_update_model extends CI_Model
         $this->_site_id = $this->EE->session->userdata('site_id');
         
         $this->_package_name    	= 'dashEE';
-        $this->_package_version 	= '1.8';
-        $this->_extension_version 	= '1.2';
+        $this->_package_version 	= '2.0';
+        $this->_extension_version 	= '1.3';
 
         $this->_module_settings = array(
     		array(
@@ -94,6 +94,7 @@ class Dashee_update_model extends CI_Model
     {
         $this->install_module_register();
         $this->install_module_members_table();
+        $this->install_module_member_configs_table();
         $this->install_module_layouts_table();
         $this->install_module_layouts_groups_table();
         $this->install_module_settings_table();
@@ -144,16 +145,48 @@ class Dashee_update_model extends CI_Model
 				'type' 			=> 'INT',
 				'constraint' 	=> 10,
 				'unsigned'		=> TRUE
-				),
-			'config' => array(
-				'type'			=> 'TEXT',
-				'null'			=> TRUE
 				)
 			);
 			
 		$this->EE->dbforge->add_field($fields);
 		$this->EE->dbforge->add_key('id', TRUE);
 		$this->EE->dbforge->create_table('dashee_members', TRUE);
+    }
+
+    public function install_module_member_configs_table()
+    {
+        $this->EE->load->dbforge();
+                
+        $fields = array(
+            'id' => array(
+                'type'           => 'INT',
+                'constraint'     => 10,
+                'unsigned'       => TRUE,
+                'auto_increment' => TRUE
+                ),
+            'dashee_id' => array(
+                'type'           => 'INT',
+                'constraint'     => 10,
+                'unsigned'       => TRUE
+                ),
+            'name' => array(
+                'type'           => 'VARCHAR',
+                'constraint'     => 200
+                ),
+            'config' => array(
+                'type'           => 'TEXT',
+                'null'           => TRUE
+                ),
+            'is_default' => array(
+                'type'          => 'TINYINT',
+                'constraint'    => 1,
+                'default'       => 0
+                )
+            );
+            
+        $this->EE->dbforge->add_field($fields);
+        $this->EE->dbforge->add_key('id', TRUE);
+        $this->EE->dbforge->create_table('dashee_member_configs', TRUE);
     }
     
     /**
@@ -373,6 +406,7 @@ class Dashee_update_model extends CI_Model
         // Drop the module entries table.
         $this->EE->load->dbforge();
         $this->EE->dbforge->drop_table('dashee_members');
+        $this->EE->dbforge->drop_table('dashee_member_configs');
         $this->EE->dbforge->drop_table('dashee_layouts');
         $this->EE->dbforge->drop_table('dashee_member_groups_layouts');
         $this->EE->dbforge->drop_table('dashee_settings');
@@ -413,6 +447,11 @@ class Dashee_update_model extends CI_Model
         if(version_compare($installed_version, '1.8', '<'))
         {
             $this->_update_package_to_version_18();
+        }
+
+        if(version_compare($installed_version, '2.0', '<'))
+        {
+            $this->_update_package_to_version_20();
         }
 
         // Forcibly update the module version number?
@@ -552,14 +591,19 @@ class Dashee_update_model extends CI_Model
     }
 
     /**
-     * Update any references to Feed Reader widget to new name.
+     * Add new DB table for multiple dashboard functionality and update any 
+     * references to Feed Reader widget to new name.
      *
      * @access  private
      * @return  void
      */
     private function _update_package_to_version_20()
     {
-        // update all occurances of feed reader widget to new widget name (because it lives in a subfolder now)
+        // create new dashee_member_configs table
+        $this->install_module_member_configs_table();
+
+        // update all occurances of feed reader widget to new widget name (because it lives in a subfolder now) and move 
+        // configs to new dashee_member_configs table
         $members = $this->EE->db->get('dashee_members');
         foreach($members->result() as $member)
         {
@@ -569,29 +613,50 @@ class Dashee_update_model extends CI_Model
             {
                 foreach($widgets as $id => $widget)
                 {
+                    if($widget['wgt'] == 'wgt.welcome.php')
+                    {
+                        $dash['widgets'][$col][$id]['wgt']     = 'dummy';
+                        $dash['widgets'][$col][$id]['data']    = array(
+                            'title'     => 'Welcome to dashEE',
+                            'wclass'    => 'padded welcome',
+                            'content'   => '<p>dashEE is the ultimate in ExpressionEngine control panel customization. The module comes with several default widgets for making your life easier (located in the \'widgets\' directory). Don\'t see the functionality you\'re looking for? You can develop your own widgets and even integrate dashEE with your custom modules. Learn more by following the links below:</p><p><a href="http://chrismonnat.com/code/dashee" target="_blank">Documentation</a> | <a href="https://github.com/mrtopher/dashEE">GitHub Repo</a></p>'
+                            );
+                    }
+
                     if($widget['wgt'] == 'wgt.feedreader.php')
                     {
-                        $dash[$col][$id]['wgt'] = 'feedreader';
+                        $dash['widgets'][$col][$id]['wgt'] = 'feedreader';
                     }
                 }
             }
             
-            $this->EE->db->update('dashee_members', array('config' => json_encode($dash)), array('id' => $member->id));
+            $params = array(
+                'dashee_id'     => $member->id,
+                'name'          => 'Default',
+                'config'        => json_encode($dash),
+                'is_default'    => TRUE
+                );
+
+            $this->EE->db->insert('dashee_member_configs', $params);
         }
+
+        // drop old config column from dashee_members table
+        $this->EE->load->dbforge();
+        $this->EE->dbforge->drop_column('dashee_members', 'config');
 
         // add dummy widget welcoming current user only (no other members) to dashEE 2.0
         $widget = array(
             'title'     => 'dashEE 2.0 Is Here!',
             'wclass'    => 'padded',
-            'content'   => "<p>Video goes here<\/p>"
+            'content'   => '<p>Video or other content goes here.</p>'
             );
 
         $member_id = $this->EE->session->userdata('member_id');
-        $member = $this->EE->db->get_where('dashee_members', array('member_id' => $member_id))->row();
+        $member = $this->EE->db->get_where('dashee_member_configs', array('dashee_id' => $member_id, 'is_default' => TRUE))->row();
         $config = $this->_add_dummy_widget($widget, $member->config);
-        $this->EE->db->update('dashee_members', array('config' => $config), array('member_id' => $member_id));
+        $this->EE->db->update('dashee_member_configs', array('config' => $config), array('dashee_id' => $member_id));
     }
-    
+
    	/**
 	 * Update Extension
 	 *
@@ -665,7 +730,7 @@ class Dashee_update_model extends CI_Model
         }
         
         $col = array_keys($totals, min($totals));
-        $config['widgets'][$col][$wid] = $new_widget;
+        $config['widgets'][$col[0]][$wid] = $new_widget;
 
         return json_encode($config);
     }
