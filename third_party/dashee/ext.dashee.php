@@ -32,6 +32,8 @@ class Dashee_ext
 		$this->EE 		=& get_instance();
 		$this->settings = $settings;
 
+		$this->_EE->load->helper('url');
+
 		if(version_compare(APP_VER, 2.6, '>=')) 
 		{
 			$this->EE->load->library(array('localize', 'remember', 'session'));
@@ -111,19 +113,20 @@ class Dashee_ext
 	 */
 	public function sessions_end(&$data)
 	{	
-		$c = $this->EE->input->get('C');
+		$c = $this->_EE->uri->segment(1);
+		$e = $this->_EE->uri->segment(2);
 
-		if(REQ == 'CP' AND ($c == 'homepage' OR $c == ''))
+		if(REQ == 'CP' AND ($c == 'cp' AND $e == ''))
 		{
 			$u = $data->userdata;
 
 			$setting = $this->EE->db->get_where('dashee_settings', array('site_id' => $u['site_id'], 'key' => 'redirect_admins'))->row();
 
 			// redirect super admins?
-			if($u['group_id'] == 1 && !$setting->value) return;
+			if($u['group_id'] == 1 AND !$setting->value) return;
 
 			// can user access modules at all?
-			if($u['can_access_cp']=='y' && $u['can_access_addons']=='y' && $u['can_access_modules']=='y')
+			if($u['can_access_cp']=='y' AND $u['can_access_addons']=='y' AND $u['can_access_modules']=='y')
 			{
 				// is dashEE installed? fetch module_id and check user can access it
 				$dashee_id = $this->EE->db->where('module_name','DashEE')->get('modules')->row('module_id');
@@ -133,19 +136,39 @@ class Dashee_ext
 				if(@$u['assigned_modules'][$dashee_id] != TRUE && $u['group_id'] != 1) return;
 
 				// all ok, build the url
-				$s = 0;
-				switch($this->EE->config->item('admin_session_type'))
-				{
-					case 's'	:
-						$s = $u['session_id'];
-						break;
-					case 'cs'	:
-						$s = $u['fingerprint'];
-						break;
-				}
+		        if(version_compare(APP_VER, 2.8, '>=')) 
+		        {
+					$s = 0;
+					switch($this->_EE->config->item('cp_session_type'))
+					{
+						case 's'	:
+							$s = $u['session_id'];
+							break;
+						case 'cs'	:
+							$s = $u['fingerprint'];
+							break;
+					}
 
-				header('Location: ' . SELF . str_replace('&amp;', '&', '?S=' . $s . AMP . 'D=cp' . AMP . $this->_base_qs));
-				exit;
+		            $this->_EE->load->helper('url');
+		    		header('Location: ' . SELF . '?/cp/addons_modules/show_module_cp?module=dashee&S=' . $s);
+		        }
+		        else
+		        {
+					$s = 0;
+					switch($this->_EE->config->item('admin_session_type'))
+					{
+						case 's'	:
+							$s = $u['session_id'];
+							break;
+						case 'cs'	:
+							$s = $u['fingerprint'];
+							break;
+					}
+
+		    		header('Location: ' . SELF . str_replace('&amp;', '&', '?S=' . $s . AMP . 'D=cp' . AMP . $this->_base_qs));
+		        }
+
+		        exit;
 			}
 		}
 	}
