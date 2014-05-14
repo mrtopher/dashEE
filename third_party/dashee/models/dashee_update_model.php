@@ -32,7 +32,7 @@ class Dashee_update_model extends CI_Model
         
         $this->_package_name    	= 'dashEE';
         $this->_package_version 	= '2.0';
-        $this->_extension_version 	= '1.3';
+        $this->_extension_version 	= '1.4';
 
         $this->_module_settings = array(
     		array(

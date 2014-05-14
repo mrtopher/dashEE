@@ -17,7 +17,7 @@ class Dashee_ext
 	public $docs_url		= 'http://dash-ee.com';
 	public $name			= 'dashEE';
 	public $settings_exist	= 'n';
-	public $version			= '1.3';
+	public $version			= '1.4';
 	public $required_by 	= array('module');
 	
 	private $EE;
@@ -34,13 +34,7 @@ class Dashee_ext
 
 		$this->EE->load->helper('url');
 
-		if(version_compare(APP_VER, 2.6, '>=')) 
-		{
-			$this->EE->load->library(array('localize', 'remember', 'session'));
-		}
-		
-        $this->_base_qs     = 'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=dashee';
-        $this->_base_url    = (defined('BASE') ? BASE : SELF).AMP.$this->_base_qs;
+		$this->EE->load->library(array('localize', 'remember', 'session'));
 	}
 		
 	/**
@@ -76,7 +70,7 @@ class Dashee_ext
         $js = '';
 
         // If another extension shares the same hook
-        if ($this->EE->extensions->last_call !== FALSE)
+        if($this->EE->extensions->last_call !== FALSE)
         {
             $js = $this->EE->extensions->last_call;
         }
@@ -136,38 +130,19 @@ class Dashee_ext
 				if(@$u['assigned_modules'][$dashee_id] != TRUE && $u['group_id'] != 1) return;
 
 				// all ok, build the url
-		        if(version_compare(APP_VER, 2.8, '>=')) 
-		        {
-					$s = 0;
-					switch($this->EE->config->item('cp_session_type'))
-					{
-						case 's'	:
-							$s = $u['session_id'];
-							break;
-						case 'cs'	:
-							$s = $u['fingerprint'];
-							break;
-					}
+				$s = 0;
+				switch($this->EE->config->item('cp_session_type'))
+				{
+					case 's'	:
+						$s = $u['session_id'];
+						break;
+					case 'cs'	:
+						$s = $u['fingerprint'];
+						break;
+				}
 
-		            $this->EE->load->helper('url');
-		    		header('Location: ' . SELF . '?/cp/addons_modules/show_module_cp?module=dashee&S=' . $s);
-		        }
-		        else
-		        {
-					$s = 0;
-					switch($this->EE->config->item('admin_session_type'))
-					{
-						case 's'	:
-							$s = $u['session_id'];
-							break;
-						case 'cs'	:
-							$s = $u['fingerprint'];
-							break;
-					}
-
-		    		header('Location: ' . SELF . str_replace('&amp;', '&', '?S=' . $s . AMP . 'D=cp' . AMP . $this->_base_qs));
-		        }
-
+	            $this->EE->load->helper('url');
+	    		header('Location: ' . SELF . '?/cp/addons_modules/show_module_cp?module=dashee&S=' . $s);
 		        exit;
 			}
 		}
