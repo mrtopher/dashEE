@@ -7,12 +7,12 @@ $lang = array(
 	'module_home' => 'dashEE Home',
 	
 	'dashee_term' 		=> 'Dashboard',	
-	'dashee_settings' 	=> 'Settings',	
+	'dashee_settings' 	=> 'dashEE Settings',	
 	
 	// buttons
 	'btn_collapse'	=> '- Collapse All',
 	'btn_expand'	=> '+ Expand All',
-	'btn_widgets'	=> 'Widgets &amp; Dashboard',
+	'btn_widgets'	=> 'Widgets',
 	'btn_dashboard'	=> 'Dashboard',
 	'btn_settings'	=> 'Settings',
 	'btn_save'		=> 'Save Layout',
@@ -74,14 +74,16 @@ $lang = array(
 	'flash_dashboard_updated'			=> 'Dashboard has been updated.',
 	
 	// terms
-	'trm_default_layout' 	=> 'Default layout',
-	'trm_whats_this'		=> 'What\'s this?',
-	'trm_reset_dashboard'	=> 'Reset Dashboard',
-	'trm_rename_dashboard'	=> 'Rename Dashboard',
-	'trm_save_dashboard'	=> 'Save Dashboard Layout',
-	'trm_copy_dashboard'	=> 'Copy Dashboard to Member',
-	'trm_new_dashboard'		=> 'Create New Dashboard',
-	'trm_delete_dashboard'	=> 'Delete Dashboard',
+	'trm_widgets' 				=> 'Widgets',
+	'trm_default_layout' 		=> 'Default layout',
+	'trm_whats_this'			=> 'What\'s this?',
+	'trm_reset_dashboard'		=> 'Reset Dashboard',
+	'trm_rename_dashboard'		=> 'Rename Dashboard',
+	'trm_save_dashboard'		=> 'Save Layout',
+	'trm_copy_dashboard'		=> 'Copy Dashboard to Member',
+	'trm_new_dashboard'			=> 'Add',
+	'trm_delete_dashboard'		=> 'Delete Dashboard',
+	'trm_dashboard_settings'	=> 'Dashboard Settings',
 
 	// help
 	'help_layouts' => '	<p>Saved layouts give EE Super Admins the ability to save dashboard configurations for later use or assign those configurations as the 

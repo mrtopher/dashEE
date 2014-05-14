@@ -58,12 +58,14 @@ class Dashee_mcp
 	 */
 	public function index()
 	{
-        $this->EE->cp->add_to_head('<link rel="stylesheet" type="text/css" href="' . $this->_css_url . '" />');
+        $this->EE->cp->add_to_head('<link rel="stylesheet" type="text/css" href="' . $this->_css_url . '" />
+        							<link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">');
 
         // is the member_group layout locked?
         if($this->_settings['locked'] == FALSE)
         {
-        	$this->EE->cp->add_to_foot('<script type="text/javascript" src="' . $this->_js_url . '"></script>');
+        	$this->EE->cp->add_to_foot('<script type="text/javascript" src="' . $this->_js_url . '"></script>
+        								<script type="text/javascript" src="' . $this->_theme_url .'js/dashee_plugin.js"></script>');
         }
 					
 		// override default breadcrumb display to make module look like default CP homepage
@@ -99,8 +101,9 @@ class Dashee_mcp
 		 */
 		$this->EE->load->add_package_path(PATH_THIRD . 'dashee/'); 
 
+		$this->EE->view->cp_page_title = $module_settings['crumb_term'];
+
 		$page_data = array(
-			'cp_page_title' 	=> $module_settings['crumb_term'],
 			'settings' 			=> $this->_settings, 
 			'dashboards'		=> $this->_model->get_dashboards($this->_member_id),
 			'content' 			=> $widgets, 
@@ -125,13 +128,13 @@ class Dashee_mcp
 		$this->EE->load->library('table');
 	
         $this->EE->cp->add_to_head('<link rel="stylesheet" type="text/css" href="' . $this->_theme_url . 'css/settings.css" />');
-        $this->EE->cp->add_to_head('<script type="text/javascript" src="' . $this->_js_url . '"></script>');
+        $this->EE->cp->add_to_foot('<script type="text/javascript" src="' . $this->_js_url . '"></script>');
 
         $this->EE->cp->set_right_nav(array(
-        	'btn_back_to_dashboard'	=> module_url('dashee')
+        	'btn_back_to_dashboard'	=> cp_url('cp/addons_modules/show_module_cp', array('module' => 'dashee'))
         	));
 			
-		$this->EE->cp->set_breadcrumb(module_url('dashee'), lang('btn_settings'));
+		$this->EE->cp->set_breadcrumb(cp_url('cp/addons_modules/show_module_cp', array('module' => 'dashee')), lang('btn_settings'));
 		
 		// override default breadcrumb display
 		$this->EE->javascript->output("
@@ -164,8 +167,9 @@ class Dashee_mcp
 			}
 		}
 		
+		$this->EE->view->cp_page_title = lang('dashee_settings');
+
 		$page_data = array(
-			'cp_page_title' => lang('dashee_settings'),
 			'settings' 		=> $this->_model->get_module_settings(),
 			'is_admin'		=> $this->_super_admin,
 			'layouts' 		=> $layouts,
@@ -202,7 +206,7 @@ class Dashee_mcp
 
 		$this->EE->session->set_flashdata('dashee_msg', lang('flash_settings_updated'));
 
-		$this->EE->functions->redirect(module_url('dashee', 'settings'));
+		$this->EE->functions->redirect(cp_url('dashee', 'settings'));
 	}
 	
 	/**
@@ -214,6 +218,7 @@ class Dashee_mcp
 	public function update_member_settings()
 	{
 		$post_columns = $this->EE->input->post('columns');
+
 		if(($post_columns != '' AND is_numeric($post_columns) AND $post_columns <= 3) AND $post_columns != $this->_settings['columns'])
 		{
 			$current = $this->_settings['columns'];
@@ -274,7 +279,7 @@ class Dashee_mcp
 		
 		$this->EE->session->set_flashdata('dashee_msg', lang('flash_settings_updated'));
 
-		$this->EE->functions->redirect(module_url('dashee', 'index', array('config_id' => $this->_config_id)));
+		$this->EE->functions->redirect(cp_url('dashee', 'index', array('config_id' => $this->EE->input->post('config_id'))));
 	}
 		
 	/**
@@ -348,7 +353,7 @@ class Dashee_mcp
 						$widget_name,
 						$widget_description,
 						lang(strtolower($mod).'_module_name'),
-						anchor(module_url('dashee'), 'Add', 'class="addWidget" data-module="' . $mod . '" data-widget="' . $widget . '"')
+						anchor(cp_url('dashee'), 'Add', 'class="addWidget" data-module="' . $mod . '" data-widget="' . $widget . '"')
 						);			
 				}
 			}
@@ -376,10 +381,23 @@ class Dashee_mcp
 			$obj = $this->_get_widget_object($mod, $wgt);
 			$wid = 'wgt'.random_string('numeric', 8);
 
-			// run installer method if exists
+			// run widget add method if exists
+			if(method_exists($obj, 'widget_add'))
+			{
+				$obj->widget_add();
+			}
+
+			// run widget install method if exists
 			if(method_exists($obj, 'widget_install'))
 			{
-				$obj->widget_install();
+				// determine if any other users have this widget on their dashboard
+				$total = $this->_model->get_widget_count(@$this->_widgets[$wgt]['wgt']);
+				
+				// only run install for widget if it is not already on any dashboards currently
+				if($total == 0)
+				{
+					$obj->widget_install();
+				}
 			}
 			
 			// determine which column has the least number of widgets in it so you can add the 
@@ -432,10 +450,23 @@ class Dashee_mcp
 			{
 				$obj = $this->_get_widget_object($widget['mod'], $widget['wgt']);
 
-				// run installer method if exists
+				// run widget remove method if exists
+				if(method_exists($obj, 'widget_remove'))
+				{
+					$obj->widget_remove();
+				}
+
+				// run widget uninstaller method if exists
 				if(method_exists($obj, 'widget_uninstall'))
 				{
-					$obj->widget_uninstall();
+					// determine if any other users have this widget on their dashboard
+					$total = $this->_model->get_widget_count($widget['wgt']);
+					
+					// only run uninstall for widget if this is the only instance of it
+					if($total <= 1)
+					{
+						$obj->widget_uninstall();
+					}
 				}
 			}
 
@@ -608,7 +639,7 @@ class Dashee_mcp
 			$this->EE->session->set_flashdata('dashee_msg', lang('flash_layout_not_updated'));
 		}
 		
-		$this->EE->functions->redirect(module_url('dashee', 'settings'));
+		$this->EE->functions->redirect(cp_url('dashee', 'settings'));
 	}
 	
 	/**
@@ -634,7 +665,7 @@ class Dashee_mcp
 			$this->EE->session->set_flashdata('dashee_msg', lang('flash_layout_not_loaded'));
 		}
 		
-		$this->EE->functions->redirect(module_url('dashee'));
+		$this->EE->functions->redirect(cp_url('dashee'));
 	}
 	
 	/**
@@ -662,7 +693,7 @@ class Dashee_mcp
 			$this->EE->session->set_flashdata('dashee_msg', lang('flash_layout_not_deleted'));
 		}
 		
-		$this->EE->functions->redirect(module_url('dashee', 'settings'));
+		$this->EE->functions->redirect(cp_url('dashee', 'settings'));
 	}
 	
 	/**
@@ -692,7 +723,7 @@ class Dashee_mcp
 			$this->EE->session->set_flashdata('dashee_msg', lang('flash_group_default_not_updated'));
 		}
 		
-		$this->EE->functions->redirect(module_url('dashee', 'settings'));
+		$this->EE->functions->redirect(cp_url('dashee', 'settings'));
 	}
 	
 	/**
@@ -721,7 +752,7 @@ class Dashee_mcp
 			$this->EE->session->set_flashdata('dashee_msg', lang('flash_group_layout_not_reset') . $group->group_title . '.');
 		}
 		
-		$this->EE->functions->redirect(module_url('dashee', 'settings'));
+		$this->EE->functions->redirect(cp_url('dashee', 'settings'));
 
 	}
 
@@ -835,7 +866,7 @@ class Dashee_mcp
 		$this->_update_member(FALSE);
 		
 		$this->EE->session->set_flashdata('dashee_msg', lang('flash_dashboard_reset'));
-		$this->EE->functions->redirect(module_url('dashee', 'index', array('config_id' => $this->_config_id)));
+		$this->EE->functions->redirect(cp_url('cp/addons_modules/show_module_cp', array('module' => 'dashee', 'config_id' => $this->_config_id)));
 	}
 
 	/**
@@ -846,20 +877,21 @@ class Dashee_mcp
 	 */
 	public function rename_dashboard()
 	{
-		 $name = $this->EE->input->post('dashboard_name');
+		$name 		= $this->EE->input->post('dashboard_name');
+		$config_id 	= $this->EE->input->post('config_id');
 
-		 if($name != '')
-		 {
+		if($name != '' AND ($config_id != '' AND is_numeric($config_id)))
+		{
 		 	$dashboard_params = array(
 		 		'name' => $name
 		 		);
 
-		 	$this->_model->update_dashboard($this->_config_id, $dashboard_params);
+		 	$this->_model->update_dashboard($config_id, $dashboard_params);
 
 			$this->EE->session->set_flashdata('dashee_msg', lang('flash_dashboard_updated'));
-		 }
+		}
 
-		$this->EE->functions->redirect(module_url('dashee', 'index', array('config_id' => $this->_config_id)));
+		$this->EE->functions->redirect(cp_url('cp/addons_modules/show_module_cp', array('module' => 'dashee', 'config_id' => $this->_config_id)));
 	}
 
 	/**
@@ -905,7 +937,7 @@ class Dashee_mcp
 		$config_id = $this->_model->add_dashboard($dashboard_params);
 
 		$this->EE->session->set_flashdata('dashee_msg', lang('flash_dashboard_created'));
-		$this->EE->functions->redirect(module_url('dashee', 'index', array('config_id' => $config_id)));
+		$this->EE->functions->redirect(cp_url('cp/addons_modules/show_module_cp', array('module' => 'dashee', 'config_id' => $config_id)));
 	}
 
 	/**
@@ -941,7 +973,7 @@ class Dashee_mcp
 
 		// redirect user to their default dashboard
 		$config_id = $this->_model->get_member_default_config_id($this->_member_id);
-		$this->EE->functions->redirect(module_url('dashee', 'index', array('config_id' => $config_id)));
+		$this->EE->functions->redirect(cp_url('cp/addons_modules/show_module_cp', array('module' => 'dashee', 'config_id' => $config_id)));
 	}
 
 	/**

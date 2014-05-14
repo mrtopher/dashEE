@@ -424,11 +424,11 @@ $(function() {
 					$('#dashListing .widgets').html('<p>There was a problem: ' + html + '</p>');
 				}
 			});
-			$('a[href="#widgets"]').html('Close');
+			$('a[href="#widgets"]').html('Close Widgets');
 		}
 		else {
 			$('#dashListing').slideUp();
-			$('a[href="#widgets"]').html('Widgets &amp; Dashboard');
+			$('a[href="#widgets"]').html('Widgets');
 		}
 	}); 
 	

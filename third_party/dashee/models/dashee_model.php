@@ -185,8 +185,8 @@ class Dashee_model extends CI_Model
 		$result = $this->EE->db->select('dashee_members.*, dashee_member_configs.config')
 			->from('dashee_members')
 			->join('dashee_member_configs', 'dashee_members.id = dashee_member_configs.dashee_id')
-			->where('site_id', $this->_site_id)
-			->where('member_id', $member_id);
+			->where('dashee_members.site_id', $this->_site_id)
+			->where('dashee_members.member_id', $member_id);
 
 		if(!is_null($config_id))
 		{
@@ -231,9 +231,10 @@ class Dashee_model extends CI_Model
 			$dashee_id = $this->EE->db->insert_id();
 
 			$config_params = array(
-				'dashee_id' => $dashee_id,
-				'name'		=> 'Default',
-				'config'	=> $config
+				'dashee_id' 	=> $dashee_id,
+				'name'			=> 'Default',
+				'config'		=> $config,
+				'is_default' 	=> TRUE
 				);
 
 			$this->EE->db->insert('dashee_member_configs', $config_params);
@@ -642,6 +643,26 @@ class Dashee_model extends CI_Model
 		{
 			$this->EE->db->update('dashee_settings', array('value' => $value), array('site_id' => $this->_site_id, 'key' => $key));
 		}
+	}
+
+	/**
+	 * Return total number of widget instances among all dashboards.
+	 *
+     * @access  public
+     * @param   string 	  $widget
+	 * @return 	integer
+	 */
+	public function get_widget_count($widget)
+	{
+		$qry = $this->EE->db->get('dashee_member_configs');
+
+		$total = 0;
+		foreach($qry->result() as $row)
+		{
+			$total += @substr_count($row->config, $widget);
+		}
+
+		return $total;
 	}
 }
 /* End of file dashee_model.php */

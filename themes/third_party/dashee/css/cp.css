@@ -1,8 +1,6 @@
 /* dashEE Module CSS */
 
 /* EE Override */
-.rightNav { padding-right: 3.3%; margin-bottom:5px; }
-.rightNav .button { margin-left: 6px; margin-right: 0; }
 .contents { padding-left: 0; padding-right: 0; }
 .heading { display: none; }
 #mainContent .pageContents { border-top: none; padding-left: 0; padding-right: 0; padding-top:0; background: none; }
@@ -10,19 +8,19 @@
 .contentMenu { margin-left: 0; float: none; width: 100%; }
 
 /* Module CSS */
-#dashboards { padding:0 25px 15px 25px; font-size:1.1em; }
+#dashboards { margin:0 2% 0 2%; font-size:1.1em; background:#F0F0F0; }
 #dashboards li { float:left; }
-#dashboards li a { display:block; padding-left:10px; }
-#dashboards li a.active { font-weight:bold; }
+#dashboards li.sub { float:right; }
+#dashboards li a { display:block; padding:5px 10px; }
+#dashboards li a.active { font-weight:bold; background:#CCC; }
+#dashboards li a.opt { padding:5px; }
 
-#dashListing { height:220px; margin: 0 3.1% 25px 1.9%; }
-#dashListing .widgets { width:85%; float:left; height:220px; overflow:auto; }
-#dashListing .dashboard { width:13%; float:left; height:210px; padding:5px; margin-left:1em; background:#F0F0F0; }
-#dashListing .dashboard li { line-height:1.5em; }
+#dashListing { height:320px; overflow:auto; margin:0 2% 15px 2%; }
 
 #dashContainer .column { 
     float: left;
-    margin-left:3.9%;
+    margin-left:4.5%;
+    margin-top:15px;
 	min-height: 400px;
 	height: auto !important; 
 	height: 400px;
@@ -33,6 +31,9 @@
 #dashContainer .columns3 .column { width:29%; }
 #dashContainer .columns2 .column { width:45%; }
 #dashContainer .columns1 .column { width:94%; }
+
+/* cog icon doesn't line up with others for some reason, need to add top padding to make it look good */
+.fa-cog { padding-top:3px; }
 
 .widget {
     margin-bottom: 25px;

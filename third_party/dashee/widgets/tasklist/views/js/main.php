@@ -3,7 +3,6 @@ $(function() {
 
 	// Event to handle when widget task checkbox is checked.
 	$(document).on('click', 'input.tasklist-toggle', function() {
-		var $widget = $(this).parents('li');
 		var $row = $(this).closest('tr');
 
 		if($(this).is(':checked'))
@@ -15,12 +14,9 @@ $(function() {
 			var $status = 0;
 		}
 
-		$.ajax({
-			type: 'GET',
-			url: EE.BASE + '&C=addons_modules&M=show_module_cp&module=dashee&method=ajax_widget_get_proxy',
-			data: {
-				'wgtid': $widget.attr('id'),
-				'mthd': 'ajax_update_task',
+		$(this).dasheeGetProxy({
+			method: 'ajax_update_task',
+			params: {
 				'task_id': $(this).data('taskid'),
 				'status': $status
 			},
@@ -41,23 +37,17 @@ $(function() {
 				else {
 					$.ee_notice($result.message, {type: 'error', open: true});
 				}
-			},
-			error: function(html) {
-				$.ee_notice("Nope, there was a problem.", {type: 'error', open: true});
 			}
 		});
 	});
 
 	// Event to handle when widget task delete link is clicked.
 	$(document).on('click', '.tasklist-delete', function() {
-		var $widget = $(this).parents('li');
 		var $row = $(this).closest('tr');
 
-		$.ajax({
-			type: 'GET',
-			url: EE.BASE + '&C=addons_modules&M=show_module_cp&module=dashee&method=ajax_widget_get_proxy',
-			data: {
-				'wgtid': $widget.attr('id'),
+		$(this).dasheeGetProxy({
+			method: 'ajax_delete_task',
+			params: {
 				'mthd': 'ajax_delete_task',
 				'task_id': $(this).data('taskid')
 			},
@@ -71,9 +61,6 @@ $(function() {
 				else {
 					$.ee_notice($result.message, {type: 'error', open: true});
 				}
-			},
-			error: function(html) {
-				$.ee_notice("Nope, there was a problem.", {type: 'error', open: true});
 			}
 		});
 	});

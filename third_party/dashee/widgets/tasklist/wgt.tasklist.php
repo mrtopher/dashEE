@@ -54,8 +54,8 @@ class Wgt_tasklist
 	 */
 	public function index($settings = NULL)
 	{
-		$this->list_id = $settings->list_id;
-		$this->title = $settings->title;
+		$this->list_id 	= $settings->list_id;
+		$this->title 	= $settings->title;
 	
 		$widget_data = array(
 			'list_id' 	=> $this->list_id,
@@ -151,14 +151,29 @@ class Wgt_tasklist
 			
 			<p><label for="title">Widget Title:</label>
 			<input type="text" name="title" value="'.$settings->title.'" /></p>
-						
+			
+			<input type="hidden" name="list_id" value="'.$settings->list_id.'" />
+
 			<p><input type="submit" value="Save" /></p>
 			
 			'.form_close();
 	}
 
 	/**
+	 * Widget Add Function
+	 * Run everytime members add widget to their dashboard.
+	 *
+	 * @param	object
+	 * @return 	void
+	 */
+	public function widget_add()
+	{
+
+	}
+
+	/**
 	 * Widget Installer Function
+	 * Is run everytime members add widget AND is the first instance of widget.
 	 *
 	 * @param	object
 	 * @return 	void
@@ -201,17 +216,29 @@ class Wgt_tasklist
 	}
 
 	/**
+	 * Widget Remove Function
+	 * Is run everytime members remove widget from their dashboard.
+	 *
+	 * @param	object
+	 * @return 	void
+	 */
+	public function widget_remove()
+	{
+		exit('yep');
+		$this->EE->db->delete('widget_tasklist', array('member_id' => $this->_member_id));
+	}
+
+	/**
 	 * Widget Uninstaller Function
+	 * Is run everytime members remove widget AND it's the last 
+	 * instance of that widget across all dashboards.
 	 *
 	 * @param	object
 	 * @return 	void
 	 */
 	public function widget_uninstall()
 	{
-		$this->EE->db->delete('widget_tasklist', array('member_id' => $this->_member_id));
-
 		$this->EE->load->dbforge();
-
 		$this->EE->dbforge->drop_table('widget_tasklist');
 	}
 }
