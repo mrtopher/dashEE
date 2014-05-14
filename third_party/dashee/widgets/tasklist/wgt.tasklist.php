@@ -21,7 +21,7 @@ class Wgt_tasklist
 	public $list_id;
 	public $title;
 	public $wclass;
-	// public $settings;
+	public $settings;
 	public $js;
 	
 	private $_model;
@@ -219,13 +219,13 @@ class Wgt_tasklist
 	 * Widget Remove Function
 	 * Is run everytime members remove widget from their dashboard.
 	 *
-	 * @param	object
+	 * @param	string
 	 * @return 	void
 	 */
-	public function widget_remove()
+	public function widget_remove($settings)
 	{
-		exit('yep');
-		$this->EE->db->delete('widget_tasklist', array('member_id' => $this->_member_id));
+		$settings = json_decode($settings);
+		$this->EE->db->delete('widget_tasklist', array('list_id' => $settings->list_id));
 	}
 
 	/**

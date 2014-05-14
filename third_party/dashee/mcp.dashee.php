@@ -35,8 +35,7 @@ class Dashee_mcp
         $this->_model = $this->EE->dashee_model;
 		
         $this->_theme_url   = $this->_model->get_package_theme_url();
-        $this->_css_url   	= $this->_theme_url .'css/cp.css';
-        $this->_js_url   	= $this->_theme_url .'js/dashee.js';
+        $this->_js_url   	= $this->_theme_url . 'js/dashee.js';
         // $this->_js_url   	= $this->_theme_url .'js/dashee.min.js';
         
         $this->_member_id = $this->EE->session->userdata('member_id');
@@ -58,7 +57,7 @@ class Dashee_mcp
 	 */
 	public function index()
 	{
-        $this->EE->cp->add_to_head('<link rel="stylesheet" type="text/css" href="' . $this->_css_url . '" />
+        $this->EE->cp->add_to_head('<link rel="stylesheet" type="text/css" href="' . $this->_theme_url .'css/cp.css" />
         							<link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">');
 
         // is the member_group layout locked?
@@ -446,14 +445,14 @@ class Dashee_mcp
 		{
 			$widget = $this->_widgets[$wgt];
 
-			if($widget['mod'] != 'dashee' AND $widget['wgt'] != 'dummy')
+			if($widget['wgt'] != 'dummy')
 			{
 				$obj = $this->_get_widget_object($widget['mod'], $widget['wgt']);
 
 				// run widget remove method if exists
 				if(method_exists($obj, 'widget_remove'))
 				{
-					$obj->widget_remove();
+					$obj->widget_remove(@$widget['stng']);
 				}
 
 				// run widget uninstaller method if exists
