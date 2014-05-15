@@ -3,7 +3,7 @@
 /**
  * dashEE Update Model
  *
- * Model used only for modules install and update operations.
+ * Model used ONLY for modules install and update operations.
  *
  * @package		ExpressionEngine
  * @subpackage	Addons
@@ -22,6 +22,12 @@ class Dashee_update_model extends CI_Model
 
     private $_module_settings = array();
 
+    /**
+     * Constructor
+     *
+     * @access      public
+     * @return      void
+     */
     public function __construct()
     {
         parent::__construct();
@@ -49,10 +55,11 @@ class Dashee_update_model extends CI_Model
     }
     
     /**
+     * Get Installed Version Function
      * Returns the installed package version.
      *
-     * @access  public
-     * @return  string
+     * @access      public
+     * @return      str
      */
     public function get_installed_version()
     {
@@ -63,10 +70,11 @@ class Dashee_update_model extends CI_Model
     }
     
     /**
+     * Get Package Name Function
      * Returns the package name.
      *
-     * @access  public
-     * @return  string
+     * @access      public
+     * @return      str
      */
     public function get_package_name()
     {
@@ -74,10 +82,11 @@ class Dashee_update_model extends CI_Model
     }
     
     /**
+     * Get Package Version Function
      * Returns the package version.
      *
-     * @access  public
-     * @return  string
+     * @access      public
+     * @return      str
      */
     public function get_package_version()
     {
@@ -85,10 +94,11 @@ class Dashee_update_model extends CI_Model
     }
 
     /**
+     * Install Module Function
      * Installs the module.
      *
-     * @access  public
-     * @return  bool
+     * @access      public
+     * @return      bool
      */
     public function install_module()
     {
@@ -103,10 +113,11 @@ class Dashee_update_model extends CI_Model
     }
 
     /**
+     * Register Module Function
      * Registers the module in the database.
      *
-     * @access  public
-     * @return  void
+     * @access      public
+     * @return      void
      */
     public function install_module_register()
     {
@@ -119,11 +130,13 @@ class Dashee_update_model extends CI_Model
     }
 
     /**
+     * Create dashee_members DB Table Function
+     * 
      * Creates the dashEE members entries table.
      * Stores each members module configuration data.
      *
-     * @access  public
-     * @return  void
+     * @access      public
+     * @return      void
      */
     public function install_module_members_table()
     {
@@ -153,6 +166,16 @@ class Dashee_update_model extends CI_Model
 		$this->EE->dbforge->create_table('dashee_members', TRUE);
     }
 
+    /**
+     * Create dashee_member_configs DB Table Function
+     * 
+     * Creates the dashEE member config entries table.
+     * Stores each members dashboard configuration data allowing 
+     * members to have multiple dashboards.
+     *
+     * @access      public
+     * @return      void
+     */
     public function install_module_member_configs_table()
     {
         $this->EE->load->dbforge();
@@ -190,11 +213,13 @@ class Dashee_update_model extends CI_Model
     }
     
     /**
+     * Create dashee_layouts DB Table Function
+     * 
      * Creates the dashEE layouts table.
      * Stores saved dashboard layouts for later use.
      *
-     * @access  public
-     * @return  void
+     * @access      public
+     * @return      void
      */
     public function install_module_layouts_table()
     {
@@ -252,11 +277,13 @@ class Dashee_update_model extends CI_Model
     }
     
     /**
+     * Create dashee_member_groups_layouts DB Table Function
+     * 
      * Creates the dashEE member groups layouts table.
      * Stores relationships between saved dashboard layouts and membership groups.
      *
-     * @access  public
-     * @return  void
+     * @access      public
+     * @return      void
      */
     public function install_module_layouts_groups_table()
     {
@@ -298,11 +325,13 @@ class Dashee_update_model extends CI_Model
     }
 
     /**
+     * Create dashee_settings DB Table Function
+     * 
      * Creates the dashEE settings table.
      * Stores module settings data.
      *
-     * @access  public
-     * @return  void
+     * @access      public
+     * @return      void
      */
     public function install_module_settings_table()
     {
@@ -340,10 +369,12 @@ class Dashee_update_model extends CI_Model
     }
     
     /**
-     * Activate module extension.
+     * Activate Extension Function
+     * 
+     * Activate module extension in DB.
      *
-     * @access  public
-     * @return  void
+     * @access      public
+     * @return      void
      */
     public function activate_extension()
     {
@@ -370,10 +401,12 @@ class Dashee_update_model extends CI_Model
     }
     
     /**
+     * Disable Extension Function
+     * 
      * Activate module extension.
      *
-     * @access  public
-     * @return  void
+     * @access      public
+     * @return      void
      */
     public function disable_extension()
     {
@@ -382,10 +415,12 @@ class Dashee_update_model extends CI_Model
     }
     
     /**
+     * Uninstall Module Function
+     * 
      * Uninstalls the module.
      *
-     * @access  public
-     * @return  bool
+     * @access      public
+     * @return      bool
      */
     public function uninstall_module()
     {
@@ -415,12 +450,14 @@ class Dashee_update_model extends CI_Model
     }
     
     /**
-     * Updates the module.
+     * Update Package Funciton
+     * 
+     * Updates the module to current version.
      *
-     * @access  public
-     * @param   string      $installed_version      The installed version.
-     * @param   bool        $force                  Forcibly update the module version number?
-     * @return  bool
+     * @access      public
+     * @param       str         $installed_version      The installed version.
+     * @param       bool        $force                  Forcibly update the module version number?
+     * @return      bool
      */
     public function update_package($installed_version = '', $force = FALSE)
     {
@@ -468,11 +505,13 @@ class Dashee_update_model extends CI_Model
     }
     
     /**
+     * Version 1.4 Update Function
+     * 
      * Update dashboard config format to account for storing settings.
      * Add new DB tables to account for saving layouts and assigning them to member groups.
      *
-     * @access  private
-     * @return  void
+     * @access      private
+     * @return      void
      */
     private function _update_package_to_version_14()
     {
@@ -493,10 +532,12 @@ class Dashee_update_model extends CI_Model
     }
 
     /**
+     * Version 1.5 Update Function
+     * 
      * Add column 'locked' to dashee_member_groups_layouts
      *
-     * @access  private
-     * @return  void
+     * @access      private
+     * @return      void
      */
     private function _update_package_to_version_15()
     {
@@ -515,10 +556,12 @@ class Dashee_update_model extends CI_Model
     }
         
     /**
+     * Version 1.6 Update Function
+     * 
      * Add site_id columns to appropriate tables and populate as needed for MSM support.
      *
-     * @access  private
-     * @return  void
+     * @access      private
+     * @return      void
      */
     private function _update_package_to_version_16()
     {
@@ -565,10 +608,12 @@ class Dashee_update_model extends CI_Model
     }
 
 	/**
+     * Version 1.8 Update Function
+     * 
 	 * Add module settings DB table and populate with default settings and remove extension settings.
 	 *
-	 * @access  private
-	 * @return  void
+	 * @access     private
+	 * @return     void
 	 */
     private function _update_package_to_version_18()
     {
@@ -591,11 +636,13 @@ class Dashee_update_model extends CI_Model
     }
 
     /**
+     * Version 2.0 Update Function
+     * 
      * Add new DB table for multiple dashboard functionality and update any 
      * references to Feed Reader widget to new name.
      *
-     * @access  private
-     * @return  void
+     * @access      private
+     * @return      void
      */
     private function _update_package_to_version_20()
     {
@@ -658,12 +705,14 @@ class Dashee_update_model extends CI_Model
     }
 
    	/**
-	 * Update Extension
+	 * Update Extension Function
 	 *
 	 * This function performs any necessary db updates when the extension
 	 * page is visited
-	 *
-	 * @return 	mixed	void on update / false if none
+     *
+     * @access      public
+     * @param       str         $current        void on update / false if none 
+	 * @return      bool  
 	 */
 	public function update_extension($current = '')
 	{
@@ -681,11 +730,12 @@ class Dashee_update_model extends CI_Model
 	}	
 		
 	/**
-	 * Update Extension to Version 1.1
+	 * Version 1.1 Extension Update Function
 	 *
 	 * Add session_end hook to extensions table.
 	 *
-	 * @return 	mixed	void on update / false if none
+     * @access     private
+	 * @return 	   void
 	 */
 	private function _update_extension_to_version_11()
 	{
@@ -702,9 +752,17 @@ class Dashee_update_model extends CI_Model
 	}
 
     /**
+     * Add Dummy Widget Function
+     * 
      * Add provided dummy widget to provided dash config.
+     * 
+     * Was added to provide for creation of widgets that don't require widget files 
+     * in the widgets directory (like update notes and the Welcome widget).
      *
-     * @return  string
+     * @access      private
+     * @param       array         $widget         Array representation of widget.
+     * @param       array         $config         Array for current dashboard configuration.
+     * @return      obj
      */
     private function _add_dummy_widget($widget, $config)
     {

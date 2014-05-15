@@ -15,6 +15,12 @@ class Wgt_text
 	public $title;
 	public $wclass;
 	
+	/**
+	 * Constructor
+	 *
+	 * @access 		public
+ 	 * @return 		void
+	 */
 	public function __construct()
 	{
 		$this->wclass = 'padded';
@@ -23,8 +29,9 @@ class Wgt_text
 	/**
 	 * Index Function
 	 *
-	 * @param	object
-	 * @return 	string
+	 * @access 		public
+	 * @param		obj 		$settings 		Object containing member widget settings.
+	 * @return 		str
 	 */
 	public function index($settings = NULL)
 	{

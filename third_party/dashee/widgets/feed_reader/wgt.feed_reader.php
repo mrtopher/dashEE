@@ -19,6 +19,12 @@ class Wgt_feed_reader
 	public $wclass;
 	public $settings;
 	
+	/**
+	 * Constructor
+	 *
+	 * @access 		public
+ 	 * @return 		void
+	 */
 	public function __construct()
 	{
 		$this->EE =& get_instance();
@@ -33,8 +39,9 @@ class Wgt_feed_reader
 	/**
 	 * Index Function
 	 *
-	 * @param 	object
-	 * @return 	string
+	 * @access 		public
+	 * @param 		obj 		$settings 		Object containing member widget settings.
+	 * @return 		str
 	 */
 	public function index($settings = NULL)
 	{
@@ -63,8 +70,9 @@ class Wgt_feed_reader
 	 * Settings Form Function
 	 * Generate settings form for widget.
 	 *
-	 * @param 	object
-	 * @return 	string
+	 * @access 		public
+	 * @param 		obj 		$swttings 		Object containing member widget settings.
+	 * @return 		str
 	 */
 	public function settings_form($settings)
 	{

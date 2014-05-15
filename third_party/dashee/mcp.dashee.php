@@ -25,6 +25,12 @@ class Dashee_mcp
 	private $_settings;
 	private $_widgets;
 	
+	/**
+	 * Constructor
+	 *
+	 * @access 		public
+ 	 * @return 		void
+	 */
 	public function __construct()
 	{
 		$this->EE =& get_instance();
@@ -35,8 +41,8 @@ class Dashee_mcp
         $this->_model = $this->EE->dashee_model;
 		
         $this->_theme_url   = $this->_model->get_package_theme_url();
-        $this->_js_url   	= $this->_theme_url . 'js/dashee.js';
-        // $this->_js_url   	= $this->_theme_url .'js/dashee.min.js';
+        // $this->_js_url   	= $this->_theme_url . 'js/dashee.js';
+        $this->_js_url   	= $this->_theme_url .'js/dashee.min.js';
         
         $this->_member_id = $this->EE->session->userdata('member_id');
         if($this->EE->session->userdata('group_id') == 1)
@@ -52,8 +58,10 @@ class Dashee_mcp
 
 	/**
 	 * Index Function
-	 *
-	 * @return 	void
+	 * Display selected dashboard.
+	 * 
+	 * @access 		public
+	 * @return 		void
 	 */
 	public function index()
 	{
@@ -120,7 +128,8 @@ class Dashee_mcp
 	 * Settings Function
 	 * Display module settings form.
 	 *
-	 * @return 	void
+	 * @access 		public
+	 * @return 		void
 	 */
 	public function settings()
 	{
@@ -185,7 +194,8 @@ class Dashee_mcp
 	 * Update Settings Function
 	 * Display module settings form.
 	 *
-	 * @return 	void
+	 * @access 		public
+	 * @return 		void
 	 */
 	public function update_settings()
 	{
@@ -212,7 +222,8 @@ class Dashee_mcp
 	 * Update Member Settings Function
 	 * Attempt to save users module settings to DB.
 	 *
-	 * @return 	void
+	 * @access 		public
+	 * @return 		void
 	 */
 	public function update_member_settings()
 	{
@@ -285,7 +296,8 @@ class Dashee_mcp
 	 * AJAX METHOD
 	 * Get listing of all available widgets from installed modules.
 	 *
-	 * @return 	NULL
+	 * @access 		public
+	 * @return 		void
 	 */
 	public function ajax_get_widget_listing()
 	{
@@ -366,7 +378,8 @@ class Dashee_mcp
 	 * AJAX METHOD
 	 * Add selected widget to users dashboard and update config.
 	 *
-	 * @return 	void
+	 * @access 		public
+	 * @return 		void
 	 */
 	public function ajax_add_widget()
 	{
@@ -435,7 +448,8 @@ class Dashee_mcp
 	 * AJAX METHOD
 	 * Remove selected widget from users dashboard and update settings.
 	 *
-	 * @return 	NULL
+	 * @access 		public
+	 * @return 		void
 	 */
 	public function ajax_remove_widget()
 	{
@@ -478,7 +492,8 @@ class Dashee_mcp
 	 * AJAX METHOD
 	 * Update widget order and column placement in DB.
 	 *
-	 * @return 	NULL
+	 * @access 		public
+	 * @return 		void
 	 */
 	public function ajax_update_widget_order()
 	{
@@ -518,7 +533,8 @@ class Dashee_mcp
 	 * AJAX METHOD
 	 * Display settings options for selected widget.
 	 *
-	 * @return 	NULL
+	 * @access 		public
+	 * @return 		void
 	 */
 	public function ajax_widget_settings()
 	{
@@ -542,7 +558,8 @@ class Dashee_mcp
 	 * AJAX METHOD
 	 * Attempt to update a widgets state in the DB.
 	 *
-	 * @return 	NULL
+	 * @access 		public
+	 * @return 		void
 	 */
 	public function ajax_update_widget_state()
 	{
@@ -573,7 +590,8 @@ class Dashee_mcp
 	 * AJAX METHOD
 	 * Attempt to update a widgets settings.
 	 *
-	 * @return 	NULL
+	 * @access 		public
+	 * @return 		void
 	 */
 	public function ajax_update_widget_settings()
 	{
@@ -605,7 +623,8 @@ class Dashee_mcp
 	 * AJAX METHOD
 	 * Attempt to save current dashboard layout in DB.
 	 *
-	 * @return 	NULL
+	 * @access 		public
+	 * @return 		void
 	 */
 	public function ajax_save_layout()
 	{
@@ -617,149 +636,13 @@ class Dashee_mcp
 			$this->_model->add_layout($name, $description, $this->_settings);
 		}
 	}
-	
-	/**
-	 * Change default layout in DB.
-	 *
-	 * @return 	void
-	 */
-	public function set_default_layout()
-	{
-		$layout_id = $this->EE->input->get('layout_id');
-		
-		if($this->_super_admin AND $layout_id != '' AND is_numeric($layout_id))
-		{
-			$this->_model->set_default_layout($layout_id);
-			
-			$this->EE->session->set_flashdata('dashee_msg', lang('flash_layout_updated'));
-		}
-		else
-		{
-			$this->EE->session->set_flashdata('dashee_msg', lang('flash_layout_not_updated'));
-		}
-		
-		$this->EE->functions->redirect(cp_url('dashee', 'settings'));
-	}
-	
-	/**
-	 * Load selected saved layout for current user.
-	 *
-	 * @return 	void
-	 */
-	public function load_layout()
-	{
-		$layout_id = $this->EE->input->get('layout_id');
-		
-		if($this->_super_admin AND $layout_id != '' AND is_numeric($layout_id))
-		{
-			$layout = $this->_model->get_layout($layout_id);
-			$this->_settings = json_decode($layout->config, TRUE);
-			
-			$this->_update_member(FALSE);
-			
-			$this->EE->session->set_flashdata('dashee_msg', $layout->name . lang('flash_layout_loaded'));
-		}
-		else
-		{
-			$this->EE->session->set_flashdata('dashee_msg', lang('flash_layout_not_loaded'));
-		}
-		
-		$this->EE->functions->redirect(cp_url('dashee'));
-	}
-	
-	/**
-	 * Delete selected saved layout from DB.
-	 *
-	 * @return 	void
-	 */
-	public function delete_layout()
-	{
-		$layout_id = $this->EE->input->get('layout_id');
-		
-		if($this->_super_admin AND $layout_id != '' AND is_numeric($layout_id))
-		{
-			$layout = $this->_model->get_layout($layout_id);
-			
-			if(!$layout->is_default)
-			{
-				$this->_model->delete_layout($layout->id);
-
-				$this->EE->session->set_flashdata('dashee_msg', $layout->name . lang('flash_layout_deleted'));
-			}
-		}
-		else
-		{
-			$this->EE->session->set_flashdata('dashee_msg', lang('flash_layout_not_deleted'));
-		}
-		
-		$this->EE->functions->redirect(cp_url('dashee', 'settings'));
-	}
-	
-	/**
-	 * Update Member Group Defaults Function
-	 * Attempt to save member group default settings to DB.
-	 *
-	 * @return 	void
-	 */
-	public function update_group_defaults()
-	{
-		if($this->_super_admin == FALSE)
-		{
-			show_error(lang('unauthorized_access'));
-		}
-
-		$group_layouts = $this->EE->input->post('group_layouts');
-		$group_locked = $this->EE->input->post('group_locked');
-		
-		if($group_layouts != '' AND is_array($group_layouts))
-		{
-			$this->_model->update_group_layouts($group_layouts, $group_locked);
-		
-			$this->EE->session->set_flashdata('dashee_msg', lang('flash_group_default_updated'));
-		}
-		else
-		{
-			$this->EE->session->set_flashdata('dashee_msg', lang('flash_group_default_not_updated'));
-		}
-		
-		$this->EE->functions->redirect(cp_url('dashee', 'settings'));
-	}
-	
-	/**
-	 * Reset layout for a member group.
-	 *
-	 * @return 	void
-	 */
-	public function reset_group_defaults()
-	{
-		$group_id = $this->EE->input->get('group_id');
-
-		if($this->_super_admin == false)
-		{
-            show_error(lang('unauthorized_access'));
-		}
-		
-		$group = $this->_model->get_member_group($group_id);
-		if($group_id != '' AND is_numeric($group_id))
-		{
-			$this->_model->reset_member_layouts($group_id);
-			
-			$this->EE->session->set_flashdata('dashee_msg', lang('flash_group_layout_reset') . $group->group_title . '.');
-		}
-		else
-		{
-			$this->EE->session->set_flashdata('dashee_msg', lang('flash_group_layout_not_reset') . $group->group_title . '.');
-		}
-		
-		$this->EE->functions->redirect(cp_url('dashee', 'settings'));
-
-	}
 
 	/**
 	 * AJAX METHOD
 	 * Pass through (proxy) method for hanlding widget POST requests.
 	 *
-	 * @return 	string
+	 * @access 		public
+	 * @return 		string
 	 */
 	public function ajax_widget_post_proxy()
 	{
@@ -797,7 +680,8 @@ class Dashee_mcp
 	 * AJAX METHOD
 	 * Pass through (proxy) method for hanlding widget GET requests.
 	 *
-	 * @return 	string
+	 * @access 		public
+	 * @return 		string
 	 */
 	public function ajax_widget_get_proxy()
 	{
@@ -836,7 +720,8 @@ class Dashee_mcp
 	 * Return JSON for selected widget for processing by javascript.
 	 * Used to return widgets back to load state after NOT submitting settings form.
 	 *
-	 * @return	string
+	 * @access 		public
+	 * @return		string
 	 */
 	public function ajax_get_widget()
 	{
@@ -850,8 +735,152 @@ class Dashee_mcp
 		echo json_encode($result);
 		exit();
 	}
+	
+	/**
+	 * Change default layout in DB.
+	 *
+	 * @access 		public
+	 * @return 		void
+	 */
+	public function set_default_layout()
+	{
+		$layout_id = $this->EE->input->get('layout_id');
+		
+		if($this->_super_admin AND $layout_id != '' AND is_numeric($layout_id))
+		{
+			$this->_model->set_default_layout($layout_id);
+			
+			$this->EE->session->set_flashdata('dashee_msg', lang('flash_layout_updated'));
+		}
+		else
+		{
+			$this->EE->session->set_flashdata('dashee_msg', lang('flash_layout_not_updated'));
+		}
+		
+		$this->EE->functions->redirect(cp_url('dashee', 'settings'));
+	}
+	
+	/**
+	 * Load selected saved layout for current user.
+	 *
+	 * @access 		public
+	 * @return 		void
+	 */
+	public function load_layout()
+	{
+		$layout_id = $this->EE->input->get('layout_id');
+		
+		if($this->_super_admin AND $layout_id != '' AND is_numeric($layout_id))
+		{
+			$layout = $this->_model->get_layout($layout_id);
+			$this->_settings = json_decode($layout->config, TRUE);
+			
+			$this->_update_member(FALSE);
+			
+			$this->EE->session->set_flashdata('dashee_msg', $layout->name . lang('flash_layout_loaded'));
+		}
+		else
+		{
+			$this->EE->session->set_flashdata('dashee_msg', lang('flash_layout_not_loaded'));
+		}
+		
+		$this->EE->functions->redirect(cp_url('dashee'));
+	}
+	
+	/**
+	 * Delete selected saved layout from DB.
+	 *
+	 * @access 		public
+	 * @return 		void
+	 */
+	public function delete_layout()
+	{
+		$layout_id = $this->EE->input->get('layout_id');
+		
+		if($this->_super_admin AND $layout_id != '' AND is_numeric($layout_id))
+		{
+			$layout = $this->_model->get_layout($layout_id);
+			
+			if(!$layout->is_default)
+			{
+				$this->_model->delete_layout($layout->id);
+
+				$this->EE->session->set_flashdata('dashee_msg', $layout->name . lang('flash_layout_deleted'));
+			}
+		}
+		else
+		{
+			$this->EE->session->set_flashdata('dashee_msg', lang('flash_layout_not_deleted'));
+		}
+		
+		$this->EE->functions->redirect(cp_url('dashee', 'settings'));
+	}
+	
+	/**
+	 * Update Member Group Defaults Function
+	 * Attempt to save member group default settings to DB.
+	 *
+	 * @access 		public
+	 * @return 		void
+	 */
+	public function update_group_defaults()
+	{
+		if($this->_super_admin == FALSE)
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
+		$group_layouts = $this->EE->input->post('group_layouts');
+		$group_locked = $this->EE->input->post('group_locked');
+		
+		if($group_layouts != '' AND is_array($group_layouts))
+		{
+			$this->_model->update_group_layouts($group_layouts, $group_locked);
+		
+			$this->EE->session->set_flashdata('dashee_msg', lang('flash_group_default_updated'));
+		}
+		else
+		{
+			$this->EE->session->set_flashdata('dashee_msg', lang('flash_group_default_not_updated'));
+		}
+		
+		$this->EE->functions->redirect(cp_url('dashee', 'settings'));
+	}
+	
+	/**
+	 * Reset Member Group Defaults Function
+	 * Reset layout for a member group.
+	 *
+	 * @access 		public
+	 * @return 		void
+	 */
+	public function reset_group_defaults()
+	{
+		$group_id = $this->EE->input->get('group_id');
+
+		if($this->_super_admin == false)
+		{
+            show_error(lang('unauthorized_access'));
+		}
+		
+		$group = $this->_model->get_member_group($group_id);
+		if($group_id != '' AND is_numeric($group_id))
+		{
+			$this->_model->reset_member_layouts($group_id);
+			
+			$this->EE->session->set_flashdata('dashee_msg', lang('flash_group_layout_reset') . $group->group_title . '.');
+		}
+		else
+		{
+			$this->EE->session->set_flashdata('dashee_msg', lang('flash_group_layout_not_reset') . $group->group_title . '.');
+		}
+		
+		$this->EE->functions->redirect(cp_url('dashee', 'settings'));
+
+	}
 
 	/**
+	 * Reset Dashboard Function
 	 * Reset selected dashboard to default layout config.
 	 *
 	 * @access	public
@@ -869,6 +898,7 @@ class Dashee_mcp
 	}
 
 	/**
+	 * Rename Dashboard Function
 	 * Update name of the selected dashboard in DB.
 	 *
 	 * @access	public
@@ -894,6 +924,7 @@ class Dashee_mcp
 	}
 
 	/**
+	 * Create New Dashboard Function
 	 * Create new dashboard for current user.
 	 *
 	 * @access	public
@@ -940,6 +971,7 @@ class Dashee_mcp
 	}
 
 	/**
+	 * Delete Dashboard Function
 	 * Delete current dashboard from DB.
 	 *
 	 * @access  public
@@ -976,15 +1008,15 @@ class Dashee_mcp
 	}
 
 	/**
-	 * Add Widget's Package Path
+	 * Add Widget's Package Path Function
+	 * Makes it possible for widgets to use $EE->load->view(), etc.
 	 *
-	 * Makes it possible for widgets to use $EE->load->view(), etc
+	 * Should be called right before calling a widget's index() funciton.
 	 *
-	 * Should be called right before calling a widget's index() funciton
-	 *
-	 * @param string $module module widget belongs to
-	 * @param string $widget widget name
-	 * @return void
+	 * @access 		private
+	 * @param 		string 		$module 	Module widget belongs to.
+	 * @param 		string 		$widget 	Widget name.
+	 * @return 		void
 	 */
 	private function _add_widget_package_path($module, $widget)
 	{
@@ -1010,10 +1042,11 @@ class Dashee_mcp
 	}
 	
 	/**
+	 * Get Member Module Settings Function
 	 * Get/update users dashEE settings.
 	 *
-	 * @param   $member_id 	EE member ID.
-	 * @return 	array
+	 * @access 		private
+	 * @return 		array
 	 */
 	private function _get_member_settings()
 	{
@@ -1064,9 +1097,11 @@ class Dashee_mcp
 	}
 	
 	/**
+	 * Get Widgets Function
 	 * Get just widget data and put in array for easy access/reference.
 	 *
-	 * @return 	array
+	 * @access 		private
+	 * @return 		array
 	 */
 	private function _get_widgets()
 	{
@@ -1082,9 +1117,11 @@ class Dashee_mcp
 	}
 	
 	/**
+	 * Update Member Config Function
 	 * Attempt to update a members dashboard config in DB.
 	 *
-	 * @return 	array
+	 * @access 		private
+	 * @return 		array
 	 */
 	private function _update_member($reindex = TRUE)
 	{
@@ -1119,9 +1156,11 @@ class Dashee_mcp
 	}
 
 	/**
+	 * Load Widget Function
 	 * Load selected widgets for display.
 	 *
-	 * @return 	array
+	 * @access 		private
+	 * @return 		array
 	 */
 	private function _widget_loader(array $widgets)
 	{
@@ -1145,9 +1184,11 @@ class Dashee_mcp
 	}
 	
 	/**
+	 * Render Widget Function
 	 * Render selected widget and return generated HTML.
 	 *
-	 * @return	string
+	 * @access 		private
+	 * @return		string
 	 */
 	private function _render_widget($id, $module, $widget, $state = 1, $settings = '')
 	{
@@ -1210,11 +1251,13 @@ class Dashee_mcp
 	}
 		
 	/**
+	 * Get Widget Function
 	 * Require necessary widget class and return instance.
 	 *
-	 * @param	$module		string		Module that requested widget is part of.
-	 * @param	$widget		string		Requested widget.
-	 * @return 	object
+	 * @access 		private
+	 * @param		$module		string		Module that requested widget is part of.
+	 * @param		$widget		string		Requested widget.
+	 * @return 		object
 	 */
 	private function _get_widget_object($module, $widget)
 	{
@@ -1235,11 +1278,13 @@ class Dashee_mcp
 	}
 	
 	/**
+	 * Format Filename Function
 	 * Format widget names for reference.
 	 *
-	 * @param 	$name		string		File name.
-	 * @param 	$cap		bool		Capitalize filename?
-	 * @return 	string
+	 * @access 		private
+	 * @param 		$name		string		File name.
+	 * @param 		$cap		bool		Capitalize filename?
+	 * @return 		string
 	 */
 	private function _format_filename($name, $cap = FALSE)
 	{
@@ -1254,6 +1299,7 @@ class Dashee_mcp
 
 		return $cap ? ucfirst($str) : $str;
 	}
+	
 }
 /* End of file mcp.dashee.php */
 /* Location: /system/expressionengine/third_party/dashee/mcp.dashee.php */

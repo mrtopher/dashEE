@@ -16,7 +16,7 @@ class Wgt_tasklist
 {
 	public $EE;
 	public $widget_name 		= 'Task List';
-	public $widget_description 	= 'Simple widget for managing a task list.';
+	public $widget_description 	= 'Simple interactive widget for managing task lists.';
 
 	public $list_id;
 	public $title;
@@ -27,6 +27,12 @@ class Wgt_tasklist
 	private $_model;
 	private $_member_id;
 
+	/**
+	 * Constructor
+	 *
+	 * @access 		public
+ 	 * @return 		void
+	 */
 	public function __construct()
 	{
 		$this->EE =& get_instance();
@@ -49,8 +55,9 @@ class Wgt_tasklist
 	/**
 	 * Index Function
 	 *
-	 * @param	object
-	 * @return 	string
+	 * @access 		public
+	 * @param		obj 		$settings 		Object containing member widget settings.
+	 * @return 		str
 	 */
 	public function index($settings = NULL)
 	{
@@ -69,9 +76,11 @@ class Wgt_tasklist
 	 * AJAX METHOD
 	 * 
 	 * Add Task Function
+	 * 
 	 * Attempt to add a new task to the DB.
 	 *
-	 * @return 	string
+	 * @access 		public
+	 * @return 		str
 	 */
 	public function ajax_add_task()
 	{
@@ -90,9 +99,12 @@ class Wgt_tasklist
 	 * AJAX METHOD
 	 * 
 	 * Update Task Status Function
+	 * 
 	 * Attempt to mark the provided task as complete or incomplete in the DB.
 	 *
-	 * @return 	string
+	 * @access 		public
+	 * @param 		array 		$params 		Array of task parameters to update.
+	 * @return 		str
 	 */
 	public function ajax_update_task($params)
 	{
@@ -118,9 +130,12 @@ class Wgt_tasklist
 	 * AJAX METHOD
 	 * 
 	 * Delete Task Function
+	 * 
 	 * Attempt to delete selected task from the DB.
 	 *
-	 * @return 	string
+	 * @access 		public
+	 * @param 		array 		$params 		Array of task parameters to update.
+	 * @return 		str
 	 */
 	public function ajax_delete_task($params)
 	{
@@ -140,10 +155,12 @@ class Wgt_tasklist
 	
 	/**
 	 * Settings Form Function
+	 * 
 	 * Generate settings form for widget.
 	 *
-	 * @param	object
-	 * @return 	string
+	 * @access 		public
+	 * @param		obj 		$settings 		Object containing member widget settings.
+	 * @return 		str
 	 */
 	public function settings_form($settings)
 	{
@@ -161,10 +178,11 @@ class Wgt_tasklist
 
 	/**
 	 * Widget Add Function
+	 * 
 	 * Run everytime members add widget to their dashboard.
 	 *
-	 * @param	object
-	 * @return 	void
+	 * @access 		public
+	 * @return 		void
 	 */
 	public function widget_add()
 	{
@@ -173,10 +191,11 @@ class Wgt_tasklist
 
 	/**
 	 * Widget Installer Function
+	 * 
 	 * Is run everytime members add widget AND is the first instance of widget.
 	 *
-	 * @param	object
-	 * @return 	void
+	 * @access 		public
+	 * @return 		void
 	 */
 	public function widget_install()
 	{
@@ -217,10 +236,12 @@ class Wgt_tasklist
 
 	/**
 	 * Widget Remove Function
+	 * 
 	 * Is run everytime members remove widget from their dashboard.
 	 *
-	 * @param	string
-	 * @return 	void
+	 * @access 		public
+	 * @param		obj 		$settings 		Object containing member widget settings.
+	 * @return 		void
 	 */
 	public function widget_remove($settings)
 	{
@@ -230,11 +251,12 @@ class Wgt_tasklist
 
 	/**
 	 * Widget Uninstaller Function
+	 * 
 	 * Is run everytime members remove widget AND it's the last 
 	 * instance of that widget across all dashboards.
 	 *
-	 * @param	object
-	 * @return 	void
+	 * @access 		public
+	 * @return 		void
 	 */
 	public function widget_uninstall()
 	{

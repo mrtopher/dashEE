@@ -20,19 +20,23 @@ class Wgt_new_members
 		
 	/**
 	 * Constructor
+	 *
+	 * @access 		public
+ 	 * @return 		void
 	 */
 	public function __construct()
 	{
 		$this->EE =& get_instance();
 
-		$this->title = 'New Members';
+		$this->title  = 'New Members';
 		$this->wclass = 'contentMenu';	
 	}
 	
 	/**
 	 * Index Function
 	 *
-	 * @return 	string
+	 * @access 		public
+	 * @return 		str
 	 */
 	public function index()
 	{

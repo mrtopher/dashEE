@@ -17,9 +17,13 @@ class Wgt_modify_links
 	public $EE;
 	public $title;
 	public $wclass;
-	
-	private $_EE;
-	
+		
+	/**
+	 * Constructor
+	 *
+	 * @access 		public
+ 	 * @return 		void
+	 */
 	public function __construct()
 	{
 		$this->EE =& get_instance();
@@ -32,7 +36,8 @@ class Wgt_modify_links
 	 * Permissions Function
 	 * Defines permissions needed for user to be able to add widget.
 	 *
-	 * @return 	bool
+	 * @access 		public
+	 * @return 		bool
 	 */
 	public function permissions()
 	{
@@ -48,7 +53,8 @@ class Wgt_modify_links
 	/**
 	 * Index Function
 	 *
-	 * @return 	string
+	 * @access 		public
+	 * @return 		str
 	 */
 	public function index()
 	{	
@@ -86,7 +92,7 @@ class Wgt_modify_links
 			$content .= '<li class="group"><a href="'.BASE.AMP.'C=content_publish'.AMP.'M=entry_form'.AMP.'channel_id='.$entry->channel_id.AMP.'entry_id='.$entry->entry_id.'">'.lang('most_recent_entry').'</a></li>';
 		}
 		
-		// comments - doesn't work for some reason... need to revisit
+		// TASK: comments - doesn't work for some reason... need to revisit
 		/*if($this->_EE->db->table_exists('comments') && $this->_EE->cp->allowed_group('can_moderate_comments'))
 		{
 			$content .= '<li class="item"><a href="'.BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=comment'.AMP.'status=p">'.lang('total_validating_comments').'</a></li>';

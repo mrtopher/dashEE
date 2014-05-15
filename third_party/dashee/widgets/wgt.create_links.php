@@ -18,6 +18,12 @@ class Wgt_create_links
 	public $title;
 	public $wclass;
 		
+	/**
+	 * Constructor
+	 *
+	 * @access 		public
+ 	 * @return 		void
+	 */
 	public function __construct()
 	{
 		$this->EE =& get_instance();
@@ -28,9 +34,11 @@ class Wgt_create_links
 		
 	/**
 	 * Permissions Function
+	 * 
 	 * Defines permissions needed for user to be able to add widget.
 	 *
-	 * @return 	bool
+	 * @access 		public
+	 * @return 		bool
 	 */
 	public function permissions()
 	{
@@ -47,7 +55,8 @@ class Wgt_create_links
 	/**
 	 * Index Function
 	 *
-	 * @return 	string
+	 * @access 		public
+	 * @return 		str
 	 */
 	public function index()
 	{

@@ -20,6 +20,9 @@ class Wgt_recent_entries
 		
 	/**
 	 * Constructor
+	 *
+	 * @access 		public
+ 	 * @return 		void
 	 */
 	public function __construct()
 	{
@@ -31,7 +34,8 @@ class Wgt_recent_entries
 	/**
 	 * Index Function
 	 *
-	 * @return 	string
+	 * @access 		public
+	 * @return 		str
 	 */
 	public function index()
 	{

@@ -16,6 +16,9 @@ class Task_model extends CI_Model
 
 	/**
 	 * Constructor
+	 *
+	 * @access 		public
+ 	 * @return 		void
 	 */
 	public function __construct()
 	{
@@ -24,14 +27,15 @@ class Task_model extends CI_Model
 		$this->EE =& get_instance();
 	}
 
-	// ----------------------------------------------------------------
-
 	/**
+	 * Get Task Function
+	 * 
 	 * Get all tasks from DB.
 	 *
-	 * @param 	int 		$member_id
-	 * @param 	int 		$list_id
-	 * @return 	object
+	 * @access 		public
+	 * @param 		int 		$member_id 		Current member ID.
+	 * @param 		int 		$list_id 		Current task list ID.
+	 * @return 		obj
 	 */
 	public function get_tasks($member_id, $list_id)
 	{
@@ -41,9 +45,13 @@ class Task_model extends CI_Model
 	}
 
 	/**
+	 * Add Task Function
+	 * 
 	 * Attempt to add new task to DB.
 	 *
-	 * @return 	void
+	 * @access 		public
+	 * @param 		array 		$params 		Array of task list parameters.
+	 * @return 		void
 	 */
 	public function add_task($params)
 	{
@@ -51,9 +59,14 @@ class Task_model extends CI_Model
 	}
 
 	/**
+	 * Edit Task Function
+	 * 
 	 * Attempt to update a task in the DB.
 	 *
-	 * @return 	void
+	 * @access 		public
+	 * @param 		int 		$task_id 		Selected task ID.
+	 * @param 		array 		$params 		Array of task list parameters to update.
+	 * @return 		void
 	 */
 	public function edit_task($task_id, $params)
 	{
@@ -61,9 +74,13 @@ class Task_model extends CI_Model
 	}
 
 	/**
+	 * Delete Task Function
+	 * 
 	 * Attempt to delete a task from the DB.
 	 *
-	 * @return 	void
+	 * @access 		public
+	 * @param 		int 		$task_id 		Selected task ID.
+	 * @return 		void
 	 */
 	public function delete_task($task_id)
 	{

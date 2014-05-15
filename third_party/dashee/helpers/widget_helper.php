@@ -11,15 +11,15 @@
  */
 
 /**
- * Widget Form Declaration
+ * Widget Form Declaration Function
  *
  * Creates the opening portion of the form, EE CP Style
  *
- * @access	public
- * @param	string	the method of the widget file to be called
- * @param	array	a key/value pair of attributes
- * @param	array	a key/value pair hidden data
- * @return	string
+ * @access		public
+ * @param		str 		$method 		The method of the widget file to be called.
+ * @param		array 		$attributes 	A key/value pair of attributes.
+ * @param		array 		$hidden 		A key/value pair hidden data.
+ * @return		string
  */	
 function wgt_form_open($method, $attributes = array(), $hidden = array())
 {
@@ -72,6 +72,5 @@ function wgt_form_open($method, $attributes = array(), $hidden = array())
 
 	return $form;
 }
-
 /* End of file widget_helper.php */
 /* Location: /system/expressionengine/third_party/dashee/helpers/widget_helper.php */

@@ -17,6 +17,12 @@ class Dashee_model extends CI_Model
 
     private $_module_settings = array();
 
+	/**
+	 * Constructor
+	 *
+	 * @access 		public
+ 	 * @return 		void
+	 */
     public function __construct()
     {
         parent::__construct();
@@ -42,8 +48,8 @@ class Dashee_model extends CI_Model
     /**
      * Returns the module URL with session ID if required.
      *
-     * @access  public
-     * @return  string
+     * @access  	public
+     * @return  	str
      */
     public function get_module_url()
     {
@@ -72,8 +78,8 @@ class Dashee_model extends CI_Model
     /**
      * Returns the package theme folder URL, appending a forward slash if required.
      *
-     * @access    public
-     * @return    string
+     * @access    	public
+     * @return    	str
      */
     public function get_package_theme_url()
     {
@@ -83,8 +89,8 @@ class Dashee_model extends CI_Model
     /**
      * Get all installed EE modules.
      *
-     * @access    public
-     * @return    array
+     * @access    	public
+     * @return    	array
      */
     public function get_installed_modules()
     {
@@ -105,9 +111,9 @@ class Dashee_model extends CI_Model
     /**
      * Get all dashboards for provided member.
      *
-     * @access    public
-     * @param  	  int 		$member_id
-     * @return    obj
+     * @access    	public
+     * @param  	  	int 		$member 		ID of current member.
+     * @return    	obj
      */
     public function get_dashboards($member_id)
     {
@@ -123,9 +129,9 @@ class Dashee_model extends CI_Model
     /**
      * Get selected dashboard config.
      *
-     * @access    public
-     * @param  	  int 		$config_id
-     * @return    obj
+     * @access    	public
+     * @param  	  	int 		$config_id 		Dashboard configuration ID.
+     * @return    	obj
      */
     public function get_dashboard($config_id)
     {
@@ -135,11 +141,11 @@ class Dashee_model extends CI_Model
     /**
      * Attempt to add new dashboard for current user.
      *
-     * @access    public
-     * @param     array
-     * @return    int
+     * @access    	public
+     * @param     	array 		$params 		Array of dashboard parameters to insert into DB.
+     * @return    	int
      */
-   	public function add_dashboard($params)
+   	public function add_dashboard($params)	
 	{
 		$this->EE->db->insert('dashee_member_configs', $params);
 		return $this->EE->db->insert_id();
@@ -148,9 +154,10 @@ class Dashee_model extends CI_Model
     /**
      * Attempt to update a dashboard.
      *
-     * @access    public
-     * @param     array
-     * @return    void
+     * @access    	public
+     * @param     	int 		$config_id 		Dashboard configuration ID.
+     * @param     	array 		$params 		Array of dashboard parameters to update in the DB.
+     * @return    	void
      */
 	public function update_dashboard($config_id, $params)
 	{
@@ -160,9 +167,9 @@ class Dashee_model extends CI_Model
     /**
      * Attempt to delete a dashboard from the DB.
      *
-     * @access    public
-     * @param     int
-     * @return    int
+     * @access    	public
+     * @param     	int 		$config_id 		Dashboard configuration ID.
+     * @return    	int
      */
 	public function delete_dashboard($config_id)
 	{
@@ -172,9 +179,9 @@ class Dashee_model extends CI_Model
 	/**
 	 * Get members dashboard configuration from DB.
 	 *
-     * @access  public
-     * @param	int			$member_id		ID of currently logged in user.
-	 * @return 	obj
+     * @access  	public
+     * @param		int			$member_id		ID of currently logged in user.
+	 * @return 		obj
 	 */
 	public function get_member_settings($member_id, $config_id = NULL)
 	{
@@ -261,9 +268,9 @@ class Dashee_model extends CI_Model
 	/**
 	 * Return dashEE ID associated to provided member_id.
 	 *
-     * @access  public
-     * @param	int			$member_id		ID of currently logged in user.
-	 * @return 	int
+     * @access  	public
+     * @param		int			$member_id		ID of currently logged in user.
+	 * @return 		int
 	 */
 	public function get_dashee_id($member_id)
 	{
@@ -278,9 +285,9 @@ class Dashee_model extends CI_Model
 	/**
 	 * Return ID of default config for provided member.
 	 *
-     * @access  public
-     * @param	int			$member_id		ID of currently logged in user.
-	 * @return 	int
+     * @access  	public
+     * @param		int			$member_id		ID of currently logged in user.
+	 * @return 		int
 	 */
 	public function get_member_default_config_id($member_id)
 	{
@@ -304,10 +311,10 @@ class Dashee_model extends CI_Model
 	/**
 	 * Update members dashboard configuration in DB.
 	 *
-     * @access  public
-     * @param	int			$config_id		ID of current dashboard config.
-     * @param	array		$config			Member dashboard config.
-	 * @return 	obj
+     * @access  	public
+     * @param		int			$config_id		ID of current dashboard config.
+     * @param		array		$config			Member dashboard config.
+	 * @return 		obj
 	 */
 	public function update_member($config_id, $config)
 	{
@@ -317,8 +324,8 @@ class Dashee_model extends CI_Model
 	/**
 	 * Get all saved layouts for display.
 	 *
-     * @access  public
-	 * @return 	obj
+     * @access  	public
+	 * @return 		obj
 	 */
 	public function get_all_layouts()
 	{
@@ -331,9 +338,9 @@ class Dashee_model extends CI_Model
 	/**
 	 * Get selected saved layout from DB by ID.
 	 *
-     * @access  public
-     * @param 	int			$layout_id		ID of selected layout.
-	 * @return 	obj
+     * @access  	public
+     * @param 		int			$layout_id		ID of selected layout.
+	 * @return 		obj
 	 */
 	public function get_layout($layout_id)
 	{
@@ -343,8 +350,8 @@ class Dashee_model extends CI_Model
 	/**
 	 * Store standard default layout for use throughout model.
 	 *
-     * @access  public
-	 * @return 	array
+     * @access  	public
+	 * @return 		array
 	 */
 	public function get_standard_default_template()
 	{
@@ -393,8 +400,8 @@ class Dashee_model extends CI_Model
 	/**
 	 * Get default layout from DB.
 	 *
-     * @access  public
-	 * @return 	obj
+     * @access  	public
+	 * @return 		obj
 	 */
 	public function get_default_layout()
 	{
@@ -423,8 +430,8 @@ class Dashee_model extends CI_Model
 	/**
 	 * Get member group default layouts for display in setting form.
 	 *
-     * @access  public
-	 * @return 	array
+     * @access  	public
+	 * @return 		array
 	 */
 	public function get_all_group_layouts()
 	{
@@ -449,9 +456,9 @@ class Dashee_model extends CI_Model
 	/**
 	 * Set new default layout for module.
 	 *
-     * @access  public
-     * @param 	int			$layout_id		ID of selected layout.
-	 * @return 	obj
+     * @access  	public
+     * @param 		int			$layout_id		ID of selected layout.
+	 * @return 		obj
 	 */
 	public function set_default_layout($layout_id)
 	{
@@ -462,11 +469,11 @@ class Dashee_model extends CI_Model
 	/**
 	 * Add new layout to DB.
 	 *
-     * @access  public
-     * @param	string		$name			Name of layout to save.
-     * @param	string		$description	Optional layout description.
-     * @param	array		$config			Dashboard config.
-	 * @return 	obj
+     * @access  	public
+     * @param		str			$name			Name of layout to save.
+     * @param		str			$description	Optional layout description.
+     * @param		array		$config			Dashboard config.
+	 * @return 		obj
 	 */
 	public function add_layout($name, $description, $config)
 	{
@@ -482,10 +489,10 @@ class Dashee_model extends CI_Model
 	/**
 	 * Update selected saved layout from DB by ID.
 	 *
-     * @access  public
-     * @param 	int			$layout_id		ID of selected layout.
-     * @param 	array		$params			Updated layout parameters.
-	 * @return 	obj
+     * @access  	public
+     * @param 		int			$layout_id		ID of selected layout.
+     * @param 		array		$params			Updated layout parameters.
+	 * @return 		obj
 	 */
 	public function update_layout($layout_id, $params)
 	{
@@ -495,9 +502,9 @@ class Dashee_model extends CI_Model
 	/**
 	 * Update default member group layouts.
 	 *
-     * @access  public
-     * @param 	array		$group_layouts		Assoc. array of group_id with assigned layout_id.
-	 * @return 	void
+     * @access  	public
+     * @param 		array		$group_layouts		Assoc. array of group_id with assigned layout_id.
+	 * @return 		void
 	 */
 	public function update_group_layouts($group_layouts, $group_locked)
 	{
@@ -520,9 +527,9 @@ class Dashee_model extends CI_Model
 	/**
 	 * Reset member layouts according to the assigned member group layout.
 	 *
-     * @access  public
-     * @param 	array		$group_layouts		Assoc. array of group_id with assigned layout_id.
-	 * @return 	void
+     * @access  	public
+     * @param 		array		$group_layouts		Assoc. array of group_id with assigned layout_id.
+	 * @return 		void
 	 */
 	public function reset_member_layouts($group_id = FALSE)
 	{
@@ -556,9 +563,9 @@ class Dashee_model extends CI_Model
 	/**
 	 * Delete selected saved layout from DB by ID and updates any associated member groups.
 	 *
-     * @access  public
-     * @param 	int			$layout_id		ID of selected layout.
-	 * @return 	obj
+     * @access  	public
+     * @param 		int			$layout_id		ID of selected layout.
+	 * @return 		obj
 	 */
 	public function delete_layout($layout_id)
 	{
@@ -570,8 +577,8 @@ class Dashee_model extends CI_Model
 	/**
 	 * Get all member groups in CMS for layout assignment.
 	 *
-     * @access  public
-	 * @return 	obj
+     * @access  	public
+	 * @return 		obj
 	 */
 	public function get_member_groups()
 	{
@@ -587,9 +594,9 @@ class Dashee_model extends CI_Model
 	/**
 	 * Get selected member group by ID.
 	 *
-     * @access  public
-	 * @param	int
-	 * @return 	obj
+     * @access  	public
+	 * @param		int 		$group_id 		Member group ID.
+	 * @return 		obj
 	 */
 	public function get_member_group($group_id)
 	{
@@ -604,8 +611,8 @@ class Dashee_model extends CI_Model
 	/**
 	 * Get all module settings from DB.
 	 *
-     * @access  public
-	 * @return 	array
+     * @access  	public
+	 * @return 		array
 	 */
 	public function get_module_settings()
 	{
@@ -630,8 +637,8 @@ class Dashee_model extends CI_Model
 	/**
 	 * Attempt to update module settings in DB.
 	 *
-     * @access  public
-	 * @return 	void
+     * @access  	public
+	 * @return 		void
 	 */
 	public function update_module_settings($params = array())
 	{
@@ -644,9 +651,9 @@ class Dashee_model extends CI_Model
 	/**
 	 * Return total number of widget instances among all dashboards.
 	 *
-     * @access  public
-     * @param   string 	  $widget
-	 * @return 	integer
+     * @access  	public
+     * @param   	str 	  	$widget 		Config name of widget.
+	 * @return 		int
 	 */
 	public function get_widget_count($widget)
 	{

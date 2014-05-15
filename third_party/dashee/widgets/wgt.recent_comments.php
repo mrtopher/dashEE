@@ -19,6 +19,9 @@ class Wgt_recent_comments
 		
 	/**
 	 * Constructor
+	 *
+	 * @access 		public
+ 	 * @return 		void
 	 */
 	public function __construct()
 	{
@@ -31,7 +34,8 @@ class Wgt_recent_comments
 	/**
 	 * Index Function
 	 *
-	 * @return 	string
+	 * @access 		public
+	 * @return 		string
 	 */
 	public function index()
 	{

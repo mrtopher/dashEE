@@ -17,6 +17,12 @@ class Dashee_upd
 	private $EE;
 	private $_model;
 	
+	/**
+	 * Constructor
+	 *
+	 * @access 		public
+ 	 * @return 		void
+	 */
 	public function __construct()
 	{
 		$this->EE =& get_instance();
@@ -32,7 +38,8 @@ class Dashee_upd
 	/**
 	 * Installation Method
 	 *
-	 * @return 	boolean 	TRUE
+	 * @access 		public
+	 * @return 		boo 		TRUE
 	 */
 	public function install()
 	{
@@ -47,7 +54,8 @@ class Dashee_upd
 	/**
 	 * Uninstall
 	 *
-	 * @return 	boolean 	TRUE
+	 * @access 		public
+	 * @return 		bool 		TRUE
 	 */	
 	public function uninstall()
 	{
@@ -62,7 +70,8 @@ class Dashee_upd
 	/**
 	 * Module Updater
 	 *
-	 * @return 	boolean 	TRUE
+	 * @access 		public
+	 * @return 		bool 		TRUE
 	 */	
 	public function update($current = '')
 	{

@@ -25,7 +25,9 @@ class Dashee_ext
 	/**
 	 * Constructor
 	 *
-	 * @param 	mixed	Settings array or empty string if none exist.
+	 * @access 		public
+	 * @param 		mixed		$settings 		Settings array or empty string if none exist.
+	 * @return  	void
 	 */
 	public function __construct($settings = '')
 	{
@@ -44,7 +46,8 @@ class Dashee_ext
 	 * the page is fully loaded. This is to prevent the breadcrumb nav from being 
 	 * displayed before it has been updated by module JS.
 	 *
-	 * @return string
+	 * @access 		public
+	 * @return 		string
 	 */
 	public function crumb_hide()
 	{
@@ -58,7 +61,8 @@ class Dashee_ext
 	 * and html attributes site wide so users are directed to module instead 
 	 * of default EE CP Home.
 	 *
-	 * @return string
+	 * @access 		public
+	 * @return 		string
 	 */
     public function crumb_remap()
     {
@@ -92,7 +96,8 @@ class Dashee_ext
 	 * Automatically redirects members to module instead of default EE CP Home 
 	 * when logging into the CP.
 	 *
-	 * @return NULL 
+	 * @access 		public
+	 * @return 		NULL 
 	 */
 	public function member_redirect()
 	{
@@ -103,7 +108,11 @@ class Dashee_ext
 	/**
 	 * Redirect CP home to DashEE
 	 *
-	 * @return NULL 
+	 * Redirects users from default EE CP to module upon login and navigation.
+	 * 
+	 * @access 		public
+	 * @param  		object 
+	 * @return 		NULL 
 	 */
 	public function sessions_end(&$data)
 	{	
@@ -151,9 +160,11 @@ class Dashee_ext
 	/**
 	 * Activate Extension
 	 *
-	 * This function enters the extension into the exp_extensions table
+	 * Required by EE but extension is installed and 
+	 * maintained by module installation code.
 	 *
-	 * @return void
+	 * @access 		public
+	 * @return 		bool
 	 */
 	public function activate_extension()
 	{
@@ -163,9 +174,13 @@ class Dashee_ext
 	/**
 	 * Disable Extension
 	 *
-	 * @return void
+	 * Required by EE but extension is installed and 
+	 * maintained by module installation code.
+	 *
+	 * @access 		public
+	 * @return 		bool
 	 */
-	function disable_extension()
+	public function disable_extension()
 	{
 		return TRUE;
 	}
@@ -173,13 +188,17 @@ class Dashee_ext
 	/**
 	 * Update Extension
 	 *
-	 * @return  void
+	 * Required by EE but extension is installed and 
+	 * maintained by module installation code.
+	 * 
+	 * @access 		public
+	 * @param  		string		$current 		Current version of module installed.
+	 * @return  	bool
 	 */
-	function update_extension($current = '')
+	public function update_extension($current = '')
 	{
 		return TRUE;
 	}		
 }
-
 /* End of file ext.dashee.php */
 /* Location: /system/expressionengine/third_party/dashee/ext.dashee.php */
