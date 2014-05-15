@@ -411,7 +411,7 @@ $(function() {
 	// Click event to display available widgets listing.
 	$('a[href="#widgets"]').on('click', function() {
 		if($('#dashListing').is(':hidden')) {
-			$('#dashListing .content').html('<p>&nbsp;</p><p><center>Loading...</center></p><p><center><img src="'+$('#dashLoader').attr('src')+'" /></center></p><p>&nbsp;</p>');
+			$('#dashListing .widgets').html('<p>&nbsp;</p><p><center>Loading...</center></p><p><center><img src="'+$('#dashLoader').attr('src')+'" /></center></p><p>&nbsp;</p>');
 			$('#dashListing').slideDown();
 			$.ajax({
 				type: 'GET',
