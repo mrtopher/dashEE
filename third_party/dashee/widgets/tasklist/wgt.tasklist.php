@@ -15,15 +15,15 @@
 class Wgt_tasklist
 {
 	public $EE;
-	public $widget_name 		= 'Task List';
-	public $widget_description 	= 'Simple interactive widget for managing task lists.';
+	// public $widget_name 		= 'Task List';
+	// public $widget_description 	= 'Simple interactive widget for managing task lists.';
 
 	public $list_id;
 	public $title;
 	public $wclass;
 	public $settings;
 	public $js;
-	
+
 	private $_model;
 	private $_member_id;
 
@@ -51,7 +51,7 @@ class Wgt_tasklist
 
 		$this->_member_id = $this->EE->session->userdata('member_id');
 	}
-	
+
 	/**
 	 * Index Function
 	 *
@@ -63,7 +63,7 @@ class Wgt_tasklist
 	{
 		$this->list_id 	= $settings->list_id;
 		$this->title 	= $settings->title;
-	
+
 		$widget_data = array(
 			'list_id' 	=> $this->list_id,
 			'tasks' 	=> $this->_model->get_tasks($this->_member_id, $this->list_id)
@@ -74,9 +74,9 @@ class Wgt_tasklist
 
 	/**
 	 * AJAX METHOD
-	 * 
+	 *
 	 * Add Task Function
-	 * 
+	 *
 	 * Attempt to add a new task to the DB.
 	 *
 	 * @access 		public
@@ -97,9 +97,9 @@ class Wgt_tasklist
 
 	/**
 	 * AJAX METHOD
-	 * 
+	 *
 	 * Update Task Status Function
-	 * 
+	 *
 	 * Attempt to mark the provided task as complete or incomplete in the DB.
 	 *
 	 * @access 		public
@@ -118,7 +118,7 @@ class Wgt_tasklist
 
 			$this->_model->edit_task($task_id, $params);
 
-			return 'Task updated.';			
+			return 'Task updated.';
 		}
 		else
 		{
@@ -128,9 +128,9 @@ class Wgt_tasklist
 
 	/**
 	 * AJAX METHOD
-	 * 
+	 *
 	 * Delete Task Function
-	 * 
+	 *
 	 * Attempt to delete selected task from the DB.
 	 *
 	 * @access 		public
@@ -145,17 +145,17 @@ class Wgt_tasklist
 		{
 			$this->_model->delete_task($task_id);
 
-			return 'Task deleted.';			
+			return 'Task deleted.';
 		}
 		else
 		{
 			return 'No task specified.';
 		}
 	}
-	
+
 	/**
 	 * Settings Form Function
-	 * 
+	 *
 	 * Generate settings form for widget.
 	 *
 	 * @access 		public
@@ -165,20 +165,20 @@ class Wgt_tasklist
 	public function settings_form($settings)
 	{
 		return form_open('', array('class' => 'dashForm')).'
-			
+
 			<p><label for="title">Widget Title:</label>
 			<input type="text" name="title" value="'.$settings->title.'" /></p>
-			
+
 			<input type="hidden" name="list_id" value="'.$settings->list_id.'" />
 
 			<p><input type="submit" value="Save" /></p>
-			
+
 			'.form_close();
 	}
 
 	/**
 	 * Widget Add Function
-	 * 
+	 *
 	 * Run everytime members add widget to their dashboard.
 	 *
 	 * @access 		public
@@ -191,7 +191,7 @@ class Wgt_tasklist
 
 	/**
 	 * Widget Installer Function
-	 * 
+	 *
 	 * Is run everytime members add widget AND is the first instance of widget.
 	 *
 	 * @access 		public
@@ -236,7 +236,7 @@ class Wgt_tasklist
 
 	/**
 	 * Widget Remove Function
-	 * 
+	 *
 	 * Is run everytime members remove widget from their dashboard.
 	 *
 	 * @access 		public
@@ -251,8 +251,8 @@ class Wgt_tasklist
 
 	/**
 	 * Widget Uninstaller Function
-	 * 
-	 * Is run everytime members remove widget AND it's the last 
+	 *
+	 * Is run everytime members remove widget AND it's the last
 	 * instance of that widget across all dashboards.
 	 *
 	 * @access 		public
