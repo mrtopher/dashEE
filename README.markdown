@@ -113,9 +113,9 @@ To create your own simple widget:
 
 ### Widget Settings
 
-In the example above you created a super simple widget with static HTML content that users can add to their dashboards for reference. Now we will explore how you can add settings to your widget that users can then customize on the dashboard. Continuing the above example, lets modify the test widget we've been building to make the widget title and body something that the user can customize and set to whatever the like after it's been added to their dashboard.
+In the example above you created a simple widget with static HTML content that users can add to their dashboards for reference. Now we will explore how you can add settings to your widget that users can then customize. Continuing with the above example, lets modify the test widget we've been building to make the widget title and body something that the user can customize and set to whatever they like after it's been added to their dashboard.
 
-1. Open the wgt.test_widget.php file and add a new variable to the top called $settings. The $settings variable is a attribute that dashEE looks out for and automatically adds functionality to your widget on the front end.
+1. Open the wgt.test_widget.php file and add a new variable called $settings. The $settings variable is a attribute that dashEE looks for and automatically adds functionality to your widget on the front end.
 
 2. Create a constructor method for the Wgt_test_widget class and set the $settings variable with an array of default settings for the widget. If you are going to provide users with settings they you are required to provide default values that dashEE can use when the widget is first added to a users dashboard.
 
@@ -142,7 +142,7 @@ In the example above you created a super simple widget with static HTML content 
             }
         }
 
-        
+
 The index function of this widget contains some logic instead of just returning static content like in the simple widget above. You will notice that you can still gain access to the EE object by using the get_instance() function just like in modules and other EE add-ons. This index method uses the values stored in settings to go and get the contents of an RSS feed and return it as an unordered list. One thing to note here is that $settings is passed as an argument to index. It’s important not to overlook this because if it's not included then the module will be unable to pass the users saved settings to your widget upon load.
 
     public function index($settings = NULL)
