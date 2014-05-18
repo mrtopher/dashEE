@@ -12,7 +12,7 @@
  * @link		http://chrismonnat.com
  */
 
-class Dashee_update_model extends CI_Model 
+class Dashee_update_model extends CI_Model
 {
     private $EE;
     private $_site_id;
@@ -35,7 +35,7 @@ class Dashee_update_model extends CI_Model
         $this->EE =& get_instance();
 
         $this->_site_id = $this->EE->session->userdata('site_id');
-        
+
         $this->_package_name    	= 'dashEE';
         $this->_package_version 	= '2.0';
         $this->_extension_version 	= '1.4';
@@ -53,7 +53,7 @@ class Dashee_update_model extends CI_Model
     			)
     		);
     }
-    
+
     /**
      * Get Installed Version Function
      * Returns the installed package version.
@@ -68,7 +68,7 @@ class Dashee_update_model extends CI_Model
 
         return $result->num_rows() === 1 ? $result->row()->module_version : '';
     }
-    
+
     /**
      * Get Package Name Function
      * Returns the package name.
@@ -80,7 +80,7 @@ class Dashee_update_model extends CI_Model
     {
         return $this->_package_name;
     }
-    
+
     /**
      * Get Package Version Function
      * Returns the package version.
@@ -131,7 +131,7 @@ class Dashee_update_model extends CI_Model
 
     /**
      * Create dashee_members DB Table Function
-     * 
+     *
      * Creates the dashEE members entries table.
      * Stores each members module configuration data.
      *
@@ -141,7 +141,7 @@ class Dashee_update_model extends CI_Model
     public function install_module_members_table()
     {
 		$this->EE->load->dbforge();
-				
+
 		$fields = array(
 			'id' => array(
 				'type' 			 => 'INT',
@@ -160,7 +160,7 @@ class Dashee_update_model extends CI_Model
 				'unsigned'		=> TRUE
 				)
 			);
-			
+
 		$this->EE->dbforge->add_field($fields);
 		$this->EE->dbforge->add_key('id', TRUE);
 		$this->EE->dbforge->create_table('dashee_members', TRUE);
@@ -168,9 +168,9 @@ class Dashee_update_model extends CI_Model
 
     /**
      * Create dashee_member_configs DB Table Function
-     * 
+     *
      * Creates the dashEE member config entries table.
-     * Stores each members dashboard configuration data allowing 
+     * Stores each members dashboard configuration data allowing
      * members to have multiple dashboards.
      *
      * @access      public
@@ -179,7 +179,7 @@ class Dashee_update_model extends CI_Model
     public function install_module_member_configs_table()
     {
         $this->EE->load->dbforge();
-                
+
         $fields = array(
             'id' => array(
                 'type'           => 'INT',
@@ -206,15 +206,15 @@ class Dashee_update_model extends CI_Model
                 'default'       => 0
                 )
             );
-            
+
         $this->EE->dbforge->add_field($fields);
         $this->EE->dbforge->add_key('id', TRUE);
         $this->EE->dbforge->create_table('dashee_member_configs', TRUE);
     }
-    
+
     /**
      * Create dashee_layouts DB Table Function
-     * 
+     *
      * Creates the dashEE layouts table.
      * Stores saved dashboard layouts for later use.
      *
@@ -224,7 +224,7 @@ class Dashee_update_model extends CI_Model
     public function install_module_layouts_table()
     {
 		$this->EE->load->dbforge();
-				
+
 		$fields = array(
 			'id' => array(
 				'type' 			 => 'INT',
@@ -255,15 +255,15 @@ class Dashee_update_model extends CI_Model
 				'default'		=> 0
 				)
 			);
-			
+
 		$this->EE->dbforge->add_field($fields);
 		$this->EE->dbforge->add_key('id', TRUE);
 		$this->EE->dbforge->create_table('dashee_layouts', TRUE);
-		
+
 		// add standard default layout to new layouts DB table
-        $this->EE->load->model('dashee_model'); 
+        $this->EE->load->model('dashee_model');
 		$default_config = $this->EE->dashee_model->get_standard_default_template();
-	
+
 		$params = array(
 			'site_id'		=> $this->_site_id,
 			'name' 			=> 'Default EE layout',
@@ -271,14 +271,14 @@ class Dashee_update_model extends CI_Model
 			'config' 		=> json_encode($default_config),
 			'is_default' 	=> TRUE
 			);
-			
+
 		$this->EE->db->insert('dashee_layouts', $params);
 
     }
-    
+
     /**
      * Create dashee_member_groups_layouts DB Table Function
-     * 
+     *
      * Creates the dashEE member groups layouts table.
      * Stores relationships between saved dashboard layouts and membership groups.
      *
@@ -288,7 +288,7 @@ class Dashee_update_model extends CI_Model
     public function install_module_layouts_groups_table()
     {
     	$this->EE->load->dbforge();
-    
+
 		$fields = array(
 			'id' => array(
 				'type' 			 => 'INT',
@@ -318,7 +318,7 @@ class Dashee_update_model extends CI_Model
 				'null'			=> FALSE
 				),
 			);
-			
+
 		$this->EE->dbforge->add_field($fields);
 		$this->EE->dbforge->add_key('id', TRUE);
 		$this->EE->dbforge->create_table('dashee_member_groups_layouts', TRUE);
@@ -326,7 +326,7 @@ class Dashee_update_model extends CI_Model
 
     /**
      * Create dashee_settings DB Table Function
-     * 
+     *
      * Creates the dashEE settings table.
      * Stores module settings data.
      *
@@ -336,7 +336,7 @@ class Dashee_update_model extends CI_Model
     public function install_module_settings_table()
     {
     	$this->EE->load->dbforge();
-    
+
 		$fields = array(
 			'id' => array(
 				'type' 			 => 'INT',
@@ -360,17 +360,17 @@ class Dashee_update_model extends CI_Model
 				'null'			=> FALSE
 				)
 			);
-			
+
 		$this->EE->dbforge->add_field($fields);
 		$this->EE->dbforge->add_key('id', TRUE);
 		$this->EE->dbforge->create_table('dashee_settings', TRUE);
 
         $this->EE->db->insert_batch('dashee_settings', $this->_module_settings);
     }
-    
+
     /**
      * Activate Extension Function
-     * 
+     *
      * Activate module extension in DB.
      *
      * @access      public
@@ -396,13 +396,13 @@ class Dashee_update_model extends CI_Model
 				'enabled'	=> 'y'
 				);
 
-			$this->EE->db->insert('extensions', $data);			
+			$this->EE->db->insert('extensions', $data);
 		}
     }
-    
+
     /**
      * Disable Extension Function
-     * 
+     *
      * Activate module extension.
      *
      * @access      public
@@ -413,10 +413,10 @@ class Dashee_update_model extends CI_Model
 		$this->EE->db->where('class', 'Dashee_ext');
 		$this->EE->db->delete('extensions');
     }
-    
+
     /**
      * Uninstall Module Function
-     * 
+     *
      * Uninstalls the module.
      *
      * @access      public
@@ -448,10 +448,10 @@ class Dashee_update_model extends CI_Model
 
         return TRUE;
     }
-    
+
     /**
      * Update Package Funciton
-     * 
+     *
      * Updates the module to current version.
      *
      * @access      public
@@ -503,10 +503,10 @@ class Dashee_update_model extends CI_Model
 
         return TRUE;
     }
-    
+
     /**
      * Version 1.4 Update Function
-     * 
+     *
      * Update dashboard config format to account for storing settings.
      * Add new DB tables to account for saving layouts and assigning them to member groups.
      *
@@ -517,23 +517,23 @@ class Dashee_update_model extends CI_Model
     {
     	// update stored configs with new 'columns' variable
     	$qry = $this->EE->db->get('dashee_members');
-    	
+
     	foreach($qry->result() as $row)
     	{
     		$settings = json_decode($row->config, TRUE);
     		$settings['columns'] = 3;
-    		
-    		$this->db->update('dashee_members', array('config' => json_encode($settings)), array('id' => $row->id)); 
+
+    		$this->db->update('dashee_members', array('config' => json_encode($settings)), array('id' => $row->id));
     	}
-    	
+
     	// add DB tables for storing layouts and assigning them to member groups
     	$this->install_module_layouts_table();
-		$this->install_module_layouts_groups_table();		
+		$this->install_module_layouts_groups_table();
     }
 
     /**
      * Version 1.5 Update Function
-     * 
+     *
      * Add column 'locked' to dashee_member_groups_layouts
      *
      * @access      private
@@ -545,19 +545,19 @@ class Dashee_update_model extends CI_Model
 
 		$fields = array(
 			'locked' => array(
-				'type' 			=> 'int', 
+				'type' 			=> 'int',
 				'constraint' 	=> '1',
 				'unsigned'		=> TRUE,
 				'null' 			=> FALSE
 				)
 			);
-		
+
 		$this->EE->dbforge->add_column('dashee_member_groups_layouts', $fields);
     }
-        
+
     /**
      * Version 1.6 Update Function
-     * 
+     *
      * Add site_id columns to appropriate tables and populate as needed for MSM support.
      *
      * @access      private
@@ -574,21 +574,21 @@ class Dashee_update_model extends CI_Model
 				'unsigned'		=> TRUE
 				)
 			);
-		
+
 		// add site_id column to both members and layouts table
 		// using query() instead of DB forge to take advantage of mysql AFTER operator
 		$this->EE->db->query('ALTER TABLE exp_dashee_members ADD `site_id` INT(10) UNSIGNED NOT NULL AFTER `id`');
 		$this->EE->db->query('ALTER TABLE exp_dashee_layouts ADD `site_id` INT(10) UNSIGNED NOT NULL AFTER `id`');
 		$this->EE->db->query('ALTER TABLE exp_dashee_member_groups_layouts ADD `site_id` INT(10) UNSIGNED NOT NULL AFTER `member_group_id`');
-		
+
 		// set new site_id column for all existing members/layouts
 		$this->EE->db->update('dashee_members', array('site_id' => $this->_site_id));
 		$this->EE->db->update('dashee_layouts', array('site_id' => $this->_site_id));
 		$this->EE->db->update('dashee_member_groups_layouts', array('site_id' => $this->_site_id));
-		
+
 		// reindex existing member layouts with random IDs
 		$this->EE->load->helper('string');
-		
+
 		$members = $this->EE->db->get('dashee_members');
 		foreach($members->result() as $member)
 		{
@@ -601,7 +601,7 @@ class Dashee_update_model extends CI_Model
 					$config[$col][random_string('numeric', 8)] = $widget;
 				}
 			}
-			
+
 			$dash['widgets'] = $config;
 			$this->EE->db->update('dashee_members', array('config' => json_encode($dash)), array('id' => $member->id));
 		}
@@ -609,7 +609,7 @@ class Dashee_update_model extends CI_Model
 
 	/**
      * Version 1.8 Update Function
-     * 
+     *
 	 * Add module settings DB table and populate with default settings and remove extension settings.
 	 *
 	 * @access     private
@@ -625,20 +625,20 @@ class Dashee_update_model extends CI_Model
 
       	// update stored configs with new 'state_buttons' variable
     	$qry = $this->EE->db->get('dashee_members');
-    	
+
     	foreach($qry->result() as $row)
     	{
     		$settings = json_decode($row->config, TRUE);
     		$settings['state_buttons'] = TRUE;
-    		
-    		$this->db->update('dashee_members', array('config' => json_encode($settings)), array('id' => $row->id)); 
+
+    		$this->db->update('dashee_members', array('config' => json_encode($settings)), array('id' => $row->id));
     	}
     }
 
     /**
      * Version 2.0 Update Function
-     * 
-     * Add new DB table for multiple dashboard functionality and update any 
+     *
+     * Add new DB table for multiple dashboard functionality and update any
      * references to Feed Reader widget to new name.
      *
      * @access      private
@@ -649,7 +649,7 @@ class Dashee_update_model extends CI_Model
         // create new dashee_member_configs table
         $this->install_module_member_configs_table();
 
-        // update all occurances of feed reader widget to new widget name (because it lives in a subfolder now) and move 
+        // update all occurances of feed reader widget to new widget name (because it lives in a subfolder now) and move
         // configs to new dashee_member_configs table
         $members = $this->EE->db->get('dashee_members');
         foreach($members->result() as $member)
@@ -676,7 +676,7 @@ class Dashee_update_model extends CI_Model
                     }
                 }
             }
-            
+
             $params = array(
                 'dashee_id'     => $member->id,
                 'name'          => 'Default',
@@ -695,7 +695,8 @@ class Dashee_update_model extends CI_Model
         $widget = array(
             'title'     => 'dashEE 2.0 Is Here!',
             'wclass'    => 'padded',
-            'content'   => '<p>Video or other content goes here.</p>'
+            'content'   => '<a href="//fast.wistia.net/embed/iframe/4186nqfmh2?popover=true" class="wistia-popover[height=360,playerColor=7b796a,width=640]"><img src="https://embed-ssl.wistia.com/deliveries/8cf8fa07ebed7fb0c07e1f7483d59728ddd0ffdb.jpg?image_play_button=true&image_play_button_color=7b796ae0&image_crop_resized=300x169" alt="" /></a>
+<script charset="ISO-8859-1" src="//fast.wistia.com/assets/external/popover-v1.js"></script>'
             );
 
         $member_id = $this->EE->session->userdata('member_id');
@@ -711,8 +712,8 @@ class Dashee_update_model extends CI_Model
 	 * page is visited
      *
      * @access      public
-     * @param       str         $current        void on update / false if none 
-	 * @return      bool  
+     * @param       str         $current        void on update / false if none
+	 * @return      bool
 	 */
 	public function update_extension($current = '')
 	{
@@ -720,15 +721,15 @@ class Dashee_update_model extends CI_Model
 		{
 			return FALSE;
 		}
-		
+
 		if(version_compare($current, '1.1', '<'))
 		{
 			$this->_update_extension_to_version_11();
 		}
-		
+
 		return TRUE;
-	}	
-		
+	}
+
 	/**
 	 * Version 1.1 Extension Update Function
 	 *
@@ -753,10 +754,10 @@ class Dashee_update_model extends CI_Model
 
     /**
      * Add Dummy Widget Function
-     * 
+     *
      * Add provided dummy widget to provided dash config.
-     * 
-     * Was added to provide for creation of widgets that don't require widget files 
+     *
+     * Was added to provide for creation of widgets that don't require widget files
      * in the widgets directory (like update notes and the Welcome widget).
      *
      * @access      private
@@ -767,7 +768,7 @@ class Dashee_update_model extends CI_Model
     private function _add_dummy_widget($widget, $config)
     {
         $this->EE->load->helper('string');
-    
+
         $config = json_decode($config, TRUE);
 
         $wid = 'wgt'.random_string('numeric', 8);
@@ -776,17 +777,17 @@ class Dashee_update_model extends CI_Model
             'mod'   => 'dashee',
             'wgt'   => 'dummy',
             'state' => 1,
-            'data'  => $widget      
+            'data'  => $widget
             );
-        
-        // determine which column has the least number of widgets in it so you can add the 
+
+        // determine which column has the least number of widgets in it so you can add the
         // new one to the one with the least
         $totals = array();
         for($i=1; $i <= $config['columns']; ++$i)
         {
             $totals[$i] = @count($config['widgets'][$i]);
         }
-        
+
         $col = array_keys($totals, min($totals));
         $config['widgets'][$col[0]][$wid] = $new_widget;
 

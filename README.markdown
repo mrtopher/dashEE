@@ -52,6 +52,7 @@ You can save yourself some time and get a jump start on your widget development 
 With the release of dashEE 2.0 come some exciting new developer features:
 
 * __Widget Folders:__ widgets can now be packaged in their own folder within the widgets directory of a module. This is especially helpful for the development of interactive widgets.
+* __Widget Models & Views:__ widgets can now support their own model and view files giving you the same power and flexibility that you have when building other EE add-ons like modules.
 * __Install/Uninstall Methods:__ you can now include install and uninstall methods in your widget to facilitate actions that need to happen when a widget is first used and when it is removed.
 * __Add/Remove Methods:__ similar to install/uninstall methods, add/remove methods fire every time a user adds or removed a widget from a dashboard. Perfect for cleaning data out of a DB table, etc.
 * __Widget Specific JS:__ you can now include custom widget specific JavaScript with your widget and leverage the new dashEE jQuery plugin to facilitate GET/POST requests with custom widget methods in your widget file.
@@ -115,9 +116,9 @@ To create your own simple widget:
 
 In the example above you created a simple widget with static HTML content that users can add to their dashboards for reference. Now we will explore how you can add settings to your widget that users can then customize. Continuing with the above example, lets modify the test widget we've been building to make the widget title and body something that the user can customize and set to whatever they like after it's been added to their dashboard.
 
-1. Open the wgt.test_widget.php file and add a new variable called $settings. The $settings variable is a attribute that dashEE looks for and automatically adds functionality to your widget on the front end.
+1. Open the __wgt.test_widget.php__ file and add a new variable called $settings. The $settings variable is a attribute that dashEE looks for and automatically adds functionality to your widget on the front end.
 
-2. Create a constructor method for the Wgt_test_widget class and set the $settings variable with an array of default settings for the widget. If you are going to provide users with settings they you are required to provide default values that dashEE can use when the widget is first added to a users dashboard.
+2. Create a constructor method for the Wgt_test_widget class and set the $settings variable with an array of default settings for the widget. If you are going to provide users with settings then you are required to provide default values that dashEE can use when the widget is first added to a users dashboard.
 
         class Wgt_test_widget
         {
@@ -130,8 +131,8 @@ In the example above you created a simple widget with static HTML content that u
             public function __construct()
             {
                 $this->settings = array(
-                          'url' => 'http://expressionengine.com/feeds/rss/eeblog/',
-                          'num' => 5
+                          'title' => 'Test Widget',
+                          'body'  => '<p>Body goes here.</p>'
                           );
             }
 
@@ -142,58 +143,53 @@ In the example above you created a simple widget with static HTML content that u
             }
         }
 
+3. Now that we have settings in the widget we can use them in our index method.
 
-The index function of this widget contains some logic instead of just returning static content like in the simple widget above. You will notice that you can still gain access to the EE object by using the get_instance() function just like in modules and other EE add-ons. This index method uses the values stored in settings to go and get the contents of an RSS feed and return it as an unordered list. One thing to note here is that $settings is passed as an argument to index. It’s important not to overlook this because if it's not included then the module will be unable to pass the users saved settings to your widget upon load.
-
-    public function index($settings = NULL)
-    {
-        $EE = get_instance();
-        $EE->load->helper('text');
-
-        $rss = simplexml_load_file($settings->url);
-
-        $display = '';
-        $i = 0;
-        foreach($rss->channel->item as $key => $item)
+        public function index($settings = NULL)
         {
-            if($i >= $settings->num) { break; }
+            $this->title = $settings->title;
 
-            $link  = trim($item->link);
-            $title = trim($item->title);
-
-            $display .= '<li>'.anchor($link, $title, 'target="_blank"').'</li>';
-            ++$i;
+            return $settings->body;
         }
+First thing to notice is the $settings argument. If you want to use your widgets settings in any method in your widget file you need to provide a $settings argument so dashEE can pass them in. Settings are stored in the database as a JSON string and are decoded as an object before being passed to the widget file so you should be able to use PHPs arrow syntax with the same index names you used when defining your defaults.
 
-        $this->title = ellipsize($rss->channel->title, 19, 1);
+4. Last thing to do is provide a settings form so users can edit the widget settings themselves. Add a new method called settings_form() with one argument for $settings.
 
-        return '
-            <ul>'.$display.'</ul>
-            ';
-    }
+        public function settings_form($settings)
+        {
+            return form_open('', array('class' => 'dashForm')).'
 
-Finally there is a new method in this widget called settings_form(). This method is called when a user clicks the settings icon for the widget. At this time you simply need to return an HTML form with fields named the same as the keys in the default settings array you provided in the constructor. dashEE takes care of displaying the form and saving the users settings in the database.
+                <p><label for="title">Widget Title:</label>
+                <input type="text" name="title" value="'.$settings->title.'" /></p>
 
-    public function settings_form($settings)
-    {
-        return form_open('', array('class' => 'dashForm')).'
+                <p><label for="body">Widget Body:</label>
+                <textarea name="body">'.$settings->body.'</textarea></p>
 
-            <p><label for="url">Feed URL:</label>
-            <input type="text" name="url" value="'.$settings->url.'" /></p>
+                <p><input type="submit" value="Save" /></p>
 
-            <p><label for="num">Number of Posts:</label>
-            <input type="text" name="num" value="'.$settings->num.'" /></p>
+                '.form_close();
+        }
+dashEE takes care of the submission and processing of widget settings, all you need to do is return an HTML form with inputs matching up to the default settings you defined in the beginning and the module will take care of the rest.
 
-            <p><input type="submit" value="Save" /></p>
-
-            '.form_close();
-    }
+5. Save and upload your changes. If you already have the widget on your dashboard you'll need to remove it and re-add it so the settings can take effect. Once added you'll notice there is a new gear icon in the widget header when you mouseover. Click that icon and you should see your settings form displayed. Make whatever changes you wish and click __Save__. You should now see your customized settings reflected in the widget.
 
 ### Interactive Widgets
 
-Simple widgets are perfect for static content and advanced widgets are great for those that can be configured/customized by users but what if you want to do more? With dashEE 2.0 you now have the tools to develop truly interactive widgets that respond to custom user input/submissions and JS events. The task list widget (provided with the module) is an example of an interactive widget. Lets use this widget to review the available methods and helper functions dashEE provides for the creation of interactive widgets.
+We have built a simple static widget and added some settings to make it a little more interactive. But what if we wanted to build a truly interactive widget with forms that respond to GET/POST requests and that has a little JS sprinkled in as well? With the release of dashEE 2.0 this is now possible with some new widget methods:
 
-Since interactive widgets are more complex, will likely have multiple views and possibly their own model it's a good idea to package your widget in it's own folder.
+__widget_install() & widget_uninstall()__
+
+Widgets now have the same capabilities as modules with their own install and uninstall methods. This is the perfect place to add/remove DB tables to go along with your widget. These methods are run when the widget is added to the very first dashboard in your install and when the very last instance of a widget is removed.
+
+__widget_add() & widget_remove()__
+
+The install and uninstall methods are run only when a widget is added to a dashboard the *first time* and removed the *last time* in an install. The add and remove methods are run *every time* a user adds or removes the widget from their dashboard. So this is the place to populate the DB with member defaults or do whatever prep needs to be done when a widget is first added to a dashboard or tear down when it is removed.
+
+__dashEE jQuery Plugin__
+
+You now have the ability to process/respond to custom GET/POST requests with the dashEE jQuery plugin. All requests from your widget are handled via AJAX through the dashEE module which routes requests back to your widget file for processing. Simply add a JS file to your widget and use the provided __$(this).dasheeGetProxy({})__ and __$(this).dasheePostProxy({})__ methods and you'll be good to go.
+
+The task list widget (provided as one of the defaults) is a great example of an interactive widget. Review the files located at */system/expressionengine/third_party/dashee/widgets/tasklist* for details.
 
 ***
 

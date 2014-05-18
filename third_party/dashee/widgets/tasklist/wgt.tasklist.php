@@ -15,8 +15,8 @@
 class Wgt_tasklist
 {
 	public $EE;
-	// public $widget_name 		= 'Task List';
-	// public $widget_description 	= 'Simple interactive widget for managing task lists.';
+	public $widget_name 		= 'Task List';
+	public $widget_description 	= 'Simple interactive widget for managing task lists.';
 
 	public $list_id;
 	public $title;
