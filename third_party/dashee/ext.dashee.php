@@ -17,34 +17,28 @@ class Dashee_ext
 	public $docs_url		= 'http://dash-ee.com';
 	public $name			= 'dashEE';
 	public $settings_exist	= 'n';
-	public $version			= '1.2';
+	public $version			= '1.4';
 	public $required_by 	= array('module');
 	
-	private $_EE;
+	private $EE;
 	
 	/**
 	 * Constructor
 	 *
-	 * @param 	mixed	Settings array or empty string if none exist.
+	 * @access 		public
+	 * @param 		mixed		$settings 		Settings array or empty string if none exist.
+	 * @return  	void
 	 */
 	public function __construct($settings = '')
 	{
-		$this->_EE 		=& get_instance();
+		$this->EE 		=& get_instance();
 		$this->settings = $settings;
 
-		$this->_EE->load->helper('url');
+		$this->EE->load->helper('url');
 
-		if(version_compare(APP_VER, 2.6, '>=')) 
-		{
-			$this->_EE->load->library(array('localize', 'remember', 'session'));
-		}
-		
-        $this->_base_qs     = 'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=dashee';
-        $this->_base_url    = (defined('BASE') ? BASE : SELF).AMP.$this->_base_qs;
+		$this->EE->load->library(array('localize', 'remember', 'session'));
 	}
-	
-	// ----------------------------------------------------------------------
-	
+		
 	/**
 	 * Hide Breadcrumb Nav
 	 *
@@ -52,15 +46,14 @@ class Dashee_ext
 	 * the page is fully loaded. This is to prevent the breadcrumb nav from being 
 	 * displayed before it has been updated by module JS.
 	 *
-	 * @return string
+	 * @access 		public
+	 * @return 		string
 	 */
 	public function crumb_hide()
 	{
 		return '#breadCrumb ol { display:none; }';
 	}
 	
-	// ----------------------------------------------------------------------
-
 	/**
 	 * Remap Breadcrumb Nav
 	 *
@@ -68,21 +61,22 @@ class Dashee_ext
 	 * and html attributes site wide so users are directed to module instead 
 	 * of default EE CP Home.
 	 *
-	 * @return string
+	 * @access 		public
+	 * @return 		string
 	 */
     public function crumb_remap()
     {
-        $this->_EE->load->model('dashee_model');
-        $settings = $this->_EE->dashee_model->get_module_settings();
+        $this->EE->load->model('dashee_model');
+        $settings = $this->EE->dashee_model->get_module_settings();
 
-        $url = $this->_EE->dashee_model->get_module_url();
+        $url = $this->EE->dashee_model->get_module_url();
 
         $js = '';
 
         // If another extension shares the same hook
-        if ($this->_EE->extensions->last_call !== FALSE)
+        if($this->EE->extensions->last_call !== FALSE)
         {
-            $js = $this->_EE->extensions->last_call;
+            $js = $this->EE->extensions->last_call;
         }
 
         $js .= "
@@ -95,8 +89,6 @@ class Dashee_ext
 
         return $js;
     }
-
-	// ----------------------------------------------------------------------
 	
 	/**
 	 * Redirect Members on Login
@@ -104,31 +96,34 @@ class Dashee_ext
 	 * Automatically redirects members to module instead of default EE CP Home 
 	 * when logging into the CP.
 	 *
-	 * @return NULL 
+	 * @access 		public
+	 * @return 		NULL 
 	 */
 	public function member_redirect()
 	{
-		$this->_EE->load->model('dashee_model');
-		$this->_EE->functions->redirect($this->_EE->dashee_model->get_module_url());
+		$this->EE->load->model('dashee_model');
+		$this->EE->functions->redirect($this->EE->dashee_model->get_module_url());
 	}
-
-	// ----------------------------------------------------------------------
 	
 	/**
 	 * Redirect CP home to DashEE
 	 *
-	 * @return NULL 
+	 * Redirects users from default EE CP to module upon login and navigation.
+	 * 
+	 * @access 		public
+	 * @param  		object 
+	 * @return 		NULL 
 	 */
 	public function sessions_end(&$data)
 	{	
-		$c = $this->_EE->uri->segment(1);
-		$e = $this->_EE->uri->segment(2);
+		$c = $this->EE->uri->segment(1);
+		$e = $this->EE->uri->segment(2);
 
 		if(REQ == 'CP' AND ($c == 'cp' AND $e == ''))
 		{
 			$u = $data->userdata;
 
-			$setting = $this->_EE->db->get_where('dashee_settings', array('site_id' => $u['site_id'], 'key' => 'redirect_admins'))->row();
+			$setting = $this->EE->db->get_where('dashee_settings', array('site_id' => $u['site_id'], 'key' => 'redirect_admins'))->row();
 
 			// redirect super admins?
 			if($u['group_id'] == 1 AND !$setting->value) return;
@@ -137,7 +132,7 @@ class Dashee_ext
 			if($u['can_access_cp']=='y' AND $u['can_access_addons']=='y' AND $u['can_access_modules']=='y')
 			{
 				// is dashEE installed? fetch module_id and check user can access it
-				$dashee_id = $this->_EE->db->where('module_name','DashEE')->get('modules')->row('module_id');
+				$dashee_id = $this->EE->db->where('module_name','DashEE')->get('modules')->row('module_id');
 
 				if(empty($dashee_id)) return;
 
@@ -181,44 +176,48 @@ class Dashee_ext
 		}
 	}
 
-	// ----------------------------------------------------------------------
-
 	/**
 	 * Activate Extension
 	 *
-	 * This function enters the extension into the exp_extensions table
+	 * Required by EE but extension is installed and 
+	 * maintained by module installation code.
 	 *
-	 * @return void
+	 * @access 		public
+	 * @return 		bool
 	 */
 	public function activate_extension()
 	{
 		return TRUE;
 	}	
 
-	// ----------------------------------------------------------------------
-
 	/**
 	 * Disable Extension
 	 *
-	 * @return void
+	 * Required by EE but extension is installed and 
+	 * maintained by module installation code.
+	 *
+	 * @access 		public
+	 * @return 		bool
 	 */
-	function disable_extension()
+	public function disable_extension()
 	{
 		return TRUE;
 	}
 
-	// ----------------------------------------------------------------------
-
 	/**
 	 * Update Extension
 	 *
-	 * @return  void
+	 * Required by EE but extension is installed and 
+	 * maintained by module installation code.
+	 * 
+	 * @access 		public
+	 * @param  		string		$current 		Current version of module installed.
+	 * @return  	bool
 	 */
-	function update_extension($current = '')
+	public function update_extension($current = '')
 	{
 		return TRUE;
 	}		
 }
-
 /* End of file ext.dashee.php */
 /* Location: /system/expressionengine/third_party/dashee/ext.dashee.php */

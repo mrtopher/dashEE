@@ -20,6 +20,9 @@ class Wgt_create_links
 		
 	/**
 	 * Constructor
+	 *
+	 * @access 		public
+ 	 * @return 		void
 	 */
 	public function __construct()
 	{
@@ -28,14 +31,14 @@ class Wgt_create_links
 		$this->title  	= lang('create');
 		$this->wclass 	= 'contentMenu create';	
 	}
-	
-	// ----------------------------------------------------------------
-	
+		
 	/**
 	 * Permissions Function
+	 * 
 	 * Defines permissions needed for user to be able to add widget.
 	 *
-	 * @return 	bool
+	 * @access 		public
+	 * @return 		bool
 	 */
 	public function permissions()
 	{
@@ -52,7 +55,8 @@ class Wgt_create_links
 	/**
 	 * Index Function
 	 *
-	 * @return 	string
+	 * @access 		public
+	 * @return 		str
 	 */
 	public function index()
 	{

@@ -1,5 +1,7 @@
+/* Main dashEE Module JS File */
 $(function() {
 
+	var $config_id = $('#config_id').val();
 	var dash = {
 		
 		settings : {
@@ -78,7 +80,7 @@ $(function() {
 			
 			$.ajax({
 				type: 'GET',
-				url: EE.BASE + '&C=addons_modules&M=show_module_cp&module=dashee&method=ajax_add_widget&mod='+link.data('module')+'&wgt='+link.data('widget'),
+				url: EE.BASE + '&C=addons_modules&M=show_module_cp&module=dashee&method=ajax_add_widget&mod='+link.data('module')+'&wgt='+link.data('widget')+'&config_id='+$config_id,
 				dataType: 'html',
 				success: $.proxy(function(json) {
 					widget = $.parseJSON(json);
@@ -115,7 +117,7 @@ $(function() {
 							$('.dialog-remove-widget > .ui-dialog-buttonpane').hide();
 							$.ajax({
 								type: 'GET',
-								url: EE.BASE + '&C=addons_modules&M=show_module_cp&module=dashee&method=ajax_remove_widget&wgt='+wgt.id,
+								url: EE.BASE + '&C=addons_modules&M=show_module_cp&module=dashee&method=ajax_remove_widget&wgt='+wgt.id+'&config_id='+$config_id,
 								dataType: 'html',
 								success: $.proxy(function(html) {
 									widget.animate({
@@ -163,7 +165,7 @@ $(function() {
 
 					$.ajax({
 						type: 'GET',
-						url: EE.BASE + '&C=addons_modules&M=show_module_cp&module=dashee&method=ajax_get_widget&wgt='+wgt.id,
+						url: EE.BASE + '&C=addons_modules&M=show_module_cp&module=dashee&method=ajax_get_widget&wgt='+wgt.id+'&config_id='+$config_id,
 						dataType: 'html',
 						success: $.proxy(function(html) {
 							var response = $.parseJSON(html);
@@ -178,7 +180,7 @@ $(function() {
 				else { 
 					$.ajax({
 						type: 'GET',
-						url: EE.BASE + '&C=addons_modules&M=show_module_cp&module=dashee&method=ajax_widget_settings&wgt='+wgt.id,
+						url: EE.BASE + '&C=addons_modules&M=show_module_cp&module=dashee&method=ajax_widget_settings&wgt='+wgt.id+'&config_id='+$config_id,
 						dataType: 'html',
 						success: $.proxy(function(html) {
 							wgt.content.html(html);
@@ -191,7 +193,7 @@ $(function() {
 			
 								$.ajax({
 									type: 'POST',
-									url: EE.BASE + '&C=addons_modules&M=show_module_cp&module=dashee&method=ajax_update_widget_settings',
+									url: EE.BASE + '&C=addons_modules&M=show_module_cp&module=dashee&method=ajax_update_widget_settings&config_id='+$config_id,
 									data: $(this).serialize() + '&wgt=' + wgt.id,
 									success: function(html) {
 										var response = $.parseJSON(html);
@@ -226,7 +228,7 @@ $(function() {
 
 				$.ajax({
 					type: 'GET',
-					url: EE.BASE + '&C=addons_modules&M=show_module_cp&module=dashee&method=ajax_update_widget_state&state=' + $state + '&wgt=' + wgt.id
+					url: EE.BASE + '&C=addons_modules&M=show_module_cp&module=dashee&method=ajax_update_widget_state&state='+$state+'&wgt='+wgt.id+'&config_id='+$config_id
 					// success: function(html) {
 					// 	$.ee_notice('Widget state has been saved.', {type: 'success', open: true});
 					// },
@@ -285,7 +287,7 @@ $(function() {
 					// save new order to DB
 					$.ajax({
 						type: 'GET',
-						url: EE.BASE + '&C=addons_modules&M=show_module_cp&module=dashee&method=ajax_update_widget_order',
+						url: EE.BASE + '&C=addons_modules&M=show_module_cp&module=dashee&method=ajax_update_widget_order&config_id='+$config_id,
 						data: 'order='+order.join('|'),
 						dataType: 'html',
 						success: function(html) {
@@ -346,7 +348,7 @@ $(function() {
 
 		$.ajax({
 			type: 'GET',
-			url: EE.BASE + '&C=addons_modules&M=show_module_cp&module=dashee&method=ajax_update_widget_state&state=0'
+			url: EE.BASE + '&C=addons_modules&M=show_module_cp&module=dashee&method=ajax_update_widget_state&state=0&config_id='+$config_id
 /*			success: function(html) {
 				$.ee_notice('Widget state has been saved.', {type: 'success', open: true});
 			},
@@ -362,7 +364,7 @@ $(function() {
 
 		$.ajax({
 			type: 'GET',
-			url: EE.BASE + '&C=addons_modules&M=show_module_cp&module=dashee&method=ajax_update_widget_state&state=1'
+			url: EE.BASE + '&C=addons_modules&M=show_module_cp&module=dashee&method=ajax_update_widget_state&state=1&config_id='+$config_id
 /*			success: function(html) {
 				$.ee_notice('Widget state has been saved.', {type: 'success', open: true});
 			},
@@ -409,17 +411,17 @@ $(function() {
 	// Click event to display available widgets listing.
 	$('a[href="#widgets"]').on('click', function() {
 		if($('#dashListing').is(':hidden')) {
-			$('#dashListing .content').html('<p>&nbsp;</p><p><center>Loading...</center></p><p><center><img src="'+$('#dashLoader').attr('src')+'" /></center></p><p>&nbsp;</p>');
+			$('#dashListing .widgets').html('<p>&nbsp;</p><p><center>Loading...</center></p><p><center><img src="'+$('#dashLoader').attr('src')+'" /></center></p><p>&nbsp;</p>');
 			$('#dashListing').slideDown();
 			$.ajax({
 				type: 'GET',
-				url: EE.BASE + '&C=addons_modules&M=show_module_cp&module=dashee&method=ajax_get_widget_listing',
+				url: EE.BASE + '&C=addons_modules&M=show_module_cp&module=dashee&method=ajax_get_widget_listing&config_id='+$config_id,
 				dataType: 'html',
 				success: function(html) {
-					$('#dashListing .content').html(html);
+					$('#dashListing .widgets').html(html);
 				},
 				error: function(html) {
-					$('#dashListing .content').html('<p>There was a problem.</p>');
+					$('#dashListing .widgets').html('<p>There was a problem: ' + html + '</p>');
 				}
 			});
 			$('a[href="#widgets"]').html('Close Widgets');
@@ -444,7 +446,7 @@ $(function() {
 					$('.dialog-save-layout > .ui-dialog-buttonpane').hide();
 					$.ajax({
 						type: 'POST',
-						url: EE.BASE + '&C=addons_modules&M=show_module_cp&module=dashee&method=ajax_save_layout',
+						url: EE.BASE + '&C=addons_modules&M=show_module_cp&module=dashee&method=ajax_save_layout&config_id='+$config_id,
 						data: $('#dasheeLayoutForm').serialize(),
 						dataType: 'html',
 						success: $.proxy(function(html) {
@@ -467,7 +469,7 @@ $(function() {
 				$('.dialog-save-layout > .ui-dialog-buttonpane').show();
 			},
 			dialogClass: 'dialog-save-layout',
-			title: 'Save Layout'
+			title: 'Save Dashboard Layout'
 		});
 		return false;
 	}, this));
@@ -496,6 +498,87 @@ $(function() {
 		});
 		return false;
 	}, this));
+
+	// Event to handle widget form submissions.
+	$(document).on('submit', '.wgt_form', function (e) {
+		e.preventDefault();
+
+		var $widget = $(this).parents('li');
+		var $widget_id = $widget.attr('id');
+
+		$.ajax({
+			type: 'POST',
+			url: EE.BASE + '&C=addons_modules&M=show_module_cp&module=dashee&method=ajax_widget_post_proxy&config_id='+$config_id,
+			data: $(this).serialize() + '&wgtid=' + $widget_id,
+			success: function(html) {
+				var $result = $.parseJSON(html);
+
+				if($result.type == 'success') {
+					$('h2', $widget).html($result.title);
+					$widget.find('.widget-content').html($result.content);
+					$.ee_notice($result.message, {type: 'success', open: false});
+				}
+				else {
+					$.ee_notice($result.message, {type: 'error', open: true});
+				}
+			},
+			error: function(html) {
+				$.ee_notice("Nope, there was a problem.", {type: 'error', open: true});
+			}
+		});
+	});
+
+	// Click event to display rename dashboard dialog.
+	$('a[href="#rename-dashboard"]').on('click', $.proxy(function (e) {
+		$('#dashRenameDashboard input[name="dashboard_name"]').val($('#dashboards a.active').html());
+
+		$('#dashRenameDashboard').dialog({
+			resizable: false,
+			height:150,
+			width:350,
+			modal: true,
+			buttons: {
+				'Save': $.proxy(function() {
+					$('<span class="loading"><center>Please wait...<br /><img src="'+$('#dashLoader').attr('src')+'" /></center></span>').appendTo('.dialog-rename-dashboard > .ui-dialog-content');
+					$('#dasheeRenameDashboardForm').hide();
+					$('.dialog-rename-dashboard > .ui-dialog-buttonpane').hide();
+
+					$('form#dasheeRenameDashboardForm').submit();
+				}, this),
+				'Cancel': function() {
+					$(this).dialog("close");
+				}
+			},
+			dialogClass: 'dialog-rename-dashboard',
+			title: 'Rename Dashboard'
+		});
+		return false;
+	}, this));
+
+	// Click event to display new dashboard dialog.
+	$('a[href="#new-dashboard"]').on('click', $.proxy(function (e) {
+		$('#dashNewDashboard').dialog({
+			resizable: false,
+			height:210,
+			width:350,
+			modal: true,
+			buttons: {
+				'Create': $.proxy(function() {
+					$('<span class="loading"><center>Please wait...<br /><img src="'+$('#dashLoader').attr('src')+'" /></center></span>').appendTo('.dialog-new-dashboard > .ui-dialog-content');
+					$('#dasheeNewDashboardForm').hide();
+					$('.dialog-new-dashboard > .ui-dialog-buttonpane').hide();
+
+					$('form#dasheeNewDashboardForm').submit();
+				}, this),
+				'Cancel': function() {
+					$(this).dialog("close");
+				}
+			},
+			dialogClass: 'dialog-new-dashboard',
+			title: 'Create New Dashboard'
+		});
+		return false;
+	}, this));
 		
 	dash.init();
-});
+}); 

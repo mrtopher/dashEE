@@ -21,6 +21,9 @@ class Wgt_feed_reader
 	
 	/**
 	 * Constructor
+	 *
+	 * @access 		public
+ 	 * @return 		void
 	 */
 	public function __construct()
 	{
@@ -33,13 +36,12 @@ class Wgt_feed_reader
 		$this->wclass = 'contentMenu';
 	}
 	
-	// ----------------------------------------------------------------
-
 	/**
 	 * Index Function
 	 *
-	 * @param 	object
-	 * @return 	string
+	 * @access 		public
+	 * @param 		obj 		$settings 		Object containing member widget settings.
+	 * @return 		str
 	 */
 	public function index($settings = NULL)
 	{
@@ -61,15 +63,16 @@ class Wgt_feed_reader
 			$vars['num'] 	= $settings->num;
 		}
 
-		return $this->EE->load->view('widgets/feed_reader', $vars, TRUE);
+		return $this->EE->load->view('index', $vars, TRUE);
 	}
 	
 	/**
 	 * Settings Form Function
 	 * Generate settings form for widget.
 	 *
-	 * @param 	object
-	 * @return 	string
+	 * @access 		public
+	 * @param 		obj 		$swttings 		Object containing member widget settings.
+	 * @return 		str
 	 */
 	public function settings_form($settings)
 	{
@@ -87,4 +90,4 @@ class Wgt_feed_reader
 	}
 }
 /* End of file wgt.feed_reader.php */
-/* Location: /system/expressionengine/third_party/dashee/widgets/wgt.feed_reader.php */
+/* Location: /system/expressionengine/third_party/dashee/widgets/feed_reader/wgt.feed_reader.php */

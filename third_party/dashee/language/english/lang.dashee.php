@@ -7,15 +7,17 @@ $lang = array(
 	'module_home' => 'dashEE Home',
 	
 	'dashee_term' 		=> 'Dashboard',	
-	'dashee_settings' 	=> 'Settings',	
+	'dashee_settings' 	=> 'dashEE Settings',	
 	
 	// buttons
 	'btn_collapse'	=> '- Collapse All',
 	'btn_expand'	=> '+ Expand All',
 	'btn_widgets'	=> 'Widgets',
+	'btn_dashboard'	=> 'Dashboard',
 	'btn_settings'	=> 'Settings',
-	'btn_settings2'	=> 'Settings 2',
 	'btn_save'		=> 'Save Layout',
+	'btn_save_settings'		=> 'Save Settings',
+	'btn_update_layouts'	=> 'Update Layouts',
 	'btn_back_to_dashboard' => 'Back to Dashboard',
 	
 	// table captions
@@ -44,6 +46,7 @@ $lang = array(
 	'lbl_layout_name' 	=> 'Layout name',
 	'lbl_layout_desc' 	=> 'Description',
 	'lbl_lock'			=> 'Lock layout',
+	'lbl_dashboard_name'=> 'Dashboard Name',
 	
 	// confirmation messages
 	'conf_remove_widget'  	=> 'Are you sure you want to remove this widget from your dashboard?',
@@ -63,10 +66,24 @@ $lang = array(
 	'flash_group_layout_reset'			=> 'Layout has been reset for ',
 	'flash_group_layout_not_reset'		=> 'Layout could not be reset for ',
 	'flash_settings_updated'			=> 'Your settings have been updated.',
+	'flash_dashboard_reset'				=> 'Your dashboard has been reset.',
+	'flash_dashboard_created'			=> 'New dashboard has been created.',
+	'flash_dashboard_deleted'			=> 'Dashboard has been deleted.',
+	'flash_dashboard_deleted_error'		=> 'This dashboard cannot be deleted because it is your default dashboard.',
+	'flash_dashboard_not_found'			=> 'The dashboard you selected could not be found.',
+	'flash_dashboard_updated'			=> 'Dashboard has been updated.',
 	
 	// terms
-	'trm_default_layout' 	=> 'Default layout',
-	'trm_whats_this'		=> 'What\'s this?',
+	'trm_widgets' 				=> 'Widgets',
+	'trm_default_layout' 		=> 'Default layout',
+	'trm_whats_this'			=> 'What\'s this?',
+	'trm_reset_dashboard'		=> 'Reset Dashboard',
+	'trm_rename_dashboard'		=> 'Rename Dashboard',
+	'trm_save_dashboard'		=> 'Save Layout',
+	'trm_copy_dashboard'		=> 'Copy Dashboard to Member',
+	'trm_new_dashboard'			=> 'Add',
+	'trm_delete_dashboard'		=> 'Delete Dashboard',
+	'trm_dashboard_settings'	=> 'Dashboard Settings',
 
 	// help
 	'help_layouts' => '	<p>Saved layouts give EE Super Admins the ability to save dashboard configurations for later use or assign those configurations as the 

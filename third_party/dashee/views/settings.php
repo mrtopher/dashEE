@@ -1,7 +1,7 @@
 <?php 
 
-// generate user setting options section o
-echo form_open($base_qs.AMP.'method=update_settings');
+// generate user setting options section
+echo form_open(form_url('dashee', 'update_settings'));
 
 $this->table->set_template($cp_pad_table_template);
 $this->table->template['thead_open'] = '<thead class="visualEscapism">';
@@ -29,7 +29,7 @@ $this->table->clear();
 ?>
 
 <div class="tableFooter">
-	<?php echo form_submit(array('name' => 'submit', 'value' => lang('submit'), 'class' => 'submit')); ?>
+	<?php echo form_submit(array('name' => 'submit', 'value' => lang('btn_save_settings'), 'class' => 'submit')); ?>
 </div>
 
 <?php 
@@ -49,13 +49,14 @@ if($is_admin):
 	foreach($layouts as $layout)
 	{
 		$name = $layout->name;
-		$options = anchor($base_url.AMP.'method=set_default_layout'.AMP.'layout_id='.$layout->id, 'Make default').' | '.
-					anchor($base_url.AMP.'method=load_layout'.AMP.'layout_id='.$layout->id, 'Load', 'class="dashLoad"').' | '.
-					anchor($base_url.AMP.'method=delete_layout'.AMP.'layout_id='.$layout->id, 'Delete', 'class="dashDelete"');
+
+		$options = anchor(cp_url('cp/addons_modules/show_module_cp', array('module' => 'dashee', 'method' => 'set_default_layout', 'layout_id' => $layout->id)), 'Make default').' | '.
+					anchor(cp_url('cp/addons_modules/show_module_cp', array('module' => 'dashee', 'method' => 'load_layout', 'layout_id' => $layout->id)), 'Load', 'class="dashLoad"').' | '.
+					anchor(cp_url('cp/addons_modules/show_module_cp', array('module' => 'dashee', 'method' => 'delete_layout', 'layout_id' => $layout->id)), 'Delete', 'class="dashDelete"');
 		if($layout->is_default)
 		{
 			$name = '<strong>' . $layout->name . '*</strong>';
-			$options = anchor($base_url.AMP.'method=load_layout'.AMP.'layout_id='.$layout->id, 'Load', 'class="dashLoad"');
+			$options = anchor(cp_url('cp/addons_modules/show_module_cp', array('module' => 'dashee', 'method' => 'load_layout', 'layout_id' => $layout->id)), 'Load', 'class="dashLoad"');
 		}
 		$this->table->add_row(
 			$name,
@@ -73,7 +74,7 @@ if($is_admin):
 	echo '<div align="right">* ' . lang('trm_default_layout') . '.</div>';
 	echo '<p>&nbsp;</p>';
 		
-	echo form_open($base_qs.AMP.'method=update_group_defaults');
+	echo form_open(form_url('dashee', 'update_group_defaults'));
 	
 	$this->table->set_caption(lang('cap_group_layouts'));
 	
@@ -98,7 +99,7 @@ if($is_admin):
 		}
 
 		$this->table->add_row(
-			$group->title.' '.anchor($base_url.AMP.'method=reset_group_defaults'.AMP.'group_id='.$group->id, 'Reset', 'class="dashReset"'),
+			$group->title.' '.anchor(cp_url('cp/addons_modules/show_module_cp', array('module' => 'dashee', 'method' => 'reset_group_defaults', 'group_id' => $group->id)), 'Reset', 'class="dashReset"'),
 			$group->description ? $group->description : '--',
 			form_checkbox('group_locked['.$group->id.']','locked', $locked, ($group->id == 1 ? 'disabled="disabled"' : '')) . ' ' . lang('lbl_lock') . ' (<a href="#" class="dashLockHelp">?</a>)',
 			form_dropdown('group_layouts['.$group->id.']', $opts_layouts, $layout_id)
@@ -110,7 +111,7 @@ if($is_admin):
 ?>
 
 <div class="tableFooter">
-	<?php echo form_submit(array('name' => 'submit', 'value' => lang('submit'), 'class' => 'submit')); ?> 
+	<?php echo form_submit(array('name' => 'submit', 'value' => lang('btn_update_layouts'), 'class' => 'submit')); ?> 
 </div>
 
 <?php echo form_close(); ?>
