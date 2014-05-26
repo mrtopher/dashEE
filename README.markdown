@@ -9,7 +9,7 @@ The idea behind dashEE is to create a completely customizable EE dashboard where
 ### ExpressionEngine 2.x Requirements
 
 * PHP 5.2+
-* ExpressionEngine 2.8, or later.
+* ExpressionEngine 2.2, or later.
 
 ### Installation
 
