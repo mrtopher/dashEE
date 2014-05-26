@@ -139,19 +139,38 @@ class Dashee_ext
 				if(@$u['assigned_modules'][$dashee_id] != TRUE && $u['group_id'] != 1) return;
 
 				// all ok, build the url
-				$s = 0;
-				switch($this->EE->config->item('cp_session_type'))
-				{
-					case 's'	:
-						$s = $u['session_id'];
-						break;
-					case 'cs'	:
-						$s = $u['fingerprint'];
-						break;
-				}
+		        if(version_compare(APP_VER, 2.8, '>=')) 
+		        {
+					$s = 0;
+					switch($this->_EE->config->item('cp_session_type'))
+					{
+						case 's'	:
+							$s = $u['session_id'];
+							break;
+						case 'cs'	:
+							$s = $u['fingerprint'];
+							break;
+					}
 
-	            $this->EE->load->helper('url');
-	    		header('Location: ' . SELF . '?/cp/addons_modules/show_module_cp?module=dashee&S=' . $s);
+		            $this->_EE->load->helper('url');
+		    		header('Location: ' . SELF . '?/cp/addons_modules/show_module_cp?module=dashee&S=' . $s);
+		        }
+		        else
+		        {
+					$s = 0;
+					switch($this->_EE->config->item('admin_session_type'))
+					{
+						case 's'	:
+							$s = $u['session_id'];
+							break;
+						case 'cs'	:
+							$s = $u['fingerprint'];
+							break;
+					}
+
+		    		header('Location: ' . SELF . str_replace('&amp;', '&', '?S=' . $s . AMP . 'D=cp' . AMP . $this->_base_qs));
+		        }
+
 		        exit;
 			}
 		}

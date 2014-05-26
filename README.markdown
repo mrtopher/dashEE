@@ -44,7 +44,7 @@ Each widget you develop must be packaged with a module, whether they are really 
 
 ## Creating New Widgets
 
-You can save yourself some time and get a jump start on your widget development by downloading the [widget boilerplate](http://www.christophermonnat.com/wp-content/uploads/2011/09/wgt.biolerplate.php_.zip). This widget template will get you up and running quickly.
+You can save yourself some time and get a jump start on your widget development by downloading the [widget boilerplate](https://github.com/mrtopher/dashee-widget-boilerplate). This widget template will get you up and running quickly.
 
 
 ### New in dashEE 2.0
@@ -211,5 +211,4 @@ If your widget has a permissions() method that method will be run before allowin
 
 ## Links
 
-* [Documentation](http://chrismonnat.com/code/dashee)
 * [Widget Directory](http://mrtopher.wufoo.com/reports/z5p8w8/)

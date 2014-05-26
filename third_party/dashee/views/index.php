@@ -2,7 +2,8 @@
 	<ul>
 		<?php foreach($dashboards as $dash): ?>
 			<?php $class = ($config_id == $dash->id) ? 'class="active"' : ''; ?>
-			<li><?php echo anchor(module_url('dashee', 'index', array('config_id' => $dash->id)), $dash->name, $class); ?></li>
+
+			<li><?php echo anchor(cp_url('cp/addons_modules/show_module_cp', array('module' => 'dashee', 'config_id' => $dash->id)), $dash->name, $class); ?></li>
 		<?php endforeach; ?>
 		<li><a href="#new-dashboard"><i class="fa fa-plus"></i> <?php echo lang('trm_new_dashboard'); ?></a></li>
 		<li><a class="opt" href="#rename-dashboard" title="Rename Dashboard"><i class="fa fa-pencil-square-o"></i></a></li>
@@ -15,7 +16,7 @@
 			<?php endif; ?>
 			<li><a class="opt" href="#member-settings" title="<?php echo lang('trm_dashboard_settings'); ?>"><i class="fa fa-cog"></i></a></li>
 			<?php if($super_admin): ?>
-				<li class="sub"><a class="opt" href="<?php echo module_url('dashee', 'settings'); ?>" title="<?php echo lang('btn_settings'); ?>"><?php echo lang('btn_settings'); ?></i></a></li>
+				<li class="sub"><a class="opt" href="<?php echo cp_url('cp/addons_modules/show_module_cp', array('module' => 'dashee', 'method' => 'settings')); ?>" title="<?php echo lang('btn_settings'); ?>"><?php echo lang('btn_settings'); ?></i></a></li>
 			<?php endif; ?>
 			<li class="sub"><a class="opt" href="#save-layout" title="<?php echo lang('trm_save_dashboard'); ?>"><?php echo lang('trm_save_dashboard'); ?></i></a></li>
 			<li class="sub"><a class="opt" href="#widgets" title="<?php echo lang('trm_widgets'); ?>"><?php echo lang('btn_widgets'); ?></i></a></li>

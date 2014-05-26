@@ -1,7 +1,7 @@
 <?php 
 
 // generate user setting options section
-echo form_open(module_url('dashee', 'update_settings'));
+echo form_open(form_url('dashee', 'update_settings'));
 
 $this->table->set_template($cp_pad_table_template);
 $this->table->template['thead_open'] = '<thead class="visualEscapism">';
@@ -49,13 +49,14 @@ if($is_admin):
 	foreach($layouts as $layout)
 	{
 		$name = $layout->name;
-		$options = anchor(module_url('dashee', 'set_default_layout', array('layout_id' => $layout->id)), 'Make default').' | '.
-					anchor(module_url('dashee', 'load_layout', array('layout_id' => $layout->id)), 'Load', 'class="dashLoad"').' | '.
-					anchor(module_url('dashee', 'delete_layout', array('layout_id' => $layout->id)), 'Delete', 'class="dashDelete"');
+
+		$options = anchor(cp_url('cp/addons_modules/show_module_cp', array('module' => 'dashee', 'method' => 'set_default_layout', 'layout_id' => $layout->id)), 'Make default').' | '.
+					anchor(cp_url('cp/addons_modules/show_module_cp', array('module' => 'dashee', 'method' => 'load_layout', 'layout_id' => $layout->id)), 'Load', 'class="dashLoad"').' | '.
+					anchor(cp_url('cp/addons_modules/show_module_cp', array('module' => 'dashee', 'method' => 'delete_layout', 'layout_id' => $layout->id)), 'Delete', 'class="dashDelete"');
 		if($layout->is_default)
 		{
 			$name = '<strong>' . $layout->name . '*</strong>';
-			$options = anchor(module_url('dashee', 'load_layout', array('layout_id' => $layout->id)), 'Load', 'class="dashLoad"');
+			$options = anchor(cp_url('cp/addons_modules/show_module_cp', array('module' => 'dashee', 'method' => 'load_layout', 'layout_id' => $layout->id)), 'Load', 'class="dashLoad"');
 		}
 		$this->table->add_row(
 			$name,
@@ -73,7 +74,7 @@ if($is_admin):
 	echo '<div align="right">* ' . lang('trm_default_layout') . '.</div>';
 	echo '<p>&nbsp;</p>';
 		
-	echo form_open(module_url('dashee', 'update_group_defaults'));
+	echo form_open(form_url('dashee', 'update_group_defaults'));
 	
 	$this->table->set_caption(lang('cap_group_layouts'));
 	
@@ -98,7 +99,7 @@ if($is_admin):
 		}
 
 		$this->table->add_row(
-			$group->title.' '.anchor(module_url('dashee', 'reset_group_defaults', array('group_id' => $group->id)), 'Reset', 'class="dashReset"'),
+			$group->title.' '.anchor(cp_url('cp/addons_modules/show_module_cp', array('module' => 'dashee', 'method' => 'reset_group_defaults', 'group_id' => $group->id)), 'Reset', 'class="dashReset"'),
 			$group->description ? $group->description : '--',
 			form_checkbox('group_locked['.$group->id.']','locked', $locked, ($group->id == 1 ? 'disabled="disabled"' : '')) . ' ' . lang('lbl_lock') . ' (<a href="#" class="dashLockHelp">?</a>)',
 			form_dropdown('group_layouts['.$group->id.']', $opts_layouts, $layout_id)

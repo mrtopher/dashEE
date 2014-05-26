@@ -367,7 +367,7 @@ class Dashee_model extends CI_Model
 						'data'	=> array(
 							'title' 	=> 'Welcome to dashEE',
 							'wclass' 	=> 'padded welcome',
-                            'content'   => '<p>dashEE is the ultimate in ExpressionEngine control panel customization. The module comes with several default widgets for making your life easier (located in the \'widgets\' directory). Don\'t see the functionality you\'re looking for? You can develop your own widgets and even integrate dashEE with your custom modules. Learn more by following the links below:</p><p><a href="http://chrismonnat.com/code/dashee" target="_blank">Documentation</a> | <a href="https://github.com/mrtopher/dashEE">GitHub Repo</a></p>'
+                            'content'   => '<p>dashEE is the ultimate in ExpressionEngine control panel customization. The module comes with several default widgets for making your life easier (located in the \'widgets\' directory). Don\'t see the functionality you\'re looking for? You can develop your own widgets and even integrate dashEE with your custom modules. Check out the video below learn more or visit the project on Github to contribute.</p><iframe src="//fast.wistia.net/embed/iframe/4186nqfmh2?videoFoam=true" allowtransparency="true" frameborder="0" scrolling="no" class="wistia_embed" name="wistia_embed" allowfullscreen mozallowfullscreen webkitallowfullscreen oallowfullscreen msallowfullscreen width="640" height="360"></iframe><script src="//fast.wistia.net/assets/external/iframe-api-v1.js"></script><br /><p><a target="_blank" href="https://github.com/mrtopher/dashEE">GitHub Repo</a></p>'
 							)
 						),
 					'wgt' . random_string('numeric', 8) => array(

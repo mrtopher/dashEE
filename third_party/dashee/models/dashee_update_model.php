@@ -666,7 +666,7 @@ class Dashee_update_model extends CI_Model
                         $dash['widgets'][$col][$id]['data']    = array(
                             'title'     => 'Welcome to dashEE',
                             'wclass'    => 'padded welcome',
-                            'content'   => '<p>dashEE is the ultimate in ExpressionEngine control panel customization. The module comes with several default widgets for making your life easier (located in the \'widgets\' directory). Don\'t see the functionality you\'re looking for? You can develop your own widgets and even integrate dashEE with your custom modules. Learn more by following the links below:</p><p><a href="http://chrismonnat.com/code/dashee" target="_blank">Documentation</a> | <a href="https://github.com/mrtopher/dashEE">GitHub Repo</a></p>'
+                            'content'   => '<p>dashEE is the ultimate in ExpressionEngine control panel customization. The module comes with several default widgets for making your life easier (located in the \'widgets\' directory). Don\'t see the functionality you\'re looking for? You can develop your own widgets and even integrate dashEE with your custom modules. Check out the video below learn more or visit the project on Github to contribute.</p><iframe src="//fast.wistia.net/embed/iframe/4186nqfmh2?videoFoam=true" allowtransparency="true" frameborder="0" scrolling="no" class="wistia_embed" name="wistia_embed" allowfullscreen mozallowfullscreen webkitallowfullscreen oallowfullscreen msallowfullscreen width="640" height="360"></iframe><script src="//fast.wistia.net/assets/external/iframe-api-v1.js"></script><br /><p><a target="_blank" href="https://github.com/mrtopher/dashEE">GitHub Repo</a></p>'
                             );
                     }
 
@@ -695,8 +695,7 @@ class Dashee_update_model extends CI_Model
         $widget = array(
             'title'     => 'dashEE 2.0 Is Here!',
             'wclass'    => 'padded',
-            'content'   => '<a href="//fast.wistia.net/embed/iframe/4186nqfmh2?popover=true" class="wistia-popover[height=360,playerColor=7b796a,width=640]"><img src="https://embed-ssl.wistia.com/deliveries/8cf8fa07ebed7fb0c07e1f7483d59728ddd0ffdb.jpg?image_play_button=true&image_play_button_color=7b796ae0&image_crop_resized=300x169" alt="" /></a>
-<script charset="ISO-8859-1" src="//fast.wistia.com/assets/external/popover-v1.js"></script>'
+            'content'   => '<iframe src="//fast.wistia.net/embed/iframe/4186nqfmh2?videoFoam=true" allowtransparency="true" frameborder="0" scrolling="no" class="wistia_embed" name="wistia_embed" allowfullscreen mozallowfullscreen webkitallowfullscreen oallowfullscreen msallowfullscreen width="640" height="360"></iframe><script src="//fast.wistia.net/assets/external/iframe-api-v1.js"></script>'
             );
 
         $member_id = $this->EE->session->userdata('member_id');

@@ -215,7 +215,7 @@ class Dashee_mcp
 
 		$this->EE->session->set_flashdata('dashee_msg', lang('flash_settings_updated'));
 
-		$this->EE->functions->redirect(cp_url('dashee', 'settings'));
+		$this->EE->functions->redirect(cp_url('cp/addons_modules/show_module_cp', array('module' => 'dashee', 'method' => 'settings')));
 	}
 
 	/**
@@ -289,7 +289,7 @@ class Dashee_mcp
 
 		$this->EE->session->set_flashdata('dashee_msg', lang('flash_settings_updated'));
 
-		$this->EE->functions->redirect(cp_url('dashee', 'index', array('config_id' => $this->EE->input->post('config_id'))));
+		$this->EE->functions->redirect(cp_url('cp/addons_modules/show_module_cp', array('module' => 'dashee', 'config_id' => $this->EE->input->post('config_id'))));
 	}
 
 	/**
@@ -364,7 +364,7 @@ class Dashee_mcp
 						$widget_name,
 						$widget_description,
 						lang(strtolower($mod).'_module_name'),
-						anchor(cp_url('dashee'), 'Add', 'class="addWidget" data-module="' . $mod . '" data-widget="' . $widget . '"')
+						anchor(cp_url('cp/addons_modules/show_module_cp', array('module' => 'dashee')), 'Add', 'class="addWidget" data-module="' . $mod . '" data-widget="' . $widget . '"')
 						);
 				}
 			}
@@ -757,7 +757,7 @@ class Dashee_mcp
 			$this->EE->session->set_flashdata('dashee_msg', lang('flash_layout_not_updated'));
 		}
 
-		$this->EE->functions->redirect(cp_url('dashee', 'settings'));
+		$this->EE->functions->redirect(cp_url('cp/addons_modules/show_module_cp', array('module' => 'dashee', 'method' => 'settings')));
 	}
 
 	/**
@@ -784,7 +784,7 @@ class Dashee_mcp
 			$this->EE->session->set_flashdata('dashee_msg', lang('flash_layout_not_loaded'));
 		}
 
-		$this->EE->functions->redirect(cp_url('dashee'));
+		$this->EE->functions->redirect(cp_url('cp/addons_modules/show_module_cp', array('module' => 'dashee')));
 	}
 
 	/**
@@ -813,7 +813,7 @@ class Dashee_mcp
 			$this->EE->session->set_flashdata('dashee_msg', lang('flash_layout_not_deleted'));
 		}
 
-		$this->EE->functions->redirect(cp_url('dashee', 'settings'));
+		$this->EE->functions->redirect(cp_url('cp/addons_modules/show_module_cp', array('module' => 'dashee', 'method' => 'settings')));
 	}
 
 	/**
@@ -844,7 +844,7 @@ class Dashee_mcp
 			$this->EE->session->set_flashdata('dashee_msg', lang('flash_group_default_not_updated'));
 		}
 
-		$this->EE->functions->redirect(cp_url('dashee', 'settings'));
+		$this->EE->functions->redirect(cp_url('cp/addons_modules/show_module_cp', array('module' => 'dashee', 'method' => 'settings')));
 	}
 
 	/**
@@ -875,7 +875,7 @@ class Dashee_mcp
 			$this->EE->session->set_flashdata('dashee_msg', lang('flash_group_layout_not_reset') . $group->group_title . '.');
 		}
 
-		$this->EE->functions->redirect(cp_url('dashee', 'settings'));
+		$this->EE->functions->redirect(cp_url('cp/addons_modules/show_module_cp', array('module' => 'dashee', 'method' => 'settings')));
 
 	}
 
