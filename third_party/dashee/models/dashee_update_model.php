@@ -37,7 +37,7 @@ class Dashee_update_model extends CI_Model
         $this->_site_id = $this->EE->session->userdata('site_id');
 
         $this->_package_name    	= 'dashEE';
-        $this->_package_version 	= '2.0';
+        $this->_package_version 	= '2.1';
         $this->_extension_version 	= '1.4';
 
         $this->_module_settings = array(
