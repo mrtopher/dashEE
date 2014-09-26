@@ -555,7 +555,7 @@ class Dashee_model extends CI_Model
 			
 			foreach($member_qry as $member)
 			{
-				$this->EE->db->update('dashee_members', array('config' => $layouts[$group_layouts[$member->group_id]['layout_id']]), array('id' => $member->id));
+				$this->EE->db->update('dashee_member_configs', array('config' => $layouts[$group_layouts[$member->group_id]['layout_id']]), array('id' => $member->id));
 			}
 		}
 	}
