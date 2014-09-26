@@ -1,3 +1,4 @@
+<?php if(!$locked): ?>
 <div id="dashboards">
 	<ul>
 		<?php foreach($dashboards as $dash): ?>
@@ -5,11 +6,10 @@
 
 			<li><?php echo anchor(cp_url('cp/addons_modules/show_module_cp', array('module' => 'dashee', 'config_id' => $dash->id)), $dash->name, $class); ?></li>
 		<?php endforeach; ?>
-		<li><a href="#new-dashboard"><i class="fa fa-plus"></i> <?php echo lang('trm_new_dashboard'); ?></a></li>
-		<li><a class="opt" href="#rename-dashboard" title="Rename Dashboard"><i class="fa fa-pencil-square-o"></i></a></li>
-		<li><a class="opt" href="<?php echo cp_url('cp/addons_modules/show_module_cp', array('module' => 'dashee', 'method' => 'reset_dashboard', 'config_id' => $config_id)); ?>" title="<?php echo lang('trm_reset_dashboard'); ?>"><i class="fa fa-refresh"></i></a></li>
-		<li><a class="opt" href="<?php echo cp_url('cp/addons_modules/show_module_cp', array('module' => 'dashee', 'method' => 'delete_dashboard', 'config_id' => $config_id)); ?>" title="<?php echo lang('trm_delete_dashboard'); ?>"><i class="fa fa-times-circle"></i></a></li>
-		<?php if(!$locked): ?>
+			<li><a href="#new-dashboard"><i class="fa fa-plus"></i> <?php echo lang('trm_new_dashboard'); ?></a></li>
+			<li><a class="opt" href="#rename-dashboard" title="Rename Dashboard"><i class="fa fa-pencil-square-o"></i></a></li>
+			<li><a class="opt" href="<?php echo cp_url('cp/addons_modules/show_module_cp', array('module' => 'dashee', 'method' => 'reset_dashboard', 'config_id' => $config_id)); ?>" title="<?php echo lang('trm_reset_dashboard'); ?>"><i class="fa fa-refresh"></i></a></li>
+			<li><a class="opt" href="<?php echo cp_url('cp/addons_modules/show_module_cp', array('module' => 'dashee', 'method' => 'delete_dashboard', 'config_id' => $config_id)); ?>" title="<?php echo lang('trm_delete_dashboard'); ?>"><i class="fa fa-times-circle"></i></a></li>
 			<?php if($state_buttons): ?>
 				<li><a class="opt" href="#collapse" title="<?php echo lang('btn_collapse'); ?>"><i class="fa fa-minus-square"></i></a></li>
 				<li><a class="opt" href="#expand" title="<?php echo lang('btn_expand'); ?>"><i class="fa fa-plus-square"></i></a></li>
@@ -20,10 +20,10 @@
 			<?php endif; ?>
 			<li class="sub"><a class="opt" href="#save-layout" title="<?php echo lang('trm_save_dashboard'); ?>"><?php echo lang('trm_save_dashboard'); ?></i></a></li>
 			<li class="sub"><a class="opt" href="#widgets" title="<?php echo lang('trm_widgets'); ?>"><?php echo lang('btn_widgets'); ?></i></a></li>
-		<?php endif; ?>
 	</ul>
 	<div class="clear"></div>
 </div>
+<?php endif; ?>
 
 <div id="dashContainer">
 	<div id="dashListing" style="display:none;">
