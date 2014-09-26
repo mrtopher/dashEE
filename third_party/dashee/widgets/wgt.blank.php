@@ -3,7 +3,7 @@
 /**
  * Blank Widget
  *
- * Display blank boilerplace widget that can be customized with settings.
+ * Display blank boilerplace widget that can be customized with widget settings.
  *
  * @package		ExpressionEngine
  * @subpackage	Addons
@@ -20,6 +20,9 @@ class Wgt_blank
 	
 	/**
 	 * Constructor
+	 *
+	 * @access 		public
+ 	 * @return 		void
 	 */
 	public function __construct()
 	{
@@ -30,13 +33,12 @@ class Wgt_blank
 		$this->wclass = 'padded';
 	}
 	
-	// ----------------------------------------------------------------
-
 	/**
 	 * Index Function
 	 *
-	 * @param	object
-	 * @return 	string
+	 * @access 		public
+	 * @param		obj 		$settings 		Object containing member widget settings.
+	 * @return 		str
 	 */
 	public function index($settings = NULL)
 	{
@@ -47,10 +49,12 @@ class Wgt_blank
 	
 	/**
 	 * Settings Form Function
+	 * 
 	 * Generate settings form for widget.
 	 *
-	 * @param	object
-	 * @return 	string
+	 * @access 		public
+	 * @param		obj 		$settings 		Object containing member widget settings.
+	 * @return 		str
 	 */
 	public function settings_form($settings)
 	{

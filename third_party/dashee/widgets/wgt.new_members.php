@@ -14,35 +14,38 @@
 
 class Wgt_new_members
 {
-	public 	$title;
+	public $EE;
+	public $title;
 	public $wclass;
-	
-	private $_EE;
-	
+		
 	/**
 	 * Constructor
+	 *
+	 * @access 		public
+ 	 * @return 		void
 	 */
 	public function __construct()
 	{
-		$this->title = 'New Members';
+		$this->EE =& get_instance();
+
+		$this->title  = 'New Members';
 		$this->wclass = 'contentMenu';	
-		
-		$this->_EE =& get_instance();
 	}
 	
 	/**
 	 * Index Function
 	 *
-	 * @return 	string
+	 * @access 		public
+	 * @return 		str
 	 */
 	public function index()
 	{
 		// get most recent 10 members from DB
-		$this->_EE->db->select('member_id, username, join_date');
-		$this->_EE->db->from('members');
-		$this->_EE->db->order_by('join_date DESC');
-		$this->_EE->db->limit(10);
-		$results = $this->_EE->db->get();
+		$results = $this->EE->db->select('member_id, username, join_date')
+			->from('members')
+			->order_by('join_date DESC')
+			->limit(10)
+			->get();
 	
 		// generate table HTML
 		$display = '';

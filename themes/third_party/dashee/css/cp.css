@@ -1,27 +1,39 @@
+/* dashEE Module CSS */
+
 /* EE Override */
-.rightNav { padding-right: 3.3%; }
-.rightNav .button { margin-left: 6px; margin-right: 0; }
 .contents { padding-left: 0; padding-right: 0; }
 .heading { display: none; }
-#mainContent .pageContents { border-top: none; padding-left: 0; padding-right: 0; background: none; }
+#mainContent .pageContents { border-top: none; padding-left: 0; padding-right: 0; padding-top:0; background: none; }
 #mainContent .pageContents table { margin-bottom: 0; }
 .contentMenu { margin-left: 0; float: none; width: 100%; }
 
-
 /* Module CSS */
-#dashListing { height:300px; overflow:auto; margin: 0 3.3% 25px; }
+#dashboards { margin:0 2% 0 2%; font-size:1.1em; background:#F0F0F0; }
+#dashboards li { float:left; }
+#dashboards li.sub { float:right; }
+#dashboards li a { display:block; padding:5px 10px; }
+#dashboards li a.active { font-weight:bold; background:#CCC; }
+#dashboards li a.opt { padding:5px; }
+
+#dashListing { height:320px; overflow:auto; margin:0 2% 15px 2%; }
 
 #dashContainer .column { 
     float: left;
-    margin-left:3.3%;
-	/* Min-height: */
+    margin-left:4.5%;
+    margin-top:15px;
 	min-height: 400px;
 	height: auto !important; 
 	height: 400px;
 }
+#dashContainer .column:first-child {
+	margin-left:1.9%;
+}
 #dashContainer .columns3 .column { width:29%; }
 #dashContainer .columns2 .column { width:45%; }
 #dashContainer .columns1 .column { width:94%; }
+
+/* cog icon doesn't line up with others for some reason, need to add top padding to make it look good */
+.fa-cog { padding-top:3px; }
 
 .widget {
     margin-bottom: 25px;
@@ -130,11 +142,11 @@
 	text-align: left;
 	vertical-align: top;
 }
-.widget.contentMenu .widget-content table th:last-child,
+/*.widget.contentMenu .widget-content table th:last-child,
 .widget.contentMenu .widget-content table td:last-child {
 	padding-right: 17px;
 	text-align: right;
-}
+}*/
 .widget.contentMenu .widget-content table thead th,
 .widget.contentMenu .widget-content table thead td {
 	border-top: 1px solid #fff;
@@ -191,11 +203,12 @@
 .widget-placeholder { margin-bottom: 21px; border: 2px dashed #999; }
 
 img#dashLoader { display:none; }
-
-img#dashLoader { display:none; }
+img#widgetLoader { display:none; }
 
 #dashSaveLayout p { margin:10px 0; }
-#dashSaveLayout input { background:#FFF; }
+#dashSaveLayout input,
+#dashNewDashboard input,
+#dashRenameDashboard input { background:#FFF; }
 
 /* Widget Specific Styling */
 .widget.welcome .heading {

@@ -1,4 +1,7 @@
-.pageContents caption a.dashHelp { 
+/* dashEE Module CSS */
+
+.rightNav { padding:0; }
+.pageContents caption a.dashLayoutHelp { 
 	display:block; 
 	float:right; 
 	padding-top:2px; 

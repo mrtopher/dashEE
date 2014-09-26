@@ -14,37 +14,37 @@
 
 class Wgt_recent_entries
 {
-	public 	$title;
+	public $EE;
+	public $title;
 	public $wclass;
-	
-	private $_EE;
-	
+		
 	/**
 	 * Constructor
+	 *
+	 * @access 		public
+ 	 * @return 		void
 	 */
 	public function __construct()
 	{
+		$this->EE =& get_instance();
 		$this->title = 'Recent Entries';
 		$this->wclass = 'contentMenu';	
-	
-		$this->_EE =& get_instance();
 	}
 	
-	// ----------------------------------------------------------------
-
 	/**
 	 * Index Function
 	 *
-	 * @return 	string
+	 * @access 		public
+	 * @return 		str
 	 */
 	public function index()
 	{
 		// get most recent 10 entries from DB
-		$this->_EE->db->select('entry_id, channel_id, title, entry_date');
-		$this->_EE->db->from('channel_titles');
-		$this->_EE->db->order_by('entry_date DESC');
-		$this->_EE->db->limit(10);
-		$entries = $this->_EE->db->get();
+		$entries = $this->EE->db->select('entry_id, channel_id, title, entry_date')
+			->from('channel_titles')
+			->order_by('entry_date DESC')
+			->limit(10)
+			->get();
 	
 		// generate table HTML
 		$display = '';

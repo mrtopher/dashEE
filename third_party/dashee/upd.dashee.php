@@ -1,20 +1,6 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2011, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
- * @since		Version 2.0
- * @filesource
- */
- 
-// ------------------------------------------------------------------------
-
-/**
  * dashEE Module Install/Update File
  *
  * @package		ExpressionEngine
@@ -24,38 +10,43 @@
  * @link		http://chrismonnat.com
  */
 
-class Dashee_upd {
-	
+class Dashee_upd 
+{
 	public $version;
 	
-	private $_EE;
+	private $EE;
 	private $_model;
 	
 	/**
 	 * Constructor
+	 *
+	 * @access 		public
+ 	 * @return 		void
 	 */
 	public function __construct()
 	{
-		$this->_EE =& get_instance();
+		$this->EE =& get_instance();
 		
-        $this->_EE->load->add_package_path(PATH_THIRD .'dashee/');
+        $this->EE->load->add_package_path(PATH_THIRD .'dashee/');
 
-        $this->_EE->load->model('dashee_model');
-        $this->_model = $this->_EE->dashee_model;
+        $this->EE->load->model('dashee_update_model');
+        $this->_model = $this->EE->dashee_update_model;
         
         $this->version = $this->_model->get_package_version();
 	}
-	
-	// ----------------------------------------------------------------
-	
+		
 	/**
 	 * Installation Method
 	 *
-	 * @return 	boolean 	TRUE
+	 * @access 		public
+	 * @return 		boo 		TRUE
 	 */
 	public function install()
 	{
-		return $this->_model->install_module();
+		$this->_model->install_module();
+		$this->_model->activate_extension();
+		
+		return TRUE;
 	}
 
 	// ----------------------------------------------------------------
@@ -63,11 +54,15 @@ class Dashee_upd {
 	/**
 	 * Uninstall
 	 *
-	 * @return 	boolean 	TRUE
+	 * @access 		public
+	 * @return 		bool 		TRUE
 	 */	
 	public function uninstall()
 	{
-		return $this->_model->uninstall_module();
+		$this->_model->uninstall_module();
+		$this->_model->disable_extension();
+		
+		return TRUE;
 	}
 	
 	// ----------------------------------------------------------------
@@ -75,11 +70,15 @@ class Dashee_upd {
 	/**
 	 * Module Updater
 	 *
-	 * @return 	boolean 	TRUE
+	 * @access 		public
+	 * @return 		bool 		TRUE
 	 */	
 	public function update($current = '')
 	{
-		return $this->_model->update_package($current);	
+		$this->_model->update_package($current);	
+		$this->_model->update_extension($current);	
+		
+		return TRUE;
 	}
 	
 }

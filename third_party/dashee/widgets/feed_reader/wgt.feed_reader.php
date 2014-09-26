@@ -14,51 +14,65 @@
 
 class Wgt_feed_reader
 {
+	public $EE;
 	public $title;
 	public $wclass;
 	public $settings;
 	
 	/**
 	 * Constructor
+	 *
+	 * @access 		public
+ 	 * @return 		void
 	 */
 	public function __construct()
 	{
+		$this->EE =& get_instance();
+
 		$this->settings = array(
-			'url' => 'http://expressionengine.com/feeds/rss/eeblog/',
+			'url' => 'http://ellislab.com/blog/rss-feed',
 			'num' => 5
 			);
 		$this->wclass = 'contentMenu';
 	}
 	
-	// ----------------------------------------------------------------
-
 	/**
 	 * Index Function
 	 *
-	 * @param 	object
-	 * @return 	string
+	 * @access 		public
+	 * @param 		obj 		$settings 		Object containing member widget settings.
+	 * @return 		str
 	 */
 	public function index($settings = NULL)
 	{
-		$EE = get_instance();
-		$EE->load->helper('text');
+		$this->EE->load->helper('text');
 	
-		$rss = simplexml_load_file($settings->url);
+		libxml_use_internal_errors(true);
+		
+		if(!$rss = simplexml_load_file($settings->url))
+		{
+			$this->title 	= "Error";
+			$vars['error'] 	= TRUE;	
+		}
+		else
+		{
+			$this->title = (string) $rss->channel->title;
+			
+			$vars['error'] 	= FALSE;
+			$vars['rss'] 	= $rss;
+			$vars['num'] 	= $settings->num;
+		}
 
-		$this->title = (string) $rss->channel->title;
-
-		$vars['rss'] = $rss;
-		$vars['num'] = $settings->num;
-
-		return $EE->load->view('widgets/feed_reader', $vars, TRUE);
+		return $this->EE->load->view('index', $vars, TRUE);
 	}
 	
 	/**
 	 * Settings Form Function
 	 * Generate settings form for widget.
 	 *
-	 * @param 	object
-	 * @return 	string
+	 * @access 		public
+	 * @param 		obj 		$swttings 		Object containing member widget settings.
+	 * @return 		str
 	 */
 	public function settings_form($settings)
 	{
@@ -76,4 +90,4 @@ class Wgt_feed_reader
 	}
 }
 /* End of file wgt.feed_reader.php */
-/* Location: /system/expressionengine/third_party/dashee/widgets/wgt.feed_reader.php */
+/* Location: /system/expressionengine/third_party/dashee/widgets/feed_reader/wgt.feed_reader.php */

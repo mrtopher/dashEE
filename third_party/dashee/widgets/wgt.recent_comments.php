@@ -14,36 +14,37 @@
 
 class Wgt_recent_comments
 {
-	public 	$title;
-	
-	private $_EE;
-	
+	public $EE;
+	public $title;
+		
 	/**
 	 * Constructor
+	 *
+	 * @access 		public
+ 	 * @return 		void
 	 */
 	public function __construct()
 	{
+		$this->EE =& get_instance();
+
 		$this->title = 'Recent Comments';
 		$this->wclass = 'contentMenu';
-	
-		$this->_EE =& get_instance();
 	}
 	
-	// ----------------------------------------------------------------
-
 	/**
 	 * Index Function
 	 *
-	 * @return 	string
+	 * @access 		public
+	 * @return 		string
 	 */
 	public function index()
 	{
 		// get most recent 10 entries from DB
-		$this->_EE->db->select('entry_id, channel_id, name, comment_date');
-		$this->_EE->db->from('comments');
-		$this->_EE->db->order_by('comment_date DESC');
-		$this->_EE->db->limit(10);
-		$comments = $this->_EE->db->get();
+		$comments = $this->EE->db->select('entry_id, channel_id, name, comment_date')
+			->from('comments')
+			->order_by('comment_date DESC')
+			->limit(10)
+			->get();
 	
 		// generate table HTML
 		$display = '';
